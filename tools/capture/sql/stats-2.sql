@@ -1,0 +1,1 @@
+SELECT COUNT(DISTINCT content_sha256) FROM captures

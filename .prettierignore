@@ -1,0 +1,12 @@
+**/node_modules/**
+**/dist/**
+**/coverage/**
+**/.turbo/**
+pnpm-lock.yaml
+# Pytest cache: generated, gitignored by its own .gitignore, and regenerated on
+# every test run. Prettier reads .prettierignore rather than .gitignore, so it
+# has to be named here too or the gate goes red after any pytest run.
+.pytest_cache/
+# Written by `eslint --suppress-all` and rewritten by `lint:prune`; ESLint owns
+# its shape, and formatting it would make every prune a formatting diff.
+eslint-suppressions.json

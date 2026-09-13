@@ -1,0 +1,1 @@
+INSERT OR REPLACE INTO remote_checks VALUES (?,?,?,?,?,?)

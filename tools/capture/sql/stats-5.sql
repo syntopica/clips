@@ -1,0 +1,1 @@
+SELECT COUNT(*) FROM assets WHERE status != 'ok'

@@ -1,0 +1,1 @@
+create table captures (url text, clip_dir text)

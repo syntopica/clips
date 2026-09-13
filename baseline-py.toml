@@ -1,0 +1,39 @@
+# Managed by baseline-py.
+schema-version = 1
+source-roots = ["tools"]
+test-roots = ["tests"]
+respect-gitignore = true
+coverage-threshold = 65
+
+[limits]
+max-file-lines = 150
+test-max-file-lines = 300
+
+[roles]
+data = []
+registry = []
+entrypoint = [
+  "tools/capture/backfill_assets.py",
+  "tools/capture/check_remote_drift.py",
+  "tools/capture/classifications.py",
+  "tools/capture/normalize_thin_clip.py",
+  "tools/capture/push_index_to_service.py",
+  "tools/capture/read_batch.py",
+  "tools/capture/record_reading.py",
+  "tools/capture/recover_gone.py",
+  "tools/capture/screen_pending.py",
+  "tools/capture/url_index.py",
+  "tools/chatgpt/convert.py",
+  "tools/chatgpt/mark.py",
+  "tools/chatgpt/mine.py",
+  "tools/chatgpt/purge_queue.py",
+  "tools/chatgpt/queue.py",
+  "tools/chatgpt/triage.py",
+  "tools/review-pass/build_batches.py",
+  "tools/review-pass/extract_review_entries.py",
+  "tools/review-pass/map_to_clips.py",
+  "tools/review-pass/write_audit.py",
+  "tools/sessions/convert.py",
+]
+generated = []
+namespace-init = []

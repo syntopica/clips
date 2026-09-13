@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "decision": "CODEX_DISABLED",
+  "decidedAt": "2026-09-13T00:00:00Z",
+  "mechanism": "none",
+  "reproducibleCommand": "pnpm test src/sandbox/composed-boundary.integration.test.ts",
+  "mechanismsEvaluated": ["shipped-default"],
+  "rows": [],
+  "justification": "The engine ships refusing. Running a model over untrusted captured text with the filesystem open is a risk only the operator of a particular instance can accept, on their own machine and against their own data, so the published engine records no acceptance and no evidence of anyone else's. An operator who wants a model synthesizer replaces this file with their own decision and its probe rows; docs/boundary-decision.md states what they are accepting. Until then --manual is the synthesizer, which needs no model, no credits and no boundary at all."
+}
