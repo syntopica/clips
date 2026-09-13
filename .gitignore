@@ -9,5 +9,6 @@ coverage/
 .mypy_cache/
 .ruff_cache/
 .turbo/
+*.tsbuildinfo
 # The instance the engine is being run against, and any local overlay of it.
 syntopica.local.json
