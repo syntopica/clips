@@ -7,6 +7,7 @@ import pytest
 
 from tests.sessions_convert_claude_line import _claude_line
 from tests.sessions_convert_convert import convert
+from tests.sessions_convert_instance import sessions_convert_instance
 
 __all__ = ["convert"]
 
@@ -14,7 +15,7 @@ __all__ = ["convert"]
 def test_convert_claude_jsonl_filters_sidechains_meta_and_injected_turns(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path / "out")
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     log = tmp_path / "0123456789abcdef.jsonl"
     log.write_text(
         "\n".join(
@@ -62,7 +63,7 @@ def test_convert_claude_jsonl_filters_sidechains_meta_and_injected_turns(
     )
     kept, skipped = convert.convert_claude_jsonl([log], "claude-code", host="mini")
     assert (kept, skipped) == (1, 0)
-    page = (tmp_path / "out" / "claude-code").glob("*.md").__next__()
+    page = (out / "claude-code").glob("*.md").__next__()
     text = page.read_text(encoding="utf-8")
     assert page.name == "2026-09-08-parser-work-89abcdef.md"  # summary wins as the title
     assert "messages: 2\n" in text
@@ -79,17 +80,17 @@ def test_convert_claude_jsonl_filters_sidechains_meta_and_injected_turns(
 def test_convert_claude_jsonl_skips_a_log_with_no_timestamped_turn(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path / "out")
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     log = tmp_path / "empty.jsonl"
     log.write_text(_claude_line(type="summary", summary="nothing") + "\n", encoding="utf-8")
     assert convert.convert_claude_jsonl([log], "claude-code") == (0, 1)
-    assert not (tmp_path / "out").exists()
+    assert not out.exists()
 
 
 def test_convert_claude_jsonl_skips_a_log_with_only_assistant_text(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path / "out")
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     log = tmp_path / "assistant-only.jsonl"
     log.write_text(
         _claude_line(
@@ -101,12 +102,13 @@ def test_convert_claude_jsonl_skips_a_log_with_only_assistant_text(
         encoding="utf-8",
     )
     assert convert.convert_claude_jsonl([log], "claude-code") == (0, 1)
+    assert not out.exists()
 
 
 def test_convert_claude_jsonl_titles_from_the_first_user_line_without_a_summary(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path / "out")
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     log = tmp_path / "abcdef0123456789.jsonl"
     log.write_text(
         _claude_line(
@@ -118,5 +120,5 @@ def test_convert_claude_jsonl_titles_from_the_first_user_line_without_a_summary(
         encoding="utf-8",
     )
     convert.convert_claude_jsonl([log], "claude-code")
-    name = (tmp_path / "out" / "claude-code").glob("*.md").__next__().name
+    name = (out / "claude-code").glob("*.md").__next__().name
     assert name == "2026-09-08-first-line-here-23456789.md"

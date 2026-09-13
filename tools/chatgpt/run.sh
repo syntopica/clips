@@ -21,12 +21,36 @@
 
 set -euo pipefail
 DIR="$(cd "$(dirname "$0")" && pwd)"
-ROOT="$(cd "$DIR/../.." && pwd)"
+# After the split, an engine-relative sources path found nothing and Git still
+# reported success. The instance must supply its data directory and sources path.
+DATA="${SYNTOPICA_DATA:-}"
+if [ -z "$DATA" ] || [ ! -d "$DATA" ] || [ ! -f "$DATA/syntopica.config.json" ]; then
+  echo "run: SYNTOPICA_DATA must name a directory containing syntopica.config.json" >&2
+  exit 78
+fi
+if ! SOURCES=$(python3 - "$DATA/syntopica.config.json" <<'PY'
+import json
+import sys
+
+try:
+    with open(sys.argv[1], encoding="utf-8") as config_file:
+        sources = json.load(config_file)["brain"]["sources"]
+    if not isinstance(sources, str) or not sources.strip():
+        raise ValueError("brain.sources must be a non-empty string")
+except (OSError, ValueError, KeyError, TypeError):
+    print("run: SYNTOPICA_DATA/syntopica.config.json must define brain.sources as a non-empty string in valid JSON", file=sys.stderr)
+    sys.exit(78)
+print(sources)
+PY
+); then
+  exit 78
+fi
+CHATGPT_SOURCES="$SOURCES/chatgpt"
+OUT="$DATA/$CHATGPT_SOURCES"
 PROFILE="${1:-${CHATGPT_CHROME_PROFILE:-Profile 1}}"
 INDEX="${CHATGPT_INDEX:-$HOME/Downloads/chatgpt-index.json}"
 WORKERS="${CHATGPT_WORKERS:-1}"
 PACE="${CHATGPT_PACE:-4000}"
-OUT="$ROOT/sources/chatgpt"
 
 command -v chrome-cli >/dev/null 2>&1 || {
   echo "chrome-cli not installed (brew install chrome-cli)" >&2

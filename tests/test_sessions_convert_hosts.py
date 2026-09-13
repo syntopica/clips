@@ -7,6 +7,7 @@ import pytest
 
 from tests.sessions_convert_claude_line import _claude_line
 from tests.sessions_convert_convert import convert
+from tests.sessions_convert_instance import sessions_convert_instance
 
 __all__ = ["convert"]
 
@@ -17,7 +18,7 @@ def test_convert_claude_hosts_writes_a_shared_session_once_under_the_local_host(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path / "out")
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     local = tmp_path / "local" / "projects" / "-repo"
     local.mkdir(parents=True)
     line = _claude_line(
@@ -26,7 +27,7 @@ def test_convert_claude_hosts_writes_a_shared_session_once_under_the_local_host(
         message={"role": "user", "content": "shared session"},
     )
     (local / "00000000-0000-0000-0000-0000000000ab.jsonl").write_text(line + "\n", encoding="utf-8")
-    mirror = tmp_path / "hosts" / "mini" / "claude-projects" / "-repo"
+    mirror = out.parent / "agent-sessions" / "hosts" / "mini" / "claude-projects" / "-repo"
     mirror.mkdir(parents=True)
     (mirror / "00000000-0000-0000-0000-0000000000ab.jsonl").write_text(
         line + "\n", encoding="utf-8"
@@ -41,12 +42,11 @@ def test_convert_claude_hosts_writes_a_shared_session_once_under_the_local_host(
         encoding="utf-8",
     )
     monkeypatch.setattr(convert, "CLAUDE_ROOT", tmp_path / "local" / "projects")
-    monkeypatch.setattr(convert, "HOSTS_MIRROR", tmp_path / "hosts")
     monkeypatch.setattr(convert, "LOCAL_HOST", "thismac")
     monkeypatch.setattr(convert, "DESKTOP_ROOTS", [])
 
     assert convert.convert_claude_hosts("claude-code") == (2, 0)
-    pages = sorted(p.read_text(encoding="utf-8") for p in (tmp_path / "out").rglob("*.md"))
+    pages = sorted(p.read_text(encoding="utf-8") for p in out.rglob("*.md"))
     assert sum("host: thismac" in p for p in pages) == 1
     assert sum("host: mini" in p for p in pages) == 1
     assert sum("shared session" in p for p in pages) == 1
@@ -58,7 +58,7 @@ def test_convert_claude_hosts_writes_a_shared_session_once_under_the_local_host(
 def test_convert_claude_hosts_ignores_subagent_logs_for_the_desktop_store(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path / "out")
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     root = tmp_path / "desktop"
     line = _claude_line(
         type="user",
@@ -75,9 +75,8 @@ def test_convert_claude_hosts_ignores_subagent_logs_for_the_desktop_store(
     stray.mkdir()
     (stray / "cccccccc55556666.jsonl").write_text(line + "\n", encoding="utf-8")
     monkeypatch.setattr(convert, "DESKTOP_ROOTS", [root])
-    monkeypatch.setattr(convert, "HOSTS_MIRROR", tmp_path / "no-hosts")
     monkeypatch.setattr(convert, "LOCAL_HOST", "thismac")
 
     assert convert.convert_claude_hosts("claude-desktop") == (1, 0)
-    names = [p.name for p in (tmp_path / "out").rglob("*.md")]
+    names = [p.name for p in out.rglob("*.md")]
     assert names == ["2026-09-08-desktop-turn-11112222.md"]
