@@ -110,7 +110,7 @@ describe('loadSyntopicaConfig', () => {
       'on or off',
     )
   })
-  it('rejects shared engine roots except the explicit monorepo compatibility case', () => {
+  it('rejects shared engine roots including both engines sharing data', () => {
     writeFileSync(
       join(data, localName),
       '{"engines":{"clips":{"path":"../engine-brain"}}}',
@@ -125,6 +125,6 @@ describe('loadSyntopicaConfig', () => {
       join(data, localName),
       '{"engines":{"brain":{"path":"."},"clips":{"path":"."}},"clips":{"archive":"."}}',
     )
-    expect(loadSyntopicaConfig(data, {}).brainPath).toBe(data)
+    expect(() => loadSyntopicaConfig(data, {})).toThrow('distinct Git roots')
   })
 })
