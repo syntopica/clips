@@ -25,10 +25,10 @@ describe('loadSyntopicaConfig', () => {
     rmSync(root, { recursive: true, force: true })
   })
 
-  it('rejects a repository subdirectory selected as archive', () => {
+  it('accepts a repository subdirectory selected as archive', () => {
     mkdirSync(join(data, 'subdir'))
     writeFileSync(join(data, localName), '{"clips":{"archive":"subdir"}}')
-    expect(() => loadSyntopicaConfig(data, {})).toThrow('Git worktree root')
+    expect(loadSyntopicaConfig(data, {}).archive).toBe(join(data, 'subdir'))
   })
   it.each(['url', 'pushurl'])(
     'rejects credential-bearing remote %s without exposing it',

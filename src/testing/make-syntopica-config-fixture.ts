@@ -8,7 +8,6 @@ export function makeSyntopicaConfigFixture(root: string): string {
   const data = join(root, 'data')
   for (const repository of [
     data,
-    join(data, 'clips'),
     join(root, 'engine-brain'),
     join(root, 'engine-clips'),
   ]) {
@@ -22,6 +21,7 @@ export function makeSyntopicaConfigFixture(root: string): string {
     if (result.status !== 0)
       throw new Error('Cannot initialize fixture repository')
   }
+  mkdirSync(join(data, 'clips'))
   mkdirSync(join(root, 'engine-brain', 'schema'))
   copyFileSync(
     syntopicaSchemaPath(),
