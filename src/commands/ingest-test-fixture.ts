@@ -1,6 +1,7 @@
 import { clipMetadata } from './ingest-test-clip-metadata.ts'
 import { CLIP_RELATIVE } from './ingest-test-clip-relative.ts'
-import { INGEST_TEST_DATA_CONFIG } from './ingest-test-data-config.ts'
+import { ingestTestDataConfig } from './ingest-test-data-config.ts'
+import { ingestTestEngineDirectory } from './ingest-test-engine-directory.ts'
 import { INDEX_BUILDER_FILES } from './ingest-test-index-builder.ts'
 import { pendingState } from './ingest-test-pending-state.ts'
 import { repositoryWithOrigin } from './ingest-test-repository-with-origin.ts'
@@ -15,7 +16,10 @@ export const fixture = (
     'index.md': '# brain\n',
     ...INDEX_BUILDER_FILES,
     ...INGEST_TEST_SCHEMA_FILE,
-    ...INGEST_TEST_DATA_CONFIG,
+    ...ingestTestDataConfig(
+      ingestTestEngineDirectory(),
+      ingestTestEngineDirectory(),
+    ),
     // A committed page pointing at the page the scripted synthesizer writes:
     // validation refuses a new page nothing links to, and a line in index.md
     // does not count as a link.
