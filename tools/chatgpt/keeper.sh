@@ -19,13 +19,37 @@
 
 set -uo pipefail
 DIR="$(cd "$(dirname "$0")" && pwd)"
-ROOT="$(cd "$DIR/../.." && pwd)"
-OUT="$ROOT/sources/chatgpt"
+# After the split, an engine-relative sources path found nothing and Git still
+# reported success. The instance must supply its data directory and sources path.
+DATA="${SYNTOPICA_DATA:-}"
+if [ -z "$DATA" ] || [ ! -d "$DATA" ] || [ ! -f "$DATA/syntopica.config.json" ]; then
+  echo "keeper: SYNTOPICA_DATA must name a directory containing syntopica.config.json" >&2
+  exit 78
+fi
+if ! SOURCES=$(python3 - "$DATA/syntopica.config.json" <<'PY'
+import json
+import sys
+
+try:
+    with open(sys.argv[1], encoding="utf-8") as config_file:
+        sources = json.load(config_file)["brain"]["sources"]
+    if not isinstance(sources, str) or not sources.strip():
+        raise ValueError("brain.sources must be a non-empty string")
+except (OSError, ValueError, KeyError, TypeError):
+    print("keeper: SYNTOPICA_DATA/syntopica.config.json must define brain.sources as a non-empty string in valid JSON", file=sys.stderr)
+    sys.exit(78)
+print(sources)
+PY
+); then
+  exit 78
+fi
+CHATGPT_SOURCES="$SOURCES/chatgpt"
+OUT="$DATA/$CHATGPT_SOURCES"
 INDEX="${CHATGPT_INDEX:-$HOME/Downloads/chatgpt-index.json}"
 INTERVAL="${KEEPER_INTERVAL:-300}"
 BATCH="${KEEPER_BATCH:-100}"
 LOCK="$HOME/.brain-chatgpt-keeper.lock"
-LOG="$ROOT/../.brain-chatgpt-keeper.log"
+LOG="${KEEPER_LOG:-$DATA/../.brain-chatgpt-keeper.log}"
 BEAT="$HOME/.brain-chatgpt-keeper.beat"
 
 say() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" >> "$LOG"; }
@@ -61,17 +85,17 @@ publish() {
   # `--untracked-files=all`: git collapses a wholly-untracked directory into
   # a single `?? sources/chatgpt/` line, so the default count says 1 for two
   # thousand new files and the batch threshold never fires.
-  new=$(git -C "$ROOT" status --porcelain --untracked-files=all -- sources/chatgpt | grep -c '\.md$' || true)
+  new=$(git -C "$DATA" status --porcelain --untracked-files=all -- "$CHATGPT_SOURCES" | grep -c '\.md$' || true)
   [ "${new:-0}" -lt "$1" ] && return 0
   # Explicit paths only. `git add -A` here would sweep whatever another session
   # has dirty into an unattended commit, which is the one thing CLAUDE.md
   # forbids outright.
-  git -C "$ROOT" add -- sources/chatgpt || return 0
-  git -C "$ROOT" commit -q -m "chatgpt: export $new conversations" \
+  git -C "$DATA" add -- "$CHATGPT_SOURCES" || return 0
+  git -C "$DATA" commit -q -m "chatgpt: export $new conversations" \
     -m "Rendered from the account's own conversation trees by tools/chatgpt. Unattended batch; see tools/chatgpt/keeper.sh." || return 0
   say "committed $new conversations"
-  if ! git -C "$ROOT" push -q 2>/dev/null; then
-    git -C "$ROOT" fetch -q origin
+  if ! git -C "$DATA" push -q 2>/dev/null; then
+    git -C "$DATA" fetch -q origin
     # Autostash only when nobody else's uncommitted work is in the way of the
     # incoming commits. A stash-and-restore of files the incoming diff does not
     # touch cannot conflict, so it moves nothing; where the sets overlap the
@@ -80,14 +104,14 @@ publish() {
     # of this repo - stalls every push indefinitely.
     local stash=
     if [ -z "$(comm -12 \
-        <(git -C "$ROOT" diff --name-only | sort) \
-        <(git -C "$ROOT" diff --name-only HEAD...origin/main | sort))" ]; then
+        <(git -C "$DATA" diff --name-only | sort) \
+        <(git -C "$DATA" diff --name-only HEAD...origin/main | sort))" ]; then
       stash=--autostash
     fi
-    if git -C "$ROOT" rebase -q $stash origin/main 2>/dev/null; then
-      git -C "$ROOT" push -q 2>/dev/null && say "pushed after rebase" || say "push still refused; will retry"
+    if git -C "$DATA" rebase -q $stash origin/main 2>/dev/null; then
+      git -C "$DATA" push -q 2>/dev/null && say "pushed after rebase" || say "push still refused; will retry"
     else
-      git -C "$ROOT" rebase --abort 2>/dev/null
+      git -C "$DATA" rebase --abort 2>/dev/null
       say "rebase skipped (conflict, or another session is editing an incoming path); commit stays local, will retry"
     fi
   else

@@ -3,12 +3,15 @@
   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <!-- Template, not an installed job: the paths are this checkout's, and every
-     instance has different ones. Render it, then load the rendered copy (which
-     is gitignored beside this file):
+     instance has different ones. From the engine root, with SYNTOPICA_DATA
+     set to the directory containing syntopica.config.json, render it, then load
+     the rendered copy (which is gitignored beside this file):
 
-       sed -e "s|__ENGINE_ROOT__|$PWD|g" -e "s|__WORKSPACE_ROOT__|$(dirname $PWD)|g" \
-         com.brain.chatgpt-keeper.plist.template > com.brain.chatgpt-keeper.plist
-       cp com.brain.chatgpt-keeper.plist ~/Library/LaunchAgents/com.brain.chatgpt-keeper.plist
+       template="$PWD/tools/chatgpt/launchd/com.brain.chatgpt-keeper.plist"
+       sed -e "s|__ENGINE_ROOT__|$PWD|g" -e "s|__WORKSPACE_ROOT__|$(dirname "$PWD")|g" \
+         -e "s|__DATA_ROOT__|${SYNTOPICA_DATA:?Set SYNTOPICA_DATA to the instance directory}|g" \
+         "$template.template" > "$template"
+       cp "$template" ~/Library/LaunchAgents/com.brain.chatgpt-keeper.plist
        launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.brain.chatgpt-keeper.plist
 -->
 <dict>
@@ -30,6 +33,8 @@
 
   <key>EnvironmentVariables</key>
   <dict>
+    <key>SYNTOPICA_DATA</key>
+    <string>__DATA_ROOT__</string>
     <key>PATH</key>
     <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
     <key>KEEPER_INTERVAL</key>

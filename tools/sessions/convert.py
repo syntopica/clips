@@ -23,12 +23,13 @@ paths, mapped by sampling 60 conversations: step_type 14 is the user turn
 is thinking - skipped), step_type 2 the structured final result (12.2).
 Everything else is tool traffic, quota errors, or system metadata.
 
-Output: sources/sessions/<store>/<date>-<slug>-<id8>.md, overwritten in place,
+Output: <SYNTOPICA_DATA>/<brain.sources>/sessions/<store>/<date>-<slug>-<id8>.md,
+overwritten in place. brain.sources is read from syntopica.config.json,
 so re-running after new sessions is safe and cheap. Sessions with no real user
 text after filtering (warmups, pure command runs) are skipped.
 
-Usage:  python3 tools/sessions/convert.py [claude-code|codex] ...
-        (no args = both stores)
+Usage:  python3 tools/sessions/convert.py [claude-code|claude-desktop|codex|antigravity] ...
+        (no args = all four stores; --help validates configuration without converting)
 """
 
 import sys
@@ -83,6 +84,8 @@ if TYPE_CHECKING:
     from tools.sessions.sessions_convert_message_text import (
         sessions_convert_message_text as message_text,
     )
+    from tools.sessions.sessions_hosts_mirror import sessions_hosts_mirror
+    from tools.sessions.sessions_output_directory import sessions_output_directory
     from tools.sessions.slugify import slugify
     from tools.sessions.write_page import write_page as _write_page
 else:
@@ -95,10 +98,10 @@ else:
     from iter_jsonl import iter_jsonl
     from proto_strings import proto_strings
     from sessions_convert_message_text import sessions_convert_message_text as message_text
+    from sessions_hosts_mirror import sessions_hosts_mirror
+    from sessions_output_directory import sessions_output_directory
     from slugify import slugify
     from write_page import write_page as _write_page
-
-OUT = Path(__file__).resolve().parents[2] / "sources" / "sessions"
 
 CLAUDE_ROOT = Path.home() / ".claude" / "projects"
 CODEX_ROOT = Path.home() / ".codex" / "sessions"
@@ -114,7 +117,6 @@ DESKTOP_ROOTS: list[Path] | None = None
 # (rsync -a --delete, gitignored) under hosts/<host>/local-agent-mode-sessions
 # and converted with host: set to that directory name. Local roots carry this
 # machine's short hostname.
-HOSTS_MIRROR = Path(__file__).resolve().parents[2] / "sources" / "agent-sessions" / "hosts"
 LOCAL_HOST = platform.node().split(".")[0].lower().replace(" ", "-") or "local"
 
 # User-role payloads that are injected by the harness, not typed by the user.
@@ -146,7 +148,7 @@ convert_codex = partial(
     get_write_page=partial(globals().__getitem__, "write_page"),
 )
 
-write_page = partial(_write_page, get_out=partial(globals().__getitem__, "OUT"))
+write_page = partial(_write_page, get_out=sessions_output_directory)
 
 WIRE_VARINT = 0
 WIRE_64BIT = 1
@@ -173,14 +175,22 @@ convert_claude_hosts = partial(
     get_desktop_roots=partial(
         configured_desktop_roots, get_override=partial(globals().__getitem__, "DESKTOP_ROOTS")
     ),
-    get_hosts_mirror=partial(globals().__getitem__, "HOSTS_MIRROR"),
+    get_hosts_mirror=sessions_hosts_mirror,
     get_local_host=partial(globals().__getitem__, "LOCAL_HOST"),
     get_convert_claude_jsonl=partial(globals().__getitem__, "convert_claude_jsonl"),
 )
 
 
-def main() -> None:
+def main() -> int:
     """Convert the stores named on the command line, or all four by default."""
+    try:
+        sessions_output_directory()
+    except ValueError as error:
+        print(f"convert: {error}", file=sys.stderr)
+        return 78
+    if sys.argv[1:] == ["--help"]:
+        print("Usage: convert.py [claude-code|claude-desktop|codex|antigravity] ...")
+        return 0
     stores = sys.argv[1:] or ["claude-code", "claude-desktop", "codex", "antigravity"]
     for store in stores:
         if store in ("claude-code", "claude-desktop"):
@@ -193,6 +203,8 @@ def main() -> None:
             sys.exit(f"unknown store: {store}")
         print(f"{store}: {kept} written, {skipped} skipped (empty or no user text)")
 
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
