@@ -6,6 +6,7 @@ from types import ModuleType
 import pytest
 
 from tests.sessions_convert_convert import convert
+from tests.sessions_convert_instance import sessions_convert_instance
 
 __all__ = ["convert"]
 
@@ -92,21 +93,21 @@ def test_iter_jsonl_replaces_undecodable_bytes_instead_of_raising(
 def test_write_page_refuses_a_session_with_no_user_turn(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path)
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     kept = convert.write_page("codex", "abc", "t", {"created": "2026-01-01"}, [("assistant", "hi")])
     assert kept is False
-    assert list(tmp_path.rglob("*.md")) == []
+    assert list(out.rglob("*.md")) == []
 
 
 def test_write_page_names_the_file_from_date_slug_and_last_eight_hex(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path)
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     meta = {"created": "2026-09-08T10:11:12Z", "cwd": "/w", "updated": "2026-09-08T11:00:00Z"}
     assert convert.write_page(
         "codex", "0198aaaa-bbbb-cccc-dddd-eeeeff001122", "Fix the parser", meta, [("user", "go")]
     )
-    written = list(tmp_path.rglob("*.md"))
+    written = list(out.rglob("*.md"))
     assert [p.name for p in written] == ["2026-09-08-fix-the-parser-ff001122.md"]
     assert written[0].parent.name == "codex"
 
@@ -114,7 +115,7 @@ def test_write_page_names_the_file_from_date_slug_and_last_eight_hex(
 def test_write_page_frontmatter_and_body(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path)
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     meta = {"host": "mini", "created": "2026-09-08T10:00:00Z", "updated": "2026-09-08T10:05:00Z"}
     convert.write_page(
         "claude-code",
@@ -123,7 +124,7 @@ def test_write_page_frontmatter_and_body(
         meta,
         [("user", "  hello  "), ("assistant", "world")],
     )
-    text = (tmp_path / "claude-code").glob("*.md").__next__().read_text(encoding="utf-8")
+    text = (out / "claude-code").glob("*.md").__next__().read_text(encoding="utf-8")
     assert text.startswith("---\n")
     assert "title: \"a 'quoted' title\"\n" in text
     assert "session_id: sid-1234abcd\n" in text
@@ -139,8 +140,8 @@ def test_write_page_frontmatter_and_body(
 def test_write_page_truncates_the_title_at_120_characters(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path)
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     convert.write_page("codex", "x" * 8, "T" * 200, {"created": "2026-01-02"}, [("user", "go")])
-    text = (tmp_path / "codex").glob("*.md").__next__().read_text(encoding="utf-8")
+    text = (out / "codex").glob("*.md").__next__().read_text(encoding="utf-8")
     assert f'title: "{"T" * 120}"' in text
     assert f"# {'T' * 120}\n" in text

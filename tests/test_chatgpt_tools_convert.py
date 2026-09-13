@@ -7,6 +7,7 @@ from typing import Any
 
 import pytest
 
+from tests.chatgpt_tools_instance import chatgpt_tools_instance
 from tests.chatgpt_tools_load import load
 
 convert = load("convert")
@@ -149,8 +150,7 @@ def part_file(directory: Path, name: str, records: list[dict[str, Any]]) -> None
 def test_main_renders_moves_the_parts_aside_and_reports_nothing_new(tmp_path, monkeypatch, capsys):
     downloads = tmp_path / "dl"
     downloads.mkdir()
-    out = tmp_path / "sources"
-    monkeypatch.setattr(convert, "OUT", out)
+    out = chatgpt_tools_instance(tmp_path, monkeypatch)
     part_file(
         downloads,
         "chatgpt-run1-part-001.json",
@@ -175,7 +175,7 @@ def test_main_renders_moves_the_parts_aside_and_reports_nothing_new(tmp_path, mo
 def test_main_skips_the_index_file_and_deduplicates_by_conversation_id(tmp_path, monkeypatch):
     downloads = tmp_path / "dl"
     downloads.mkdir()
-    monkeypatch.setattr(convert, "OUT", tmp_path / "sources")
+    out = chatgpt_tools_instance(tmp_path, monkeypatch)
     (downloads / "chatgpt-index.json").write_text("{}", encoding="utf-8")
     part_file(
         downloads,
@@ -189,7 +189,7 @@ def test_main_skips_the_index_file_and_deduplicates_by_conversation_id(tmp_path,
     monkeypatch.setattr(sys, "argv", ["convert.py", str(downloads)])
 
     assert convert.main() == 0
-    pages = list((tmp_path / "sources").glob("*.md"))
+    pages = list(out.glob("*.md"))
     assert len(pages) == 1
     assert "first" in pages[0].read_text(encoding="utf-8")
 
@@ -197,7 +197,7 @@ def test_main_skips_the_index_file_and_deduplicates_by_conversation_id(tmp_path,
 def test_main_reports_a_record_whose_tree_never_arrived(tmp_path, monkeypatch, capsys):
     downloads = tmp_path / "dl"
     downloads.mkdir()
-    monkeypatch.setattr(convert, "OUT", tmp_path / "sources")
+    chatgpt_tools_instance(tmp_path, monkeypatch)
     part_file(downloads, "chatgpt-part-001.json", [{"summary": {"id": "x1"}, "error": "403"}])
     monkeypatch.setattr(sys, "argv", ["convert.py", str(downloads)])
 
@@ -210,7 +210,7 @@ def test_main_counts_a_conversation_that_rendered_with_no_visible_message(
 ):
     downloads = tmp_path / "dl"
     downloads.mkdir()
-    monkeypatch.setattr(convert, "OUT", tmp_path / "sources")
+    chatgpt_tools_instance(tmp_path, monkeypatch)
     part_file(
         downloads,
         "chatgpt-part-001.json",

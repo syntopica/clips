@@ -7,6 +7,7 @@ from types import ModuleType
 import pytest
 
 from tests.sessions_convert_convert import convert
+from tests.sessions_convert_instance import sessions_convert_instance
 
 __all__ = ["convert"]
 
@@ -14,7 +15,7 @@ __all__ = ["convert"]
 def test_convert_codex_uses_the_session_meta_id_and_keeps_message_text(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path / "out")
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     root = tmp_path / "codex" / "2026" / "09" / "08"
     root.mkdir(parents=True)
     log = root / "rollout-2026-09-08T09-00-00-filename-id.jsonl"
@@ -70,7 +71,7 @@ def test_convert_codex_uses_the_session_meta_id_and_keeps_message_text(
     )
     monkeypatch.setattr(convert, "CODEX_ROOT", tmp_path / "codex")
     assert convert.convert_codex() == (1, 0)
-    page = (tmp_path / "out" / "codex").glob("*.md").__next__()
+    page = (out / "codex").glob("*.md").__next__()
     assert page.name == "2026-09-08-the-ask-0000beef.md"  # id from session_meta, not the filename
     text = page.read_text(encoding="utf-8")
     assert "session_id: 0198cafe-0000-7000-8000-00000000beef\n" in text
@@ -84,7 +85,7 @@ def test_convert_codex_uses_the_session_meta_id_and_keeps_message_text(
 def test_convert_codex_drops_injected_user_turns_and_then_the_session(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path / "out")
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     root = tmp_path / "codex"
     root.mkdir()
     (root / "rollout-x.jsonl").write_text(
@@ -113,12 +114,13 @@ def test_convert_codex_drops_injected_user_turns_and_then_the_session(
     )
     monkeypatch.setattr(convert, "CODEX_ROOT", root)
     assert convert.convert_codex() == (0, 1)
+    assert not out.exists()
 
 
 def test_convert_codex_skips_a_rollout_with_no_timestamp_anywhere(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path / "out")
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     root = tmp_path / "codex"
     root.mkdir()
     (root / "rollout-y.jsonl").write_text(
@@ -137,3 +139,4 @@ def test_convert_codex_skips_a_rollout_with_no_timestamp_anywhere(
     )
     monkeypatch.setattr(convert, "CODEX_ROOT", root)
     assert convert.convert_codex() == (0, 1)
+    assert not out.exists()

@@ -8,6 +8,7 @@ import pytest
 
 from tests.load_sql import load_sql
 from tests.sessions_convert_convert import convert
+from tests.sessions_convert_instance import sessions_convert_instance
 from tests.sessions_convert_string import _string
 from tests.sessions_convert_submessage import _submessage
 
@@ -33,7 +34,7 @@ def _antigravity_db(path: Path, rows: list[tuple[int, int, bytes | None]]) -> No
 def test_convert_antigravity_maps_step_types_to_roles_and_drops_the_rest(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path / "out")
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     root = tmp_path / "conversations"
     root.mkdir()
     db = root / "aaaaaaaa-1111-2222-3333-44445555abcd.db"
@@ -49,7 +50,7 @@ def test_convert_antigravity_maps_step_types_to_roles_and_drops_the_rest(
     )
     monkeypatch.setattr(convert, "ANTIGRAVITY_ROOT", root)
     assert convert.convert_antigravity() == (1, 0)
-    text = (tmp_path / "out" / "antigravity").glob("*.md").__next__().read_text(encoding="utf-8")
+    text = (out / "antigravity").glob("*.md").__next__().read_text(encoding="utf-8")
     assert "messages: 3\n" in text
     assert "what the user asked" in text
     assert REPLY in text
@@ -61,20 +62,22 @@ def test_convert_antigravity_maps_step_types_to_roles_and_drops_the_rest(
 def test_convert_antigravity_skips_a_database_without_the_steps_table(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path / "out")
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     root = tmp_path / "conversations"
     root.mkdir()
     (root / "broken.db").write_text("not a database at all", encoding="utf-8")
     monkeypatch.setattr(convert, "ANTIGRAVITY_ROOT", root)
     assert convert.convert_antigravity() == (0, 1)
+    assert not out.exists()
 
 
 def test_convert_antigravity_skips_a_conversation_with_no_user_step(
     convert: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(convert, "OUT", tmp_path / "out")
+    out = sessions_convert_instance(tmp_path, monkeypatch)
     root = tmp_path / "conversations"
     root.mkdir()
     _antigravity_db(root / "assistant-only.db", [(0, 15, _step_payload(20, 1, "reply"))])
     monkeypatch.setattr(convert, "ANTIGRAVITY_ROOT", root)
     assert convert.convert_antigravity() == (0, 1)
+    assert not out.exists()

@@ -7,8 +7,9 @@ the session's own bearer token - but rendering is pure data work and belongs in
 a file that can be re-run over the same input without touching the account.
 
 Input:  ~/Downloads/chatgpt-part-*.json  (and chatgpt-index.json)
-Output: sources/chatgpt/<date>-<slug>-<id8>.md
-        sources/chatgpt/raw/<same>.json   - the untouched tree, gitignored
+Output: <SYNTOPICA_DATA>/<brain.sources>/chatgpt/<date>-<slug>-<id8>.md
+        and raw/<same>.json there - the untouched tree, gitignored.
+        brain.sources is read from SYNTOPICA_DATA/syntopica.config.json.
 
 Usage:  python3 tools/chatgpt/convert.py [input-directory]
 """
@@ -49,6 +50,7 @@ if TYPE_CHECKING:
     )
     from tools.chatgpt.chatgpt_convert_render import chatgpt_convert_render as render
     from tools.chatgpt.chatgpt_convert_slug import chatgpt_convert_slug as slug
+    from tools.chatgpt.chatgpt_output_directory import chatgpt_output_directory
     from tools.chatgpt.is_shown import is_shown
     from tools.chatgpt.linear_messages import linear_messages
     from tools.chatgpt.part_text import part_text
@@ -57,12 +59,11 @@ else:
     from chatgpt_convert_message_text import chatgpt_convert_message_text as message_text
     from chatgpt_convert_render import chatgpt_convert_render as render
     from chatgpt_convert_slug import chatgpt_convert_slug as slug
+    from chatgpt_output_directory import chatgpt_output_directory
     from is_shown import is_shown
     from linear_messages import linear_messages
     from part_text import part_text
     from stamp import stamp
-
-OUT = Path(__file__).resolve().parents[2] / "sources" / "chatgpt"
 
 # The shape of an exported conversation is ChatGPT's, not ours, and it has
 # changed under us before: every node, message and content part is read
@@ -73,6 +74,11 @@ JsonDict = dict[str, Any]
 
 def main() -> int:
     """Render every unconsumed part file, then move the parts aside."""
+    try:
+        out = chatgpt_output_directory()
+    except ValueError as error:
+        print(f"convert: {error}", file=sys.stderr)
+        return 78
     source = Path(sys.argv[1]) if len(sys.argv) > 1 else Path.home() / "Downloads"
     # Both shapes: `chatgpt-<run>-part-NNN.json` from any current run, and the
     # older `chatgpt-part-NNN.json` - including the `... (1).json` Chrome writes
@@ -88,8 +94,8 @@ def main() -> int:
         print(f"nothing new in {source}")
         return 0
 
-    OUT.mkdir(parents=True, exist_ok=True)
-    raw_dir = OUT / "raw"
+    out.mkdir(parents=True, exist_ok=True)
+    raw_dir = out / "raw"
     raw_dir.mkdir(exist_ok=True)
 
     written = 0
@@ -117,7 +123,7 @@ def main() -> int:
             (raw_dir / f"{name}.json").write_text(
                 json.dumps(tree, ensure_ascii=False), encoding="utf-8"
             )
-            (OUT / f"{name}.md").write_text(body, encoding="utf-8")
+            (out / f"{name}.md").write_text(body, encoding="utf-8")
             written += 1
 
     # Consumed parts move aside. Re-reading every part on every tick is fine for
@@ -131,7 +137,7 @@ def main() -> int:
     for part in parts:
         part.replace(consumed / part.name)
 
-    print(f"{len(parts)} parts -> {written} conversations in {OUT}")
+    print(f"{len(parts)} parts -> {written} conversations in {out}")
     print(f"{empty} rendered with no visible message")
     if failed:
         print(f"{len(failed)} could not be fetched:", file=sys.stderr)
