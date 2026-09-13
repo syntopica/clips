@@ -1,0 +1,1 @@
+SELECT normalized_url, capture_id, clip_dir FROM captures

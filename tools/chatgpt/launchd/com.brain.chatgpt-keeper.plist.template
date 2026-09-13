@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!-- Template, not an installed job: the paths are this checkout's, and every
+     instance has different ones. Render it, then load the rendered copy (which
+     is gitignored beside this file):
+
+       sed -e "s|__ENGINE_ROOT__|$PWD|g" -e "s|__WORKSPACE_ROOT__|$(dirname $PWD)|g" \
+         com.brain.chatgpt-keeper.plist.template > com.brain.chatgpt-keeper.plist
+       cp com.brain.chatgpt-keeper.plist ~/Library/LaunchAgents/com.brain.chatgpt-keeper.plist
+       launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.brain.chatgpt-keeper.plist
+-->
+<dict>
+  <key>Label</key>
+  <string>com.brain.chatgpt-keeper</string>
+
+  <!-- The fallback half of tools/chatgpt/keeper.sh. It cannot restart a dead
+       collector, because TCC denies AppleEvents to a launchd job and there is
+       no foreground app to raise the Automation prompt against - the failure
+       already recorded for com.brain.x-bookmarks. What it can do is make sure
+       nothing already fetched is ever stranded in ~/Downloads: it converts,
+       commits and pushes on a schedule, and it takes the lock only when the
+       detached copy is gone. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>__ENGINE_ROOT__/tools/chatgpt/keeper.sh</string>
+  </array>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>KEEPER_INTERVAL</key>
+    <string>120</string>
+  </dict>
+
+  <key>WorkingDirectory</key>
+  <string>__ENGINE_ROOT__</string>
+
+  <key>RunAtLoad</key>
+  <true/>
+  <!-- SuccessfulExit false, not a bare true: the keeper exits 0 exactly once,
+       when nothing is left to fetch, and a bare KeepAlive would restart it
+       forever after that - re-taking the lock and re-holding caffeinate every
+       couple of minutes for a job that is finished. A crash still restarts. -->
+  <key>KeepAlive</key>
+  <dict>
+    <key>SuccessfulExit</key>
+    <false/>
+  </dict>
+  <key>ThrottleInterval</key>
+  <integer>600</integer>
+
+  <key>StandardOutPath</key>
+  <string>__WORKSPACE_ROOT__/.brain-chatgpt-keeper.launchd.log</string>
+  <key>StandardErrorPath</key>
+  <string>__WORKSPACE_ROOT__/.brain-chatgpt-keeper.launchd.log</string>
+</dict>
+</plist>

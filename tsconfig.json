@@ -1,0 +1,15 @@
+{
+  "extends": "@busirocket/tsconfig/node.json",
+  "compilerOptions": {
+    // Node's native TypeScript execution (no build step, see package.json's
+    // "clips" script) requires relative import specifiers to carry the real
+    // ".ts" extension - it does not resolve ".js" to a sibling ".ts" file.
+    // This only affects the executable CLI chain (src/main.ts, src/cli/**);
+    // this package has no build step to rewrite these to ".js" for a
+    // published output, so the extension stays ".ts" at both type-check and
+    // runtime.
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

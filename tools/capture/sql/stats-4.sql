@@ -1,0 +1,1 @@
+SELECT COUNT(DISTINCT asset_sha256) FROM assets

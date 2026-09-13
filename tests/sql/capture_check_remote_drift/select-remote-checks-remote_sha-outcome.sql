@@ -1,0 +1,1 @@
+SELECT remote_sha, outcome FROM remote_checks

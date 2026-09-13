@@ -1,0 +1,1 @@
+SELECT capture_id FROM captures WHERE normalized_url = ?

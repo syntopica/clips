@@ -1,0 +1,1 @@
+SELECT normalized_url, clip_dir FROM captures ORDER BY normalized_url
