@@ -1,0 +1,1 @@
+SELECT capture_id FROM remote_checks WHERE outcome IN ('unchanged','drifted')

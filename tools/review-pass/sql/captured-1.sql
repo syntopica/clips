@@ -1,0 +1,1 @@
+select url, clip_dir from captures

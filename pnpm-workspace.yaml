@@ -1,0 +1,21 @@
+# The published engine is one package, not a workspace, so there is no
+# `packages:` key. pnpm still reads the supply-chain allowlist and the security
+# overrides from this file.
+#
+# Explicit supply-chain allowlist (pnpm 11 `allowBuilds`): only these vetted
+# native dependencies may run install/build scripts. Every other dependency's
+# install scripts stay blocked (no silent postinstall). The monorepo's list
+# also names esbuild, lefthook and playwright, which nothing here resolves.
+allowBuilds:
+  unrs-resolver: true
+# GHSA advisory: brace-expansion <=5.0.7 DoS (unbounded expansion -> OOM).
+# The 1.x line (pulled in by eslint-plugin-import via minimatch@3) has no
+# patched release, so force the whole tree onto the patched 5.x, which ships
+# a CommonJS build with the same default-export shape.
+overrides:
+  brace-expansion: ^5.0.9
+  # 13 GHSA advisories (11 high) in @xmldom/xmldom 0.9.10-0.9.11, reached only
+  # through defuddle > mathml-to-latex. 0.9.12 is the patched line and nothing
+  # in the tree pins below it, so force the resolution rather than wait for
+  # the two intermediate packages to bump.
+  '@xmldom/xmldom': '>=0.9.12'

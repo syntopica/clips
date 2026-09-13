@@ -1,0 +1,28 @@
+export type SyntopicaConfig = {
+  readonly dataRoot: string
+  readonly schemaVersion: number
+  readonly instanceId: string
+  readonly pages: readonly string[]
+  readonly sources: string
+  readonly index: string
+  readonly ledger: string
+  readonly archive: string
+  readonly legacyArchive: string | null
+  readonly repositoryUrl: string | null
+  readonly screeningScope: string
+  readonly desktopRoots: readonly string[]
+  readonly memPath: string
+  readonly brainPath: string
+  readonly clipsPath: string
+  readonly brainApiVersion: number
+  readonly clipsApiVersion: number
+  readonly captureOrigin: string | null
+  readonly captureMirror: boolean
+  readonly runners: Readonly<Record<string, string | null>>
+  readonly browser: string | null
+  readonly newsletterAcceptedSenders: string
+  readonly newsletterRejectedSenders: string
+  readonly newsletterRejectedBookingSenders: string
+  readonly projectAliases: string
+  readonly projectRoots: readonly string[]
+}

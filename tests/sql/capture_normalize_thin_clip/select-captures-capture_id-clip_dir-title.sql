@@ -1,0 +1,1 @@
+SELECT capture_id, clip_dir, title FROM captures

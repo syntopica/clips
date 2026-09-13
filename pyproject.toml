@@ -1,0 +1,170 @@
+[project]
+name = "syntopica-clips"
+version = "0.1.0"
+description = "The capture and ingest engine's Python adapters: capture archive, sessions and review passes"
+requires-python = ">=3.12"
+dependencies = [
+
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+# The tools are scripts, not an installable package: nothing here is imported
+# by name from outside, so there is nothing to build a wheel from.
+[tool.setuptools]
+py-modules = []
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.deptry]
+# Sibling modules the tools import by bare name, the way a script run from its
+# own directory sees them. Generated from this tree by
+# `tools/migration/first_party_modules.py`; a list inherited from elsewhere
+# names files that are not here, and a rule that can never fire reads as a rule
+# that passes.
+known_first_party = [
+  "all_runs",
+  "already_checked",
+  "already_screened",
+  "annotate",
+  "asset_urls",
+  "audit_lines",
+  "backfill_clip",
+  "batch_prompt",
+  "bucket_for",
+  "build_frontmatter",
+  "build_metadata",
+  "build_prompt",
+  "call",
+  "candidate",
+  "candidates",
+  "capture_article",
+  "capture_backfill_assets_fetch",
+  "capture_page_transport_fetch",
+  "capture_screen_pending_clip_body",
+  "capture_screen_pending_run_agy",
+  "capture_url_index_normalize",
+  "captured",
+  "chatgpt_convert_message_text",
+  "chatgpt_convert_render",
+  "chatgpt_convert_slug",
+  "chatgpt_mine_run_agy",
+  "chatgpt_mine_unwrap_agy_response",
+  "chatgpt_mine_validate_items",
+  "chatgpt_triage_run_agy",
+  "chatgpt_triage_unwrap_agy_response",
+  "chatgpt_triage_validate_items",
+  "check",
+  "clip_dirs",
+  "clip_id",
+  "clip_result",
+  "clipped_at",
+  "clipped_at_milliseconds",
+  "configured_desktop_roots",
+  "connect",
+  "conversation_block",
+  "convert_antigravity",
+  "convert_claude_hosts",
+  "convert_claude_jsonl",
+  "convert_codex",
+  "count_words",
+  "default_capture_archive",
+  "drops_from",
+  "duplicate_capture",
+  "extension_for",
+  "extract",
+  "frontmatter_block",
+  "frontmatter_fields",
+  "gone_urls",
+  "https_only_redirect_handler",
+  "import_triage",
+  "index_capture",
+  "is_medium",
+  "is_noise",
+  "is_shown",
+  "iter_jsonl",
+  "keep",
+  "kept_from",
+  "known_projects",
+  "largest_srcset_candidate",
+  "latest",
+  "latest_verdicts",
+  "linear_messages",
+  "load_sql",
+  "lookup",
+  "lookup_capture",
+  "mapped_row",
+  "new_clip_id",
+  "normalize_clip",
+  "normalized_url",
+  "parse_conversation",
+  "parse_tags",
+  "part_text",
+  "pending",
+  "pending_clips",
+  "prompt_hash",
+  "proto_strings",
+  "push",
+  "read_batch",
+  "read_metadata",
+  "read_thin_clip",
+  "rebuild",
+  "record",
+  "recover_url",
+  "remote_body_sha",
+  "review_pass_build_batches_clip_body",
+  "review_pass_build_batches_write_batches",
+  "review_row",
+  "rows_to_push",
+  "runs",
+  "runs_dir",
+  "screen",
+  "select_batch",
+  "select_candidates",
+  "service",
+  "sessions_convert_message_text",
+  "sha256_hex",
+  "slugify",
+  "stamp",
+  "state_for",
+  "stats",
+  "thin_clip_dirs",
+  "thin_clip_error",
+  "tools",
+  "triage_batch",
+  "triage_output_schema",
+  "unwrap",
+  "url_index",
+  "verdict",
+  "wayback_snapshot",
+  "wiki_post_ids",
+  "write_page",
+  "write_trio",
+  "yaml_scalar",
+]
+
+[tool.deptry.per_rule_ignores]
+DEP004 = ["pytest", "pytest_asyncio", "pytest_cov"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 19
+
+[dependency-groups]
+quality = [
+  "busirocket-baseline-py>=0.1,<1",
+  "deptry>=0.20,<1",
+  "mypy>=1.11,<2",
+  "pip-audit>=2.7,<3",
+  "pytest>=8,<10",
+  "pytest-cov>=5,<8",
+  "ruff>=0.15,<1",
+]

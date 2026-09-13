@@ -1,0 +1,1 @@
+CREATE TABLE steps (idx INTEGER, step_type INTEGER, step_payload BLOB)

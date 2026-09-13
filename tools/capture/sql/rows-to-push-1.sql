@@ -1,0 +1,1 @@
+SELECT url, clip_dir FROM captures ORDER BY captured_at, clip_dir

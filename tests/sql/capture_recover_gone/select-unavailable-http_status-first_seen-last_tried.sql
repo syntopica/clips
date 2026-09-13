@@ -1,0 +1,1 @@
+SELECT http_status, first_seen, last_tried FROM unavailable

@@ -1,0 +1,1 @@
+SELECT url, recovered_from FROM unavailable

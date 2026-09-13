@@ -1,0 +1,1 @@
+SELECT content_sha256, captured_at FROM captures

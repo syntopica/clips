@@ -1,0 +1,1 @@
+SELECT step_type, step_payload FROM steps ORDER BY idx
