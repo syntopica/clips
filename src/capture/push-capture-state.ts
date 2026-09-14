@@ -14,7 +14,7 @@ import { readCaptureToken } from './read-capture-token.ts'
  * side effect: the caller is holding the clip, so there is nothing left for the
  * drain to fetch. Without it every clip pushed from here would look like inbox
  * work and be promoted a second time.
- * SPEC: ~/p/brain/docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md */
+ * SPEC: ~/p/wiki/docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md */
 export const pushCaptureState = async (input: {
   url: string
   state: ClipMirrorState

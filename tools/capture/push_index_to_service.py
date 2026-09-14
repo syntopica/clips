@@ -21,7 +21,7 @@ Usage:
     CAPTURE_TOKEN=... python3 push_index_to_service.py --limit 20
     CAPTURE_TOKEN=... python3 push_index_to_service.py
 
-SPEC: ~/p/brain/docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md
+SPEC: ~/p/wiki/docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md
 """
 
 import sys
