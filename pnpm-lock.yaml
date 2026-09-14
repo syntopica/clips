@@ -34,18 +34,18 @@ importers:
         specifier: ^4.5.4
         version: 4.6.2
     devDependencies:
-      '@busirocket/eslint-config':
-        specifier: ^0.8.0
-        version: 0.8.0(4d506708a716371317f1de38eff559ae)
-      '@busirocket/prettier-config':
-        specifier: ^0.2.0
-        version: 0.2.0(prettier-plugin-css-order@2.2.0(postcss@8.5.28)(prettier@3.9.6))(prettier-plugin-organize-imports@4.3.0(@typescript/typescript6@6.0.2)(prettier@3.9.6))(prettier@3.9.6)
-      '@busirocket/tsconfig':
-        specifier: ^0.3.0
-        version: 0.3.0
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.10.0(jiti@2.7.0))
+      '@syntopica/eslint-config':
+        specifier: ^0.8.0
+        version: 0.8.0(4d506708a716371317f1de38eff559ae)
+      '@syntopica/prettier-config':
+        specifier: ^0.2.0
+        version: 0.2.0(prettier-plugin-css-order@2.2.0(postcss@8.5.28)(prettier@3.9.6))(prettier-plugin-organize-imports@4.3.0(@typescript/typescript6@6.0.2)(prettier@3.9.6))(prettier@3.9.6)
+      '@syntopica/tsconfig':
+        specifier: ^0.3.0
+        version: 0.3.0
       '@types/jsdom':
         specifier: ^30.0.0
         version: 30.0.0
@@ -150,97 +150,6 @@ packages:
   '@bramus/specificity@2.4.2':
     resolution: {integrity: sha512-ctxtJ/eA+t+6q2++vj5j7FYX3nRu311q1wfYH3xjlLOsczhlhxAg2FWNUXhpGvAw3BWo1xBcvOV6/YLc2r5FJw==}
     hasBin: true
-
-  '@busirocket/eslint-config@0.8.0':
-    resolution: {integrity: sha512-mP9LYTy+J3CC1qEzXQHRoRAaNjhnZ5un0ELNZQ4L15aUdkJ0H9Cw+JPSJuGMXmr7YdXaYNepkGlHrXOvKFS0aQ==}
-    engines: {node: '>=20'}
-    peerDependencies:
-      '@eslint/markdown': '>=8.0.0'
-      '@next/eslint-plugin-next': '>=15.0.0'
-      '@vitest/eslint-plugin': '>=1.0.0'
-      eslint: '>=9.0.0'
-      eslint-config-next: '>=15.0.0'
-      eslint-plugin-astro: '>=0.34.0'
-      eslint-plugin-boundaries: '>=7.0.0'
-      eslint-plugin-code-policy: '>=0.4.0'
-      eslint-plugin-jsonc: '>=3.0.0'
-      eslint-plugin-jsx-a11y: '>=6.8.0'
-      eslint-plugin-react: '>=7.37.0'
-      eslint-plugin-react-hooks: '>=5.0.0'
-      eslint-plugin-react-refresh: '>=0.4.0'
-      eslint-plugin-regexp: '>=2.7.0'
-      eslint-plugin-sonarjs: '>=3.0.0'
-      eslint-plugin-tailwindcss: ^4.2.0
-      eslint-plugin-testing-library: '>=7.0.0'
-      eslint-plugin-unicorn: '>=57.0.0'
-      eslint-plugin-vue: '>=10.0.0'
-      eslint-plugin-vuejs-accessibility: '>=2.4.0'
-      eslint-plugin-yml: '>=3.0.0'
-      globals: '>=15.0.0'
-      typescript: '>=5.4.0'
-      vue-eslint-parser: '>=10.0.0'
-    peerDependenciesMeta:
-      '@eslint/markdown':
-        optional: true
-      '@next/eslint-plugin-next':
-        optional: true
-      '@vitest/eslint-plugin':
-        optional: true
-      eslint-config-next:
-        optional: true
-      eslint-plugin-astro:
-        optional: true
-      eslint-plugin-boundaries:
-        optional: true
-      eslint-plugin-code-policy:
-        optional: true
-      eslint-plugin-jsonc:
-        optional: true
-      eslint-plugin-jsx-a11y:
-        optional: true
-      eslint-plugin-react:
-        optional: true
-      eslint-plugin-react-hooks:
-        optional: true
-      eslint-plugin-react-refresh:
-        optional: true
-      eslint-plugin-sonarjs:
-        optional: true
-      eslint-plugin-tailwindcss:
-        optional: true
-      eslint-plugin-testing-library:
-        optional: true
-      eslint-plugin-unicorn:
-        optional: true
-      eslint-plugin-vue:
-        optional: true
-      eslint-plugin-vuejs-accessibility:
-        optional: true
-      eslint-plugin-yml:
-        optional: true
-      globals:
-        optional: true
-      vue-eslint-parser:
-        optional: true
-
-  '@busirocket/prettier-config@0.2.0':
-    resolution: {integrity: sha512-XHey3eprO6kRuK/DGAgF/qlRtxtN2w0zXXkOSAbJ1gyobhJY6oZCUtfk3KSstcvoHwZ/PtF484WqHA4ZazRu2g==}
-    engines: {node: '>=20'}
-    peerDependencies:
-      prettier: '>=3.0.0'
-      prettier-plugin-astro: '>=0.14.0'
-      prettier-plugin-css-order: '>=2.0.0'
-      prettier-plugin-organize-imports: '>=4.0.0'
-      prettier-plugin-tailwindcss: '>=0.6.0'
-    peerDependenciesMeta:
-      prettier-plugin-astro:
-        optional: true
-      prettier-plugin-tailwindcss:
-        optional: true
-
-  '@busirocket/tsconfig@0.3.0':
-    resolution: {integrity: sha512-sBk+/ET1BBxW+a3T7Ox280x/qpm2Bn5pMO99UFkz68a8b2IwBuy7ecTaG7FoBQ1UhIo2aoltgdF5HFXPMTcwRg==}
-    engines: {node: '>=20'}
 
   '@cacheable/memory@2.2.0':
     resolution: {integrity: sha512-CTLKqLItRCEixEAewD3/j9DB3/o96gpTPD4eJ1v+DGOlxZRZncRQkGYqqnAGCscYd6RNeXfGeiuCphsPtqyIfQ==}
@@ -498,6 +407,97 @@ packages:
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
+
+  '@syntopica/eslint-config@0.8.0':
+    resolution: {integrity: sha512-GlD5m7jPHGp47FaB0pWMxmB5F/irrYsZWGuAhgbSGgs/cIoZ7sZJF60d3kbEgd6qnhmUtPh9tq/U5tZoB8VHGw==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@eslint/markdown': '>=8.0.0'
+      '@next/eslint-plugin-next': '>=15.0.0'
+      '@vitest/eslint-plugin': '>=1.0.0'
+      eslint: '>=9.0.0'
+      eslint-config-next: '>=15.0.0'
+      eslint-plugin-astro: '>=0.34.0'
+      eslint-plugin-boundaries: '>=7.0.0'
+      eslint-plugin-code-policy: '>=0.4.0'
+      eslint-plugin-jsonc: '>=3.0.0'
+      eslint-plugin-jsx-a11y: '>=6.8.0'
+      eslint-plugin-react: '>=7.37.0'
+      eslint-plugin-react-hooks: '>=5.0.0'
+      eslint-plugin-react-refresh: '>=0.4.0'
+      eslint-plugin-regexp: '>=2.7.0'
+      eslint-plugin-sonarjs: '>=3.0.0'
+      eslint-plugin-tailwindcss: ^4.2.0
+      eslint-plugin-testing-library: '>=7.0.0'
+      eslint-plugin-unicorn: '>=57.0.0'
+      eslint-plugin-vue: '>=10.0.0'
+      eslint-plugin-vuejs-accessibility: '>=2.4.0'
+      eslint-plugin-yml: '>=3.0.0'
+      globals: '>=15.0.0'
+      typescript: '>=5.4.0'
+      vue-eslint-parser: '>=10.0.0'
+    peerDependenciesMeta:
+      '@eslint/markdown':
+        optional: true
+      '@next/eslint-plugin-next':
+        optional: true
+      '@vitest/eslint-plugin':
+        optional: true
+      eslint-config-next:
+        optional: true
+      eslint-plugin-astro:
+        optional: true
+      eslint-plugin-boundaries:
+        optional: true
+      eslint-plugin-code-policy:
+        optional: true
+      eslint-plugin-jsonc:
+        optional: true
+      eslint-plugin-jsx-a11y:
+        optional: true
+      eslint-plugin-react:
+        optional: true
+      eslint-plugin-react-hooks:
+        optional: true
+      eslint-plugin-react-refresh:
+        optional: true
+      eslint-plugin-sonarjs:
+        optional: true
+      eslint-plugin-tailwindcss:
+        optional: true
+      eslint-plugin-testing-library:
+        optional: true
+      eslint-plugin-unicorn:
+        optional: true
+      eslint-plugin-vue:
+        optional: true
+      eslint-plugin-vuejs-accessibility:
+        optional: true
+      eslint-plugin-yml:
+        optional: true
+      globals:
+        optional: true
+      vue-eslint-parser:
+        optional: true
+
+  '@syntopica/prettier-config@0.2.0':
+    resolution: {integrity: sha512-/ORTmzDnVwRIbaUo6+dFYR3FRkGRwhp600hZD3soQm3nSW6t7LcZxgJpsCC0mlkRU3ndxuME17WN5Xc9FzqAtA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      prettier: '>=3.0.0'
+      prettier-plugin-astro: '>=0.14.0'
+      prettier-plugin-css-order: '>=2.0.0'
+      prettier-plugin-organize-imports: '>=4.0.0'
+      prettier-plugin-tailwindcss: '>=0.6.0'
+    peerDependenciesMeta:
+      prettier-plugin-astro:
+        optional: true
+      prettier-plugin-tailwindcss:
+        optional: true
+
+  '@syntopica/tsconfig@0.3.0':
+    resolution: {integrity: sha512-0gkw4Q4iLTjwYVlFKXHGfKbjiDMDbNLPY3Gpien6Z3Av98KC1O4TatojyQ7eWe/LiErXog1xQk2wX1sTuDXXIQ==}
+    engines: {node: '>=20'}
 
   '@tybys/wasm-util@0.10.3':
     resolution: {integrity: sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg==}
@@ -2473,41 +2473,6 @@ snapshots:
     dependencies:
       css-tree: 3.2.1
 
-  '@busirocket/eslint-config@0.8.0(4d506708a716371317f1de38eff559ae)':
-    dependencies:
-      '@eslint/js': 10.0.1(eslint@10.10.0(jiti@2.7.0))
-      eslint: 10.10.0(jiti@2.7.0)
-      eslint-config-prettier: 10.1.8(eslint@10.10.0(jiti@2.7.0))
-      eslint-import-resolver-typescript: 4.4.5(eslint-plugin-import@2.32.0)(eslint@10.10.0(jiti@2.7.0))
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.70.0(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0)))(eslint-import-resolver-typescript@4.4.5)(eslint@10.10.0(jiti@2.7.0))
-      eslint-plugin-promise: 7.3.0(eslint@10.10.0(jiti@2.7.0))
-      eslint-plugin-regexp: 3.3.0(eslint@10.10.0(jiti@2.7.0))
-      eslint-plugin-security: 4.0.1
-      eslint-plugin-unused-imports: 4.4.1(@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0)))(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0)))(eslint@10.10.0(jiti@2.7.0))
-      typescript: '@typescript/typescript6@6.0.2'
-      typescript-eslint: 8.70.0(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0))
-    optionalDependencies:
-      '@vitest/eslint-plugin': 1.6.27(@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0)))(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0)))(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0))(vitest@5.0.0)
-      eslint-plugin-code-policy: 0.7.4(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0))
-      eslint-plugin-sonarjs: 4.2.0(eslint@10.10.0(jiti@2.7.0))
-      eslint-plugin-testing-library: 7.16.2(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0))
-      eslint-plugin-unicorn: 74.0.0(eslint@10.10.0(jiti@2.7.0))
-      globals: 17.12.0
-    transitivePeerDependencies:
-      - '@typescript-eslint/eslint-plugin'
-      - '@typescript-eslint/parser'
-      - eslint-import-resolver-webpack
-      - eslint-plugin-import-x
-      - supports-color
-
-  '@busirocket/prettier-config@0.2.0(prettier-plugin-css-order@2.2.0(postcss@8.5.28)(prettier@3.9.6))(prettier-plugin-organize-imports@4.3.0(@typescript/typescript6@6.0.2)(prettier@3.9.6))(prettier@3.9.6)':
-    dependencies:
-      prettier: 3.9.6
-      prettier-plugin-css-order: 2.2.0(postcss@8.5.28)(prettier@3.9.6)
-      prettier-plugin-organize-imports: 4.3.0(@typescript/typescript6@6.0.2)(prettier@3.9.6)
-
-  '@busirocket/tsconfig@0.3.0': {}
-
   '@cacheable/memory@2.2.0':
     dependencies:
       '@cacheable/utils': 2.5.0
@@ -2693,6 +2658,41 @@ snapshots:
   '@rolldown/pluginutils@1.0.1': {}
 
   '@rtsao/scc@1.1.0': {}
+
+  '@syntopica/eslint-config@0.8.0(4d506708a716371317f1de38eff559ae)':
+    dependencies:
+      '@eslint/js': 10.0.1(eslint@10.10.0(jiti@2.7.0))
+      eslint: 10.10.0(jiti@2.7.0)
+      eslint-config-prettier: 10.1.8(eslint@10.10.0(jiti@2.7.0))
+      eslint-import-resolver-typescript: 4.4.5(eslint-plugin-import@2.32.0)(eslint@10.10.0(jiti@2.7.0))
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.70.0(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0)))(eslint-import-resolver-typescript@4.4.5)(eslint@10.10.0(jiti@2.7.0))
+      eslint-plugin-promise: 7.3.0(eslint@10.10.0(jiti@2.7.0))
+      eslint-plugin-regexp: 3.3.0(eslint@10.10.0(jiti@2.7.0))
+      eslint-plugin-security: 4.0.1
+      eslint-plugin-unused-imports: 4.4.1(@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0)))(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0)))(eslint@10.10.0(jiti@2.7.0))
+      typescript: '@typescript/typescript6@6.0.2'
+      typescript-eslint: 8.70.0(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0))
+    optionalDependencies:
+      '@vitest/eslint-plugin': 1.6.27(@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0)))(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0)))(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0))(vitest@5.0.0)
+      eslint-plugin-code-policy: 0.7.4(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0))
+      eslint-plugin-sonarjs: 4.2.0(eslint@10.10.0(jiti@2.7.0))
+      eslint-plugin-testing-library: 7.16.2(@typescript/typescript6@6.0.2)(eslint@10.10.0(jiti@2.7.0))
+      eslint-plugin-unicorn: 74.0.0(eslint@10.10.0(jiti@2.7.0))
+      globals: 17.12.0
+    transitivePeerDependencies:
+      - '@typescript-eslint/eslint-plugin'
+      - '@typescript-eslint/parser'
+      - eslint-import-resolver-webpack
+      - eslint-plugin-import-x
+      - supports-color
+
+  '@syntopica/prettier-config@0.2.0(prettier-plugin-css-order@2.2.0(postcss@8.5.28)(prettier@3.9.6))(prettier-plugin-organize-imports@4.3.0(@typescript/typescript6@6.0.2)(prettier@3.9.6))(prettier@3.9.6)':
+    dependencies:
+      prettier: 3.9.6
+      prettier-plugin-css-order: 2.2.0(postcss@8.5.28)(prettier@3.9.6)
+      prettier-plugin-organize-imports: 4.3.0(@typescript/typescript6@6.0.2)(prettier@3.9.6)
+
+  '@syntopica/tsconfig@0.3.0': {}
 
   '@tybys/wasm-util@0.10.3':
     dependencies:
