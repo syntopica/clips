@@ -6,6 +6,7 @@ import { EXIT_CODE } from '../cli/exit-code.ts'
 import { structuredFailure } from '../reconcile/structured-failure.ts'
 import { clipTestMetadata } from '../testing/clip-test-metadata.ts'
 import { git } from '../testing/git.ts'
+import { installCommitMessageHook } from '../testing/install-commit-message-hook.ts'
 import { temporaryDir } from '../testing/temporary-dir.ts'
 import { requeue } from './requeue.ts'
 
@@ -88,6 +89,7 @@ const modelEscalated = structuredFailure(
 describe('requeue', () => {
   it('moves a transport-failed clip back to pending and pushes it', async () => {
     const store = newStore(modelEscalated)
+    installCommitMessageHook(store)
     const result = await run(newBrain(), store, CLIP_ID)
 
     expect(result.exitCode).toBe(EXIT_CODE.success)

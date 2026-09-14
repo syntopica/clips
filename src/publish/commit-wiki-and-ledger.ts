@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
+import { commitStagedChanges } from '../git/commit-staged-changes.ts'
 import { GitFailedError } from '../git/git-failed-error.ts'
 import { runGit } from '../git/run-git.ts'
 import type { CommitWikiAndLedgerInput } from './commit-wiki-and-ledger-input.ts'
@@ -52,9 +53,7 @@ export const commitWikiAndLedger = async (
     )
   }
 
-  const commit = await runGit(worktree, ['commit', '-q', '-m', input.subject])
-  if (commit.exitCode !== 0)
-    throw new GitFailedError(['commit'], commit.exitCode, commit.stderr)
+  await commitStagedChanges(worktree, input.subject)
   const sha = await runGit(worktree, ['rev-parse', 'HEAD'])
   return sha.stdout.trim()
 }

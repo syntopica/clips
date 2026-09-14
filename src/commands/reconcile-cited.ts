@@ -1,5 +1,6 @@
 import { EXIT_CODE } from '../cli/exit-code.ts'
 import { discoverClips } from '../clips/discover-clips.ts'
+import { instanceCommitMessage } from '../git/instance-commit-message.ts'
 import { resolveCommit } from '../git/resolve-commit.ts'
 import { buildCitedLedgers } from '../reconcile/build-cited-ledgers.ts'
 import { citedCandidates } from '../reconcile/cited-candidates.ts'
@@ -57,7 +58,10 @@ export const reconcileCited = async (
   const brainCommit = await publishCitedLedgers(
     repositories.brain,
     ledgers,
-    `brain: reconcile ${String(buildable.length)} cited clips`,
+    instanceCommitMessage({
+      kind: 'reconcile-cited',
+      clipIds: buildable.map((candidate) => candidate.clip.metadata.clip_id),
+    }),
   )
   process.stdout.write(
     `published ${String(ledgers.length)} ledger(s) in ${brainCommit.slice(0, 7)}\n`,

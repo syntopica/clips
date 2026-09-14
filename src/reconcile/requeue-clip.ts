@@ -1,4 +1,5 @@
 import type { Clip } from '../clips/clip.ts'
+import { instanceCommitMessage } from '../git/instance-commit-message.ts'
 import { moveClip } from './move-clip.ts'
 import { pushClipsRepository } from './push-clips-repository.ts'
 
@@ -33,7 +34,10 @@ export const requeueClip = async (
       sourceBucket: 'needs-claude',
       destinationBucket: 'pending',
       state,
-      subject: `Requeue clip ${clip.metadata.clip_id} for synthesis`,
+      subject: instanceCommitMessage({
+        kind: 'requeue',
+        clipId: clip.metadata.clip_id,
+      }),
     })
     if (await pushClipsRepository(clipsRepository)) return
   }

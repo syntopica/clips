@@ -1,5 +1,6 @@
 import { mirrorClipState } from '../capture/mirror-clip-state.ts'
 import type { Clip } from '../clips/clip.ts'
+import { instanceCommitMessage } from '../git/instance-commit-message.ts'
 import { clipRelativePath } from './clip-relative-path.ts'
 import { moveClip } from './move-clip.ts'
 import { NEEDS_CLAUDE_BUCKET } from './needs-claude-bucket.ts'
@@ -37,7 +38,11 @@ export const routeToNeedsClaude = async (
       sourceBucket: 'pending',
       destinationBucket: NEEDS_CLAUDE_BUCKET,
       state,
-      subject: `Route clip ${clip.metadata.clip_id} to needs-claude (${reason.code})`,
+      subject: instanceCommitMessage({
+        kind: 'route',
+        clipId: clip.metadata.clip_id,
+        code: reason.code,
+      }),
     })
     if (await pushClipsRepository(clipsRepository)) {
       // Only once the remote has the move, and never at the cost of the
