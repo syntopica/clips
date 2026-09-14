@@ -30,3 +30,9 @@
       coverage runs real hooks in temporary repositories; verify with
       `pnpm check` and `uv run pytest -q`. Instance data is not part of this
       repair.
+- [x] Mirror the Brain schema's required/state path classification. The Clips
+      schema is byte-identical to Brain commit `93fc683`; the selected runtime
+      schema supplies path presence policy on every load. Missing state is named
+      without failing or being created, while missing content still fails even
+      when it shares a location with state. Verify with `pnpm check` and
+      `uv run pytest -q`; regression fixtures are synthetic instances.

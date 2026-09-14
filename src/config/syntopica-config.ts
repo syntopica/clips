@@ -1,4 +1,6 @@
 export type SyntopicaConfig = {
+  readonly configuredPaths: readonly string[]
+  readonly statePaths: readonly string[]
   readonly dataRoot: string
   readonly schemaVersion: number
   readonly instanceId: string

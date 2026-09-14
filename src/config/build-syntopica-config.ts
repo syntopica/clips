@@ -1,40 +1,52 @@
+import { classifySyntopicaPaths } from './classify-syntopica-paths.ts'
 import { resolveSyntopicaBrowser } from './resolve-syntopica-browser.ts'
 import { resolveSyntopicaFieldPath } from './resolve-syntopica-field-path.ts'
 import { resolveSyntopicaFieldPaths } from './resolve-syntopica-field-paths.ts'
 import { resolveSyntopicaPaths } from './resolve-syntopica-paths.ts'
+import type { SyntopicaConfigInput } from './syntopica-config-input.ts'
 import type { SyntopicaConfig } from './syntopica-config.ts'
+import { syntopicaPathsByField } from './syntopica-paths-by-field.ts'
 import { syntopicaScalarFields } from './syntopica-scalar-fields.ts'
 import { syntopicaValueAt } from './syntopica-value-at.ts'
 
-export function buildSyntopicaConfig(
-  document: Record<string, unknown>,
-  origins: ReadonlyMap<string, string>,
-  root: string,
-  environ: NodeJS.ProcessEnv,
-): SyntopicaConfig {
+export function buildSyntopicaConfig({
+  document,
+  origins,
+  root,
+  environ,
+  schema,
+}: SyntopicaConfigInput): SyntopicaConfig {
   const browserOrigin =
     environ['CLIPS_HEADLESS_BROWSER'] === undefined
       ? (origins.get('browser.executable') ?? root)
       : root
+  const paths = resolveSyntopicaPaths(document, origins, root)
+  const legacyArchive =
+    syntopicaValueAt(document, 'clips.legacyArchive') === null
+      ? null
+      : resolveSyntopicaFieldPath(
+          document,
+          origins,
+          root,
+          'clips.legacyArchive',
+        )
+  const desktopRoots = resolveSyntopicaFieldPaths(
+    document,
+    origins,
+    root,
+    'sessions.desktopRoots',
+  )
+  const pathKinds = classifySyntopicaPaths(
+    syntopicaPathsByField(paths, legacyArchive, desktopRoots),
+    schema,
+  )
   return Object.freeze({
-    ...resolveSyntopicaPaths(document, origins, root),
+    ...paths,
+    ...pathKinds,
     ...syntopicaScalarFields(document),
     dataRoot: root,
-    legacyArchive:
-      syntopicaValueAt(document, 'clips.legacyArchive') === null
-        ? null
-        : resolveSyntopicaFieldPath(
-            document,
-            origins,
-            root,
-            'clips.legacyArchive',
-          ),
-    desktopRoots: resolveSyntopicaFieldPaths(
-      document,
-      origins,
-      root,
-      'sessions.desktopRoots',
-    ),
+    legacyArchive,
+    desktopRoots,
     browser: resolveSyntopicaBrowser(
       syntopicaValueAt(document, 'browser.executable') as string | null,
       browserOrigin,

@@ -6,19 +6,31 @@ import { buildSyntopicaConfig } from './build-syntopica-config.ts'
 
 describe('buildSyntopicaConfig', () => {
   it('produces an immutable snapshot with browser environment paths relative to data', () => {
-    const { document, origins, data, root } = syntopicaConfigTestState()
+    const { document, origins, data, root, schema } = syntopicaConfigTestState()
     document['browser'] = { executable: './browser' }
     origins.set('browser.executable', root)
-    const config = buildSyntopicaConfig(document, origins, data, {
-      CLIPS_HEADLESS_BROWSER: './browser',
+    const config = buildSyntopicaConfig({
+      document,
+      origins,
+      root: data,
+      environ: {
+        CLIPS_HEADLESS_BROWSER: './browser',
+      },
+      schema,
     })
     expect(config.browser).toBe(join(data, 'browser'))
     expect(Object.isFrozen(config)).toBe(true)
     expect(Object.isFrozen(config.runners)).toBe(true)
     document['runners'] = { grade: 'cursor' }
     expect(config.runners['grade']).toBeNull()
-    expect(buildSyntopicaConfig(document, origins, data, {}).browser).toBe(
-      join(root, 'browser'),
-    )
+    expect(
+      buildSyntopicaConfig({
+        document,
+        origins,
+        root: data,
+        environ: {},
+        schema,
+      }).browser,
+    ).toBe(join(root, 'browser'))
   })
 })

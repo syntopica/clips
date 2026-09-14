@@ -30,12 +30,13 @@ export function loadSyntopicaConfig(
     document = mergeConfigOverrides(document, environ)
     validateSyntopicaSchema(document, schema)
     validateSyntopicaUrls(document)
-    const config = buildSyntopicaConfig(
+    const config = buildSyntopicaConfig({
       document,
       origins,
-      resolvedRoot,
+      root: resolvedRoot,
       environ,
-    )
+      schema,
+    })
     validateSyntopicaGitRoots([
       resolvedRoot,
       config.archive,
