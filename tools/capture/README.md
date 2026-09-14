@@ -54,7 +54,7 @@ promote articles the store already has. Check `GET /api/captures?drained=false`
 after a run — it must show only genuine phone captures.
 
 Design:
-`~/p/brain/docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md`.
+`~/p/wiki/docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md`.
 
 ## Asset backfill
 

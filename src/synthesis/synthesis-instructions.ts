@@ -13,7 +13,7 @@ import { WIKI_REGISTER_INSTRUCTION } from './wiki-register-instruction.ts'
  * interactive transport is the one a person drives, where a rule nobody stated
  * is a run that fails at the gate. */
 export const SYNTHESIS_INSTRUCTIONS = `Write the wiki pages for this clip into the worktree above, following
-~/p/brain/SCHEMA.md: only projects/ business/ people/ topics/ personal/,
+~/p/wiki/brain/SCHEMA.md: only projects/ business/ people/ topics/ personal/,
 markdown pages with title/type/updated/summary/sources frontmatter. A page you
 create must be cross-linked from at least one other page; a line in index.md
 does not count, and validation rejects a new page nothing else links to. Do not
