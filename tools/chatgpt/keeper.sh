@@ -91,8 +91,12 @@ publish() {
   # has dirty into an unattended commit, which is the one thing CLAUDE.md
   # forbids outright.
   git -C "$DATA" add -- "$CHATGPT_SOURCES" || return 0
-  git -C "$DATA" commit -q -m "chatgpt: export $new conversations" \
-    -m "Rendered from the account's own conversation trees by tools/chatgpt. Unattended batch; see tools/chatgpt/keeper.sh." || return 0
+  local commit_output
+  if ! commit_output=$(node "$DIR/../../src/git/commit-chatgpt-export-cli.ts" "$DATA" "$new" 2>&1); then
+    say "$commit_output"
+    printf '%s\n' "$commit_output" >&2
+    return 1
+  fi
   say "committed $new conversations"
   if ! git -C "$DATA" push -q 2>/dev/null; then
     git -C "$DATA" fetch -q origin
@@ -137,12 +141,12 @@ while true; do
   echo "$(date '+%s') remaining=${left:-?}" > "$BEAT"
 
   if [ "${left:-1}" = "0" ]; then
-    publish 1
+    publish 1 || exit 1
     say "export complete; nothing left to fetch"
     exit 0
   fi
 
-  publish "$BATCH"
+  publish "$BATCH" || exit 1
 
   # Polled against the pinned tab, never the active one: reading the browser's
   # foreground made a live collector look dead every time the operator switched

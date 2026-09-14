@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { git } from '../testing/git.ts'
+import { installCommitMessageHook } from '../testing/install-commit-message-hook.ts'
 import { CLIP_ID } from './ingest-test-clip-id.ts'
 import { fixture } from './ingest-test-fixture.ts'
 import { options } from './ingest-test-options.ts'
@@ -13,6 +14,8 @@ import { ingest } from './ingest.ts'
 describe('clips ingest - publishing an approved synthesis', () => {
   it('publishes an approved synthesis and reconciles the clip', async () => {
     const { brain, clips, brainOrigin } = fixture()
+    installCommitMessageHook(brain)
+    installCommitMessageHook(clips)
     const exit = await ingest({ brain, clips }, options, {
       synthesizer: writingSynthesizer(PAGE_BODY),
       grader: null,

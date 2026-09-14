@@ -1,5 +1,6 @@
 import { mirrorClipState } from '../capture/mirror-clip-state.ts'
 import type { Clip } from '../clips/clip.ts'
+import { instanceCommitMessage } from '../git/instance-commit-message.ts'
 import { pathExistsInRef } from '../git/path-exists-in-ref.ts'
 import { refExists } from '../git/ref-exists.ts'
 import { ledgerRelativePath } from '../ledger/ledger-relative-path.ts'
@@ -22,12 +23,12 @@ export const reconcileClip = async (
 ): Promise<void> => {
   if (!(await refExists(brainRepository, 'origin/main')))
     throw new Error(`${brainRepository} has no origin/main`)
-  const ledger = ledgerRelativePath(clip.metadata.clip_id)
-  if (!(await pathExistsInRef(brainRepository, 'origin/main', ledger))) {
+  const clipId = clip.metadata.clip_id
+  const ledger = ledgerRelativePath(clipId)
+  if (!(await pathExistsInRef(brainRepository, 'origin/main', ledger)))
     throw new Error(
       `the ledger for ${clip.metadata.clip_id} is not on origin/main; publication is incomplete`,
     )
-  }
   const state = `${JSON.stringify(
     {
       status: 'processed',
@@ -45,12 +46,10 @@ export const reconcileClip = async (
       sourceBucket: 'pending',
       destinationBucket: 'processed',
       state,
-      subject: `Mark clip ${clip.metadata.clip_id} processed into the brain`,
+      subject: instanceCommitMessage({ kind: 'process', clipId }),
     })
     if (await pushClipsRepository(clipsRepository)) {
-      // Only once the remote has the move: nothing may publish a state that
-      // origin/main does not yet show. It never throws - the ledger is the
-      // truth and the mirror is repairable.
+      // Mirror only published state; the ledger remains authoritative.
       await mirrorClipState({
         url: clip.metadata.url,
         state: 'ingested',

@@ -1,5 +1,5 @@
-import { GitFailedError } from '../git/git-failed-error.ts'
-import { runGit } from '../git/run-git.ts'
+import { commitStagedChanges } from '../git/commit-staged-changes.ts'
+import { instanceCommitMessage } from '../git/instance-commit-message.ts'
 import type { CitedCandidate } from './cited-candidate.ts'
 import { stageClipMove } from './stage-clip-move.ts'
 
@@ -34,12 +34,11 @@ export const moveCitedClipsProcessed = async (
       state,
     })
   }
-  const commit = await runGit(clipsRepository, [
-    'commit',
-    '-q',
-    '-m',
-    `Mark ${String(candidates.length)} cited clips processed into the brain`,
-  ])
-  if (commit.exitCode !== 0)
-    throw new GitFailedError(['commit'], commit.exitCode, commit.stderr)
+  await commitStagedChanges(
+    clipsRepository,
+    instanceCommitMessage({
+      kind: 'process-cited',
+      clipIds: candidates.map((candidate) => candidate.clip.metadata.clip_id),
+    }),
+  )
 }

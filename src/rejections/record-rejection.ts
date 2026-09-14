@@ -1,6 +1,8 @@
 import { writeFile } from 'node:fs/promises'
 import type { Clip } from '../clips/clip.ts'
+import { commitStagedChanges } from '../git/commit-staged-changes.ts'
 import { GitFailedError } from '../git/git-failed-error.ts'
+import { instanceCommitMessage } from '../git/instance-commit-message.ts'
 import { runGit } from '../git/run-git.ts'
 import { clipRelativePath } from '../reconcile/clip-relative-path.ts'
 import { pushClipsRepository } from '../reconcile/push-clips-repository.ts'
@@ -35,14 +37,14 @@ export const recordRejection = async (
     const add = await runGit(clipsRepository, ['add', '--', relative])
     if (add.exitCode !== 0)
       throw new GitFailedError(['add'], add.exitCode, add.stderr)
-    const commit = await runGit(clipsRepository, [
-      'commit',
-      '-q',
-      '-m',
-      `Record review rejection ${String(rejections.length)} for clip ${clip.metadata.clip_id}`,
-    ])
-    if (commit.exitCode !== 0)
-      throw new GitFailedError(['commit'], commit.exitCode, commit.stderr)
+    await commitStagedChanges(
+      clipsRepository,
+      instanceCommitMessage({
+        kind: 'reject',
+        clipId: clip.metadata.clip_id,
+        count: rejections.length,
+      }),
+    )
     if (await pushClipsRepository(clipsRepository)) return rejections.length
   }
   throw new Error(

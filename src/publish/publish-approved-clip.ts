@@ -2,6 +2,7 @@ import type { Clip } from '../clips/clip.ts'
 import type { Repositories } from '../commands/repositories.ts'
 import { fastForward } from '../git/fast-forward.ts'
 import { fetchOrigin } from '../git/fetch-origin.ts'
+import { instanceCommitMessage } from '../git/instance-commit-message.ts'
 import { ledgerRelativePath } from '../ledger/ledger-relative-path.ts'
 import { clipRelativePath } from '../reconcile/clip-relative-path.ts'
 import { reconcileClip } from '../reconcile/reconcile-clip.ts'
@@ -33,11 +34,10 @@ export const publishApprovedClip = async (
     validatedPaths: input.validatedPaths,
     ledgerPath: ledgerRelativePath(ledger.clipId),
     ledgerText: await ledgerFileText(repositories.brain, ledger),
-    // Conventional-commit shape, which the commit-msg hook enforces since
-    // 2026-09-12: the wiki is documentation, so an ingest is `docs(brain)`.
-    // Clip state is tracked by sha, never by subject, so older
-    // `brain: ingest clip` commits stay resolvable.
-    subject: `docs(brain): ingest clip ${clip.metadata.clip_id}`,
+    subject: instanceCommitMessage({
+      kind: 'publish',
+      clipId: clip.metadata.clip_id,
+    }),
   })
   const published = await publishBranch(
     repositories.brain,

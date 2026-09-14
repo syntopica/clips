@@ -40,6 +40,9 @@ describe('preflightPendingClips', () => {
     expect(result.reason).toContain('clips/pending/untracked.md')
     expect(result.reason).toContain('git -C')
     expect(result.reason).toContain('push')
+    expect(result.reason).toContain(
+      'commit -m "chore(clips): add pending clips from harvest"',
+    )
   })
 
   it('ignores untracked files outside clips/pending', async () => {

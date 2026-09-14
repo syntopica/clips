@@ -21,3 +21,12 @@
       the full Python suite: the documented command renders a valid plist in a
       temporary checkout with every path filled. No job was installed or
       bootstrapped; `tools/sessions/` has no launchd template.
+- [x] Centralize conventional instance commit messages and surface hook
+      refusals. Routing used a bare `Route clip ...` subject, so a `commit-msg`
+      hook rejected it after the clip move was staged. All runtime emitters now
+      use `instanceCommitMessage`, including the harvest recovery command and
+      the ChatGPT keeper. `commitStagedChanges` reports the attempted message,
+      both output streams, and the staged but uncommitted state. Regression
+      coverage runs real hooks in temporary repositories; verify with
+      `pnpm check` and `uv run pytest -q`. Instance data is not part of this
+      repair.

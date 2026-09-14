@@ -1,3 +1,4 @@
+import { instanceCommitMessage } from '../git/instance-commit-message.ts'
 import { runGit } from '../git/run-git.ts'
 import { splitNul } from '../git/split-nul.ts'
 import type { PreflightResult } from './preflight-result.ts'
@@ -32,7 +33,7 @@ export const preflightPendingClips = async (
       clipsRepository +
       ' add clips/pending && git -C ' +
       clipsRepository +
-      ' commit -m "clips: pending from harvest" && git -C ' +
+      ` commit -m "${instanceCommitMessage({ kind: 'harvest' })}" && git -C ` +
       clipsRepository +
       ' push',
   }
