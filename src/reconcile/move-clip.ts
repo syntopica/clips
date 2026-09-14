@@ -1,5 +1,4 @@
-import { GitFailedError } from '../git/git-failed-error.ts'
-import { runGit } from '../git/run-git.ts'
+import { commitStagedChanges } from '../git/commit-staged-changes.ts'
 import type { MoveClipInput } from './move-clip-input.ts'
 import { stageClipMove } from './stage-clip-move.ts'
 
@@ -9,12 +8,5 @@ import { stageClipMove } from './stage-clip-move.ts'
  * reconcile, which stages many moves under one commit. */
 export const moveClip = async (input: MoveClipInput): Promise<void> => {
   await stageClipMove(input)
-  const commit = await runGit(input.clipsRepository, [
-    'commit',
-    '-q',
-    '-m',
-    input.subject,
-  ])
-  if (commit.exitCode !== 0)
-    throw new GitFailedError(['commit'], commit.exitCode, commit.stderr)
+  await commitStagedChanges(input.clipsRepository, input.subject)
 }

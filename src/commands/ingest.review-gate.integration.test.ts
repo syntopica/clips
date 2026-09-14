@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { git } from '../testing/git.ts'
+import { installCommitMessageHook } from '../testing/install-commit-message-hook.ts'
 import { CLIP_ID } from './ingest-test-clip-id.ts'
 import { CLIP_RELATIVE } from './ingest-test-clip-relative.ts'
 import { discardKeptWorktree } from './ingest-test-discard-kept-worktree.ts'
@@ -30,6 +31,7 @@ describe('clips ingest - the review gate rejects a draft', () => {
 
   it('keeps the reviewer reason on a skipped clip and pushes it', async () => {
     const { brain, clips } = fixture()
+    installCommitMessageHook(clips)
     const exit = await ingest({ brain, clips }, options, {
       synthesizer: writingSynthesizer(PAGE_BODY),
       grader: null,

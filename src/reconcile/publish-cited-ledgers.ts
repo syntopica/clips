@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
+import { commitStagedChanges } from '../git/commit-staged-changes.ts'
 import { GitFailedError } from '../git/git-failed-error.ts'
 import { runGit } from '../git/run-git.ts'
 
@@ -25,9 +26,7 @@ export const publishCitedLedgers = async (
   const add = await runGit(brainRepository, ['add', '--', ...paths])
   if (add.exitCode !== 0)
     throw new GitFailedError(['add'], add.exitCode, add.stderr)
-  const commit = await runGit(brainRepository, ['commit', '-q', '-m', subject])
-  if (commit.exitCode !== 0)
-    throw new GitFailedError(['commit'], commit.exitCode, commit.stderr)
+  await commitStagedChanges(brainRepository, subject)
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const push = await runGit(brainRepository, ['push', 'origin', 'main'])
     if (push.exitCode === 0) {
