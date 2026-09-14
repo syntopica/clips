@@ -47,6 +47,27 @@ describe('loadSyntopicaConfig', () => {
     writeFileSync(path, text.replace('"minimum":1', '"minimum":2'))
     expect(() => loadSyntopicaConfig(data, {})).toThrow('schema')
   })
+  it('carries the selected schema path classification on every load', () => {
+    const path = join(root, schemaRelative)
+    const config = loadSyntopicaConfig(data, {})
+    expect(config.statePaths).toEqual([config.memPath])
+    expect(config.configuredPaths).toContain(config.sources)
+    expect(config.configuredPaths).not.toContain(config.memPath)
+    expect(Object.isFrozen(config.statePaths)).toBe(true)
+    expect(Object.isFrozen(config.configuredPaths)).toBe(true)
+    const schema = JSON.stringify(readSyntopicaJson(path))
+    writeFileSync(
+      path,
+      schema.replaceAll('"x-path-kind":"required"', '"x-path-kind":"state"'),
+    )
+    const changed = loadSyntopicaConfig(data, {})
+    expect(changed.configuredPaths).toEqual([])
+    expect(changed.statePaths).toContain(config.sources)
+    writeFileSync(path, schema.replaceAll('"x-path-kind":"required",', ''))
+    expect(() => loadSyntopicaConfig(data, {})).toThrow(
+      'must declare x-path-kind',
+    )
+  })
   it('fails closed on unsupported schema keywords and missing schema', () => {
     const path = join(root, schemaRelative)
     const schema = readSyntopicaJson(path)
