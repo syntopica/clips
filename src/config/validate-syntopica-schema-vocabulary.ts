@@ -19,6 +19,7 @@ export function validateSyntopicaSchemaVocabulary(
     'minLength',
     'pattern',
     'format',
+    'x-path-kind',
   ])
   if (Object.keys(schema).some((key) => !supported.has(key)))
     throw new InvalidSyntopicaConfigError(
