@@ -1,5 +1,5 @@
 {
-  "extends": "@busirocket/tsconfig/node.json",
+  "extends": "@syntopica/tsconfig/node.json",
   "compilerOptions": {
     // Node's native TypeScript execution (no build step, see package.json's
     // "clips" script) requires relative import specifiers to carry the real

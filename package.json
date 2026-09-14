@@ -28,9 +28,9 @@
     "zod": "^4.5.4"
   },
   "devDependencies": {
-    "@busirocket/eslint-config": "^0.8.0",
-    "@busirocket/prettier-config": "^0.2.0",
-    "@busirocket/tsconfig": "^0.3.0",
+    "@syntopica/eslint-config": "^0.8.0",
+    "@syntopica/prettier-config": "^0.2.0",
+    "@syntopica/tsconfig": "^0.3.0",
     "@eslint/js": "^10.0.1",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^26",
