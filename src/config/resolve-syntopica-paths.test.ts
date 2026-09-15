@@ -12,7 +12,7 @@ describe('resolveSyntopicaPaths', () => {
       join(data, '.config/newsletter-rejected-booking.json'),
     )
     expect(paths.projectRoots).toEqual([])
-    document['mem'] = { path: '../escape' }
+    document['atrium'] = { path: '../escape' }
     expect(() => resolveSyntopicaPaths(document, origins, data)).toThrow(
       'escapes',
     )

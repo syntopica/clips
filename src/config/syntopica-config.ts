@@ -13,7 +13,7 @@ export type SyntopicaConfig = {
   readonly repositoryUrl: string | null
   readonly screeningScope: string
   readonly desktopRoots: readonly string[]
-  readonly memPath: string
+  readonly atriumPath: string
   readonly brainPath: string
   readonly clipsPath: string
   readonly brainApiVersion: number
