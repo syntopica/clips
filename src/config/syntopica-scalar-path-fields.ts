@@ -3,7 +3,7 @@ export const syntopicaScalarPathFields = {
   index: 'brain.index',
   ledger: 'brain.ledger',
   archive: 'clips.archive',
-  memPath: 'mem.path',
+  atriumPath: 'atrium.path',
   brainPath: 'engines.brain.path',
   clipsPath: 'engines.clips.path',
   newsletterAcceptedSenders: 'newsletter.acceptedSenders',

@@ -22,21 +22,21 @@ it('includes optional defaults and project roots in filesystem checks', () => {
   expect(check.message).toContain('absent')
 })
 
-it.each(['mem', 'state/agent-memory'])(
+it.each(['atrium', 'state/agent-memory'])(
   'names absent state without failing or creating it: %s',
   (memoryPath) => {
     const fixture = makeDoctorFixture()
-    rmSync(`${fixture.data}/mem`, { recursive: true })
+    rmSync(`${fixture.data}/atrium`, { recursive: true })
     writeFileSync(
       `${fixture.data}/syntopica.local.json`,
-      JSON.stringify({ mem: { path: memoryPath } }),
+      JSON.stringify({ atrium: { path: memoryPath } }),
     )
     const config = loadSyntopicaConfig(fixture.data, fixture.environ)
     expect(doctorPaths(config)).toEqual({
       passed: true,
       message: `paths: required paths present; state not created yet (${memoryPath})`,
     })
-    expect(existsSync(config.memPath)).toBe(false)
+    expect(existsSync(config.atriumPath)).toBe(false)
   },
 )
 
@@ -48,13 +48,13 @@ it.each([false, true])(
       `${fixture.data}/syntopica.local.json`,
       JSON.stringify({ brain: { pages: ['brain/absent'] } }),
     )
-    if (missingState) rmSync(`${fixture.data}/mem`, { recursive: true })
+    if (missingState) rmSync(`${fixture.data}/atrium`, { recursive: true })
     const config = loadSyntopicaConfig(fixture.data, fixture.environ)
     expect(doctorPaths(config)).toEqual({
       passed: false,
       message:
         'paths: 1 missing (brain/absent)' +
-        (missingState ? '; state not created yet (mem)' : ''),
+        (missingState ? '; state not created yet (atrium)' : ''),
     })
   },
 )
@@ -63,7 +63,10 @@ it('does not exempt content sharing a location with state', () => {
   const fixture = makeDoctorFixture()
   writeFileSync(
     `${fixture.data}/syntopica.local.json`,
-    JSON.stringify({ brain: { pages: ['shared'] }, mem: { path: 'shared' } }),
+    JSON.stringify({
+      brain: { pages: ['shared'] },
+      atrium: { path: 'shared' },
+    }),
   )
   const config = loadSyntopicaConfig(fixture.data, fixture.environ)
   expect(doctorPaths(config)).toEqual({
