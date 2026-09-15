@@ -16,6 +16,7 @@ export function makeDoctorFixture(): {
     'brain/captures',
     'brain/.ingest',
     'atrium',
+    'conversations',
     '.config',
     'bin',
   ])
