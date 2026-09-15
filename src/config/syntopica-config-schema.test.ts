@@ -50,9 +50,13 @@ describe('loadSyntopicaConfig', () => {
   it('carries the selected schema path classification on every load', () => {
     const path = join(root, schemaRelative)
     const config = loadSyntopicaConfig(data, {})
-    expect(config.statePaths).toEqual([config.atriumPath])
+    expect(config.statePaths).toEqual([
+      config.atriumPath,
+      config.conversationsPath,
+    ])
     expect(config.configuredPaths).toContain(config.sources)
     expect(config.configuredPaths).not.toContain(config.atriumPath)
+    expect(config.configuredPaths).not.toContain(config.conversationsPath)
     expect(Object.isFrozen(config.statePaths)).toBe(true)
     expect(Object.isFrozen(config.configuredPaths)).toBe(true)
     const schema = JSON.stringify(readSyntopicaJson(path))

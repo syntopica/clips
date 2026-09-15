@@ -4,6 +4,7 @@ export const syntopicaScalarPathFields = {
   ledger: 'brain.ledger',
   archive: 'clips.archive',
   atriumPath: 'atrium.path',
+  conversationsPath: 'conversations.path',
   brainPath: 'engines.brain.path',
   clipsPath: 'engines.clips.path',
   newsletterAcceptedSenders: 'newsletter.acceptedSenders',
