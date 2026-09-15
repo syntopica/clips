@@ -133,7 +133,7 @@ describe('loadSyntopicaConfig', () => {
     )
     const config = loadSyntopicaConfig(data, {})
     expect(config.sources).toBe(join(directory, 'brain/captures'))
-    expect(config.memPath).toBe(join(directory, 'mem'))
+    expect(config.atriumPath).toBe(join(directory, 'atrium'))
     expect(config.archive).toBe(join(directory, 'clips'))
   })
 })

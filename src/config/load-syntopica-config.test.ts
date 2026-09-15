@@ -42,7 +42,7 @@ describe('loadSyntopicaConfig', () => {
       captureOrigin: null,
       captureMirror: false,
       browser: null,
-      memPath: join(data, 'mem'),
+      atriumPath: join(data, 'atrium'),
       projectRoots: [],
       projectAliases: join(data, '.config/project-aliases.json'),
       newsletterAcceptedSenders: join(data, '.config/newsletter-accepted.json'),
