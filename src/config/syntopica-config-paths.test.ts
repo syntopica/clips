@@ -134,6 +134,7 @@ describe('loadSyntopicaConfig', () => {
     const config = loadSyntopicaConfig(data, {})
     expect(config.sources).toBe(join(directory, 'brain/captures'))
     expect(config.atriumPath).toBe(join(directory, 'atrium'))
+    expect(config.conversationsPath).toBe(join(directory, 'conversations'))
     expect(config.archive).toBe(join(directory, 'clips'))
   })
 })
