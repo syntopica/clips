@@ -31,4 +31,14 @@ describe('validateSyntopicaSchemaVocabulary', () => {
       })
     }).not.toThrow()
   })
+  it('accepts the x-path-kind annotation the brain engine schema carries', () => {
+    expect(() => {
+      validateSyntopicaSchemaVocabulary({
+        type: 'object',
+        properties: {
+          ledger: { type: 'string', minLength: 1, 'x-path-kind': 'state' },
+        },
+      })
+    }).not.toThrow()
+  })
 })
