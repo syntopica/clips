@@ -12,10 +12,6 @@ allowBuilds:
 # The 1.x line (pulled in by eslint-plugin-import via minimatch@3) has no
 # patched release, so force the whole tree onto the patched 5.x, which ships
 # a CommonJS build with the same default-export shape.
-minimumReleaseAgeExclude:
-  - '@syntopica/eslint-config@0.8.0'
-  - '@syntopica/prettier-config@0.2.0'
-  - '@syntopica/tsconfig@0.3.0'
 overrides:
   brace-expansion: ^5.0.9
   # 13 GHSA advisories (11 high) in @xmldom/xmldom 0.9.10-0.9.11, reached only
