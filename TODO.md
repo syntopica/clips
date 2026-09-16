@@ -43,3 +43,14 @@
       lockfile and run the existing repository quality gate. Source references
       now use the new scope; the lockfile is intentionally unchanged because the
       packages are not published.
+- [ ] Twelve ingest integration tests fail on a clean checkout of `b6d5b9f` and
+      of its parent alike (`ingest.claim-markers`, `ingest.consistency`,
+      `ingest.grading`, `ingest.locking`, `ingest.publish`, `ingest.skip`,
+      `ingest.route` files): each dies in its fixture with
+      `git cat-file -e main:topics/test-topic.md` failing or
+      `branch 'ingest/<id>' not found`, so the run they assert on never
+      published. Measured 2026-09-16 with `pnpm vitest run` before and after the
+      inbox change; the failing set is identical, which is what let the change
+      ship. Smallest step: run one file alone with `--reporter verbose` and read
+      the synthesizer it selects; the fixture likely needs a runner the host no
+      longer has on `PATH`.
