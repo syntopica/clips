@@ -27,6 +27,18 @@ describe('loadSyntopicaConfig', () => {
     rmSync(root, { recursive: true, force: true })
   })
 
+  it('names the clips engine when the instance does not declare it', () => {
+    const path = join(data, 'syntopica.config.json')
+    const document = readSyntopicaJson(path) as {
+      engines: Record<string, unknown>
+    }
+    delete document.engines['clips']
+    writeFileSync(path, JSON.stringify(document))
+    expect(() => loadSyntopicaConfig(data, {})).toThrow(
+      'engines.clips is required by the clips engine',
+    )
+  })
+
   it('resolves defaults and all optional paths and preserves API versions', () => {
     const config = loadSyntopicaConfig(data, {})
     expect(config).toMatchObject({
