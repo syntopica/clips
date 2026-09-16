@@ -15,5 +15,5 @@ callable parameter instead of freezing the dependency in an extracted module.
 
 Verify changes with `uv run ruff check tools/capture`,
 `uv run ruff format --check tools/capture`, `uv run mypy tools/capture`, and
-`uv run pytest -q tests -k capture`. Run `uv run baseline-py check` as well;
+`uv run pytest -q tests -k capture`. Run `uv run codeality-py check` as well;
 report validator constraints that conflict with preserving command paths.
