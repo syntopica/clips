@@ -1,5 +1,6 @@
 import { buildSyntopicaConfig } from './build-syntopica-config.ts'
 import { InvalidSyntopicaConfigError } from './invalid-syntopica-config-error.ts'
+import { isSyntopicaObject } from './is-syntopica-object.ts'
 import { loadSyntopicaSchema } from './load-syntopica-schema.ts'
 import { mergeConfigOverrides } from './merge-config-overrides.ts'
 import { mergeSyntopicaDocuments } from './merge-syntopica-documents.ts'
@@ -7,6 +8,7 @@ import { readSyntopicaLayers } from './read-syntopica-layers.ts'
 import { resolveSyntopicaPath } from './resolve-syntopica-path.ts'
 import type { SyntopicaConfig } from './syntopica-config.ts'
 import { syntopicaSchemaDefaults } from './syntopica-schema-defaults.ts'
+import { syntopicaValueAt } from './syntopica-value-at.ts'
 import { syntopicaValueOrigins } from './syntopica-value-origins.ts'
 import { validateSyntopicaGitRoots } from './validate-syntopica-git-roots.ts'
 import { validateSyntopicaSchema } from './validate-syntopica-schema.ts'
@@ -29,6 +31,13 @@ export function loadSyntopicaConfig(
     validateSyntopicaSchema(document, schema)
     document = mergeConfigOverrides(document, environ)
     validateSyntopicaSchema(document, schema)
+    // The schema requires only the brain engine, because a brain-only
+    // instance is valid for brain; this engine cannot run without itself.
+    const engines = syntopicaValueAt(document, 'engines')
+    if (!isSyntopicaObject(engines) || !Object.hasOwn(engines, 'clips'))
+      throw new InvalidSyntopicaConfigError(
+        'engines.clips is required by the clips engine',
+      )
     validateSyntopicaUrls(document)
     const config = buildSyntopicaConfig({
       document,
