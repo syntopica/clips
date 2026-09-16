@@ -1,104 +1,177 @@
 import { execFileSync } from 'node:child_process'
-import { rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { EXIT_CODE } from '../cli/exit-code.ts'
+import { newRepositoryWithOrigin } from '../state/clip-state-fixture-new-repository-with-origin.ts'
 import { captureStderr } from '../testing/capture-stderr.ts'
 import { git } from '../testing/git.ts'
 import { temporaryDir } from '../testing/temporary-dir.ts'
 import { pull } from './pull.ts'
 
-const originAndClone = (): { origin: string; clone: string } => {
-  const origin = temporaryDir('clips-origin-')
-  const clone = temporaryDir('clips-clone-')
+const CLIP = 'clips/pending/2026/09/2026-09-16-example-com-page-01k0000a'
 
-  execFileSync('git', ['init', '-q', '-b', 'main', origin])
-  git(origin, 'config', 'user.email', 'test@example.com')
-  git(origin, 'config', 'user.name', 'Test')
-  writeFileSync(join(origin, 'README.md'), 'one\n')
-  git(origin, 'add', '.')
-  git(origin, 'commit', '-qm', 'one')
+/** An inbox origin with one clipper commit, and a clone of it the way the
+ * instance would hold one. `clipper` stands in for the browser extension,
+ * which commits through the GitHub API and never sees the clone. */
+const inboxFixture = (): { origin: string; clone: string; clipper: string } => {
+  const origin = temporaryDir('clips-inbox-origin-')
+  execFileSync('git', ['init', '-q', '--bare', '-b', 'main', origin])
+  const clipper = temporaryDir('clips-clipper-')
+  execFileSync('git', ['clone', '-q', origin, clipper])
+  git(clipper, 'config', 'user.email', 'test@example.com')
+  git(clipper, 'config', 'user.name', 'Test')
+  writeFileSync(join(clipper, 'README.md'), '# inbox\n')
+  git(clipper, 'add', '.')
+  git(clipper, 'commit', '-qm', 'inbox')
+  git(clipper, 'push', '-q', '-u', 'origin', 'main')
+  const clone = temporaryDir('clips-inbox-clone-')
   rmSync(clone, { recursive: true, force: true })
   execFileSync('git', ['clone', '-q', origin, clone])
   git(clone, 'config', 'user.email', 'test@example.com')
   git(clone, 'config', 'user.name', 'Test')
-  return { origin, clone }
+  return { origin, clone, clipper }
 }
 
-/** Runs pull with stderr captured, so a test can assert which failure was
- * reported and not merely that one was. */
+const clipInto = (repository: string, path: string, clipId: string): void => {
+  mkdirSync(join(repository, path), { recursive: true })
+  writeFileSync(
+    join(repository, path, 'metadata.json'),
+    `${JSON.stringify({ clip_id: clipId })}\n`,
+  )
+  writeFileSync(join(repository, path, 'index.md'), '# page\n')
+  git(repository, 'add', '.')
+  git(repository, 'commit', '-qm', `Clip ${clipId}`)
+  git(repository, 'push', '-q', 'origin', 'main')
+}
+
+/** The archive lives inside the brain, as the instance lays it out. */
+const brainWithArchive = (): { brain: string; archive: string } => {
+  const brain = newRepositoryWithOrigin()
+  const archive = join(brain, 'clips')
+  mkdirSync(archive, { recursive: true })
+  return { brain, archive }
+}
+
 const runPull = async (
   ...args: Parameters<typeof pull>
-): Promise<{ exitCode: number; stderr: string }> => {
-  return captureStderr(async () => pull(...args))
-}
+): Promise<{ exitCode: number; stderr: string }> =>
+  captureStderr(async () => pull(...args))
 
-describe('pull, a clone that already exists', () => {
-  it('fast-forwards a clone that is behind', async () => {
-    const { origin, clone } = originAndClone()
-    writeFileSync(join(origin, 'README.md'), 'two\n')
-    git(origin, 'commit', '-aqm', 'two')
-    expect(await pull(clone)).toBe(EXIT_CODE.success)
-    expect(git(clone, 'log', '-1', '--format=%s')).toBe('two')
+describe('pull, handing the inbox to the archive', () => {
+  it('copies a fresh pending clip into the archive, pushes it, then empties the inbox', async () => {
+    const { brain, archive } = brainWithArchive()
+    const { origin, clone, clipper } = inboxFixture()
+    clipInto(clipper, CLIP, '01K0000A')
+
+    expect(await pull(brain, archive, clone)).toBe(EXIT_CODE.success)
+
+    expect(existsSync(join(archive, CLIP, 'index.md'))).toBe(true)
+    expect(git(brain, 'log', '-1', '--format=%s')).toBe(
+      'chore(clips): collect 1 clips from the inbox',
+    )
+    expect(git(brain, 'rev-parse', 'origin/main')).toBe(
+      git(brain, 'rev-parse', 'HEAD'),
+    )
+    expect(git(clone, 'log', '-1', '--format=%s')).toBe(
+      'chore(inbox): hand 1 clips to the archive',
+    )
+    expect(git(origin, 'ls-tree', '-r', '--name-only', 'main')).toBe(
+      'README.md',
+    )
   })
 
-  it('is a no-op when already up to date', async () => {
-    const { clone } = originAndClone()
-    const before = git(clone, 'rev-parse', 'HEAD')
-    expect(await pull(clone)).toBe(EXIT_CODE.success)
-    expect(git(clone, 'rev-parse', 'HEAD')).toBe(before)
+  it('clones the inbox on a first-ever run', async () => {
+    // A fresh clone has no local identity for the hand-over commit; the
+    // instance's global git configuration supplies one, and here the
+    // environment stands in for it.
+    for (const role of ['AUTHOR', 'COMMITTER']) {
+      vi.stubEnv(`GIT_${role}_NAME`, 'Test')
+      vi.stubEnv(`GIT_${role}_EMAIL`, 'test@example.com')
+    }
+    const { brain, archive } = brainWithArchive()
+    const { origin, clipper } = inboxFixture()
+    clipInto(clipper, CLIP, '01K0000A')
+    const inbox = join(temporaryDir('clips-inbox-fresh-'), 'inbox')
+
+    expect(await pull(brain, archive, inbox, `file://${origin}`)).toBe(
+      EXIT_CODE.success,
+    )
+    expect(existsSync(join(archive, CLIP, 'metadata.json'))).toBe(true)
+    expect(git(inbox, 'ls-tree', '-r', '--name-only', 'HEAD')).toBe('README.md')
   })
 
-  it('clones on a first-ever run', async () => {
-    const { origin } = originAndClone()
-    const destination = join(temporaryDir('clips-fresh-'), 'c')
+  it('removes without copying a clip the archive already holds in another bucket', async () => {
+    const { brain, archive } = brainWithArchive()
+    const { clone, clipper } = inboxFixture()
+    clipInto(clipper, CLIP, '01K0000A')
+    const processed = CLIP.replace('clips/pending/', 'clips/processed/')
+    mkdirSync(join(archive, processed), { recursive: true })
+    writeFileSync(join(archive, processed, 'index.md'), '# done\n')
+    git(brain, 'add', '.')
+    git(brain, 'commit', '-qm', 'processed already')
+    const before = git(brain, 'rev-parse', 'HEAD')
 
-    expect(await pull(destination, `file://${origin}`)).toBe(EXIT_CODE.success)
-    expect(git(destination, 'log', '-1', '--format=%s')).toBe('one')
+    expect(await pull(brain, archive, clone)).toBe(EXIT_CODE.success)
+
+    expect(existsSync(join(archive, CLIP))).toBe(false)
+    expect(git(brain, 'rev-parse', 'HEAD')).toBe(before)
+    expect(git(clone, 'ls-tree', '-r', '--name-only', 'HEAD')).toBe('README.md')
+  })
+
+  it('is a no-op on an empty inbox', async () => {
+    const { brain, archive } = brainWithArchive()
+    const { clone } = inboxFixture()
+    const before = git(brain, 'rev-parse', 'HEAD')
+    const inboxBefore = git(clone, 'rev-parse', 'HEAD')
+    expect(await pull(brain, archive, clone)).toBe(EXIT_CODE.success)
+    expect(git(brain, 'rev-parse', 'HEAD')).toBe(before)
+    expect(git(clone, 'rev-parse', 'HEAD')).toBe(inboxBefore)
   })
 })
 
 describe('pull, failures that must not be conflated', () => {
-  it('refuses to touch a clone whose history was rewritten', async () => {
-    // Origin amended and the clone carries a commit origin does not have: a
-    // genuine divergence, with a clean working tree so nothing else can
-    // explain the refusal.
-    const { origin, clone } = originAndClone()
-    writeFileSync(join(origin, 'README.md'), 'rewritten\n')
-    git(origin, 'commit', '-aqm', 'rewritten')
-    git(origin, 'commit', '--amend', '-qm', 'rewritten again')
+  it('refuses an instance with no inbox configured', async () => {
+    const { brain, archive } = brainWithArchive()
+    const { exitCode, stderr } = await runPull(brain, archive, null)
+    expect(exitCode).toBe(EXIT_CODE.fatalLocal)
+    expect(stderr).toMatch(/clips\.inbox is not configured/)
+  })
+
+  it('refuses to touch an inbox clone whose history was rewritten', async () => {
+    const { brain, archive } = brainWithArchive()
+    const { clone, clipper } = inboxFixture()
+    writeFileSync(join(clipper, 'README.md'), 'rewritten\n')
+    git(clipper, 'commit', '-aqm', 'rewritten')
+    git(clipper, 'push', '-q', '--force', 'origin', 'main')
     writeFileSync(join(clone, 'local.md'), 'local\n')
     git(clone, 'add', '.')
     git(clone, 'commit', '-qm', 'local')
     const before = git(clone, 'rev-parse', 'HEAD')
-    const { exitCode, stderr } = await runPull(clone)
+    const { exitCode, stderr } = await runPull(brain, archive, clone)
     expect(exitCode).toBe(EXIT_CODE.fatalLocal)
     expect(stderr).toMatch(/history was rewritten/)
     expect(git(clone, 'rev-parse', 'HEAD')).toBe(before)
   })
 
-  it('names a dirty working tree as such, not as a rewritten history', async () => {
-    // Verified: one uncommitted edit makes `git merge --ff-only origin/main`
-    // exit 1 with "Your local changes would be overwritten". Reporting that as
-    // a rewritten history sends the operator looking for a force-push that
-    // never happened.
-    const { origin, clone } = originAndClone()
-    writeFileSync(join(origin, 'README.md'), 'two\n')
-    git(origin, 'commit', '-aqm', 'two')
+  it('names a dirty inbox working tree as such', async () => {
+    const { brain, archive } = brainWithArchive()
+    const { clone } = inboxFixture()
     writeFileSync(join(clone, 'README.md'), 'edited by hand\n')
-    const { exitCode, stderr } = await runPull(clone)
+    const { exitCode, stderr } = await runPull(brain, archive, clone)
     expect(exitCode).toBe(EXIT_CODE.fatalLocal)
     expect(stderr).toMatch(/uncommitted changes/)
-    expect(stderr).not.toMatch(/history was rewritten/)
   })
 
-  it('reports a failed fetch as an exit code, not an unhandled rejection', async () => {
-    // fetchOrigin and cloneRepository throw. Only fastForward used to be
-    // guarded, so these escaped runCli and past the top-level await in
-    // main.ts, printing ERR_UNHANDLED_REJECTION and a stack trace.
-    const { origin, clone } = originAndClone()
-    rmSync(origin, { recursive: true, force: true })
-    const { exitCode, stderr } = await runPull(clone)
+  it('reports a failed clone as an exit code, not an unhandled rejection', async () => {
+    const { brain, archive } = brainWithArchive()
+    const inbox = join(temporaryDir('clips-inbox-missing-'), 'inbox')
+    const { exitCode, stderr } = await runPull(
+      brain,
+      archive,
+      inbox,
+      'file:///nowhere/at/all',
+    )
     expect(exitCode).toBe(EXIT_CODE.fatalLocal)
     expect(stderr).not.toMatch(/ERR_UNHANDLED_REJECTION/)
     expect(stderr.trim()).not.toBe('')

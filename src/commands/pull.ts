@@ -1,38 +1,56 @@
 import { existsSync } from 'node:fs'
 import { EXIT_CODE } from '../cli/exit-code.ts'
-import { clipsRepositoryUrl } from '../clips/clips-repository-url.ts'
+import { currentSyntopicaConfig } from '../config/current-syntopica-config.ts'
 import { cloneRepository } from '../git/clone-repository.ts'
+import { collectInbox } from '../inbox/collect-inbox.ts'
+import { inboxRepositoryUrl } from '../inbox/inbox-repository-url.ts'
+import { runLockedOnClipsRepository } from './run-locked-on-clips-repository.ts'
 import { updateClone } from './update-clone.ts'
 
-/** Clone on first run, otherwise fetch and fast-forward. A non-fast-forward
- * means history was rewritten: report and stop, never merge or reset.
+/** Bring the inbox up to date and hand its pending clips to the archive.
  *
- * The whole body is guarded, not just the merge: cloneRepository and
- * fetchOrigin throw too, and an unguarded throw here escapes runCli and the
- * top-level await in main.ts, so the operator gets ERR_UNHANDLED_REJECTION and
- * a stack trace where an exit code and one sentence belong.
+ * The inbox is the repository the browser clipper commits to; the archive
+ * lives inside the instance and is where every other command reads. Cloning
+ * on first run and fast-forwarding after that is the old `pull`; the
+ * hand-over is what makes a clip captured in a browser reach `clips ingest`.
+ * The archive write takes the ingest lock like `requeue` does, because a
+ * commit landing in the archive while an ingest run commits there too is the
+ * interleaving the lock exists to prevent.
  *
- * repositoryUrl is a parameter so a test can clone from a local file:// origin.
- * Hardcoding it left the clone path as the one branch that runs on a first-ever
- * run and that no test can reach. */
+ * `inbox` and `repositoryUrl` are parameters so a test can work against a
+ * local file:// origin; the CLI passes what the instance declares. The whole
+ * body is guarded, as before: cloneRepository and fetchOrigin throw, and an
+ * unguarded throw here escapes runCli with a stack trace where an exit code
+ * and one sentence belong. */
 export const pull = async (
+  brainRepository: string,
   clipsRepository: string,
+  inbox: string | null = currentSyntopicaConfig().inbox,
   repositoryUrl?: string,
 ): Promise<number> => {
+  if (inbox === null) {
+    process.stderr.write(
+      'clips.inbox is not configured; this instance has no browser clipper to pull from\n',
+    )
+    return EXIT_CODE.fatalLocal
+  }
   try {
-    if (!existsSync(clipsRepository)) {
-      await cloneRepository(
-        repositoryUrl ?? clipsRepositoryUrl(),
-        clipsRepository,
-      )
-      process.stdout.write(`cloned into ${clipsRepository}\n`)
-      return EXIT_CODE.success
+    if (!existsSync(inbox)) {
+      await cloneRepository(repositoryUrl ?? inboxRepositoryUrl(), inbox)
+      process.stdout.write(`cloned the inbox into ${inbox}\n`)
+    } else {
+      const updated = await updateClone(inbox)
+      if (updated !== EXIT_CODE.success) return updated
     }
-    return await updateClone(clipsRepository)
   } catch (error) {
     process.stderr.write(
       `${error instanceof Error ? error.message : String(error)}\n`,
     )
     return EXIT_CODE.fatalLocal
   }
+  return runLockedOnClipsRepository(
+    brainRepository,
+    clipsRepository,
+    async () => collectInbox(inbox, clipsRepository),
+  )
 }

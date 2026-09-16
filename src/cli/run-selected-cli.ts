@@ -30,11 +30,7 @@ export const runSelectedCli = async (argv: string[]): Promise<number> => {
   }
   const root = findDataDirectory(selected.explicit, process.env, process.cwd())
   const config = loadSyntopicaConfig(root, process.env)
-  const repositories = resolveCliRepositories(
-    config,
-    selected.explicit,
-    process.env,
-  )
+  const repositories = resolveCliRepositories(config)
   return withSyntopicaConfig(config, async () => {
     const readOnlyResult = await runReadOnlyCommand(args, repositories)
     if (readOnlyResult !== null) return readOnlyResult

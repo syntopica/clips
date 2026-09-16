@@ -3,7 +3,7 @@ import { syntopicaScalarPathFields } from './syntopica-scalar-path-fields.ts'
 
 export function syntopicaPathsByField(
   paths: ResolvedSyntopicaPaths,
-  legacyArchive: string | null,
+  inbox: string | null,
   desktopRoots: readonly string[],
 ): ReadonlyMap<string, readonly string[]> {
   const fields = new Map<string, readonly string[]>()
@@ -13,10 +13,7 @@ export function syntopicaPathsByField(
     fields.set(syntopicaScalarPathFields[key], [paths[key]])
   fields.set('brain.pages', paths.pages)
   fields.set('projects.roots', paths.projectRoots)
-  fields.set(
-    'clips.legacyArchive',
-    legacyArchive === null ? [] : [legacyArchive],
-  )
+  fields.set('clips.inbox', inbox === null ? [] : [inbox])
   fields.set('sessions.desktopRoots', desktopRoots)
   return fields
 }

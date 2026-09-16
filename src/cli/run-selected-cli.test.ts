@@ -1,7 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { BRAIN_REPOSITORY_PATH } from '../clips/brain-repository-path.ts'
-import { clipsRepositoryPath } from '../clips/clips-repository-path.ts'
 import { findDataDirectory } from '../config/find-data-directory.ts'
 import { loadSyntopicaConfig } from '../config/load-syntopica-config.ts'
 import { doctorReport } from '../doctor/doctor-report.ts'
@@ -10,19 +8,11 @@ import { runReadOnlyCommand } from './run-read-only-command.ts'
 import { runSelectedCli } from './run-selected-cli.ts'
 import { runUnlockedWriteCommand } from './run-unlocked-write-command.ts'
 
-vi.mock('../clips/brain-repository-path.ts', () => ({
-  BRAIN_REPOSITORY_PATH: '/fixture',
-}))
-vi.mock('../clips/clips-repository-path.ts', () => ({
-  clipsRepositoryPath: () => '/legacy/archive',
-}))
-
 const configRoots = vi.hoisted(() => ({
   dataRoot: '/fixture',
   archive: '/fixture/archive',
   brainPath: '/engine-brain',
   clipsPath: '/engine-clips',
-  legacyArchive: '/legacy/archive',
 }))
 
 const repositories = vi.hoisted(() => ({
@@ -121,40 +111,6 @@ describe('runSelectedCli', () => {
   })
 })
 
-it('preserves legacy repositories for implicit monorepo gate configuration', async () => {
-  vi.stubEnv('SYNTOPICA_DATA', undefined)
-  Object.assign(configRoots, {
-    archive: '/fixture',
-    brainPath: '/fixture',
-    clipsPath: '/fixture',
-  })
-  await expect(runSelectedCli(['ingest', '--dry-run'])).resolves.toBe(0)
-  expect(runIngestCommand).toHaveBeenCalledWith(expect.anything(), {
-    brain: BRAIN_REPOSITORY_PATH,
-    clips: clipsRepositoryPath(),
-  })
-})
-
-it.each([
-  { argv: ['--data', '/selected', 'status'], dataEnvironment: undefined },
-  { argv: ['status'], dataEnvironment: '/selected' },
-])(
-  'preserves deliberate monorepo selection through dispatch: %j',
-  async ({ argv, dataEnvironment }) => {
-    vi.stubEnv('SYNTOPICA_DATA', dataEnvironment)
-    Object.assign(configRoots, {
-      archive: '/fixture',
-      brainPath: '/fixture',
-      clipsPath: '/fixture',
-    })
-    await expect(runSelectedCli(argv)).resolves.toBe(0)
-    expect(runReadOnlyCommand).toHaveBeenCalledWith(expect.anything(), {
-      brain: '/fixture',
-      clips: '/fixture',
-    })
-  },
-)
-
 it('dispatches the loader-resolved root rather than the discovery spelling', async () => {
   Object.assign(configRoots, {
     dataRoot: '/resolved-data',
@@ -166,20 +122,5 @@ it('dispatches the loader-resolved root rather than the discovery spelling', asy
   expect(runReadOnlyCommand).toHaveBeenCalledWith(expect.anything(), {
     brain: '/resolved-data',
     clips: '/resolved-data/archive',
-  })
-})
-
-it('keeps a different implicitly discovered monorepo away from legacy repositories', async () => {
-  vi.stubEnv('SYNTOPICA_DATA', undefined)
-  Object.assign(configRoots, {
-    dataRoot: '/other',
-    archive: '/other',
-    brainPath: '/other',
-    clipsPath: '/other',
-  })
-  await expect(runSelectedCli(['status'])).resolves.toBe(0)
-  expect(runReadOnlyCommand).toHaveBeenCalledWith(expect.anything(), {
-    brain: '/other',
-    clips: '/other',
   })
 })
