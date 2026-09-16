@@ -9,8 +9,8 @@ computer, all captures centralized.
 ## Problem
 
 Interesting pages are found on several machines, in a browser, away from the Mac
-that holds the wiki checkout. Today nothing captures them: the brain only grows from
-`inbox/` drops and `tools/x/` scrapes. Copy-pasting an article loses the
+that holds the wiki checkout. Today nothing captures them: the brain only grows
+from `inbox/` drops and `tools/x/` scrapes. Copy-pasting an article loses the
 nav-free text, the images, and the provenance.
 
 ## Goals
@@ -472,8 +472,8 @@ ChromeOS-with-policy; native messaging is disproportionate for a label), so the
 options page prefills a descriptive `os-arch-<random>` default and leaves it
 editable.
 
-Nothing about the app needs to be recorded in the secrets store: the client id is
-public and the tokens never leave the device.
+Nothing about the app needs to be recorded in the secrets store: the client id
+is public and the tokens never leave the device.
 
 ### Failure handling
 
