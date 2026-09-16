@@ -163,7 +163,7 @@ Three commands, all reached through `clips <command>`:
 
 | Command  | Effect                                                                                                                                |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `pull`   | Clone or fast-forward the clips archive repository.                                                                                              |
+| `pull`   | Clone or fast-forward the clips archive repository.                                                                                   |
 | `status` | Print each clip's derived state and evidence. Read-only.                                                                              |
 | `ingest` | Run the ingest pipeline. Not implemented until plan 2b - the CLI parses the command and exits 1 with "ingest is not implemented yet". |
 
