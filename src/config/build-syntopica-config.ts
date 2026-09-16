@@ -21,15 +21,10 @@ export function buildSyntopicaConfig({
       ? (origins.get('browser.executable') ?? root)
       : root
   const paths = resolveSyntopicaPaths(document, origins, root)
-  const legacyArchive =
-    syntopicaValueAt(document, 'clips.legacyArchive') === null
+  const inbox =
+    syntopicaValueAt(document, 'clips.inbox') === null
       ? null
-      : resolveSyntopicaFieldPath(
-          document,
-          origins,
-          root,
-          'clips.legacyArchive',
-        )
+      : resolveSyntopicaFieldPath(document, origins, root, 'clips.inbox')
   const desktopRoots = resolveSyntopicaFieldPaths(
     document,
     origins,
@@ -37,7 +32,7 @@ export function buildSyntopicaConfig({
     'sessions.desktopRoots',
   )
   const pathKinds = classifySyntopicaPaths(
-    syntopicaPathsByField(paths, legacyArchive, desktopRoots),
+    syntopicaPathsByField(paths, inbox, desktopRoots),
     schema,
   )
   return Object.freeze({
@@ -45,7 +40,7 @@ export function buildSyntopicaConfig({
     ...pathKinds,
     ...syntopicaScalarFields(document),
     dataRoot: root,
-    legacyArchive,
+    inbox,
     desktopRoots,
     browser: resolveSyntopicaBrowser(
       syntopicaValueAt(document, 'browser.executable') as string | null,

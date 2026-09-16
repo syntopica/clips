@@ -1,27 +1,10 @@
-import { BRAIN_REPOSITORY_PATH } from '../clips/brain-repository-path.ts'
 import type { Repositories } from '../commands/repositories.ts'
 import type { SyntopicaConfig } from '../config/syntopica-config.ts'
 
-/** Keep implicit monorepo invocations on their pre-cutover repositories. */
+/** The brain is the data directory and the archive is wherever the instance
+ * declares it; nothing else decides which repositories a command works on. */
 export function resolveCliRepositories(
-  config: Pick<
-    SyntopicaConfig,
-    'dataRoot' | 'archive' | 'brainPath' | 'clipsPath' | 'legacyArchive'
-  >,
-  explicit: string | undefined,
-  environ: NodeJS.ProcessEnv,
+  config: Pick<SyntopicaConfig, 'dataRoot' | 'archive'>,
 ): Repositories {
-  const implicitMonorepo =
-    explicit === undefined &&
-    environ['SYNTOPICA_DATA'] === undefined &&
-    config.dataRoot === BRAIN_REPOSITORY_PATH &&
-    config.dataRoot === config.brainPath &&
-    config.dataRoot === config.clipsPath &&
-    config.dataRoot === config.archive
-  return implicitMonorepo
-    ? {
-        brain: BRAIN_REPOSITORY_PATH,
-        clips: config.legacyArchive ?? config.archive,
-      }
-    : { brain: config.dataRoot, clips: config.archive }
+  return { brain: config.dataRoot, clips: config.archive }
 }

@@ -2,19 +2,25 @@ import { drainLimit } from '../capture/drain-limit.ts'
 import { audit } from '../commands/audit.ts'
 import { drain } from '../commands/drain.ts'
 import { harvest } from '../commands/harvest.ts'
+import { pull } from '../commands/pull.ts'
 import { reconcile } from '../commands/reconcile.ts'
 import type { Repositories } from '../commands/repositories.ts'
 import { requeue } from '../commands/requeue.ts'
 import type { CliArguments } from './cli-arguments.ts'
 
-/** Commands that write outside the ingest lock, plus reconcile which takes
- * its own lock: requeue, reconcile, drain, audit, harvest. Returns null when
+/** Commands that write outside the ingest lock, plus pull, requeue and
+ * reconcile which take their own: pull, requeue, reconcile, drain, audit,
+ * harvest. Returns null when
  * `args` names none of them, so runCli falls through to ingest, the
  * default. */
 export const runUnlockedWriteCommand = async (
   args: CliArguments,
   repositories: Repositories,
 ): Promise<number | null> => {
+  // Pull commits collected clips to the archive, so it takes the ingest lock
+  // for that half; the inbox fetch before it is the old read-only pull.
+  if (args.command === 'pull')
+    return pull(repositories.brain, repositories.clips)
   // Requeue writes to the clips repository, so it takes the ingest lock; it
   // is otherwise the smallest command here, one move and a push.
   if (args.command === 'requeue')

@@ -75,18 +75,18 @@ it('does not exempt content sharing a location with state', () => {
   })
 })
 
-it('checks configured legacy archives and desktop roots as content', () => {
+it('checks desktop roots as content and the inbox as state', () => {
   const fixture = makeDoctorFixture()
   writeFileSync(
     `${fixture.data}/syntopica.local.json`,
     JSON.stringify({
-      clips: { legacyArchive: 'old-clips' },
+      clips: { inbox: 'clips-inbox' },
       sessions: { desktopRoots: ['desktop'] },
     }),
   )
   const config = loadSyntopicaConfig(fixture.data, fixture.environ)
   expect(doctorPaths(config)).toEqual({
     passed: false,
-    message: 'paths: 2 missing (old-clips, desktop)',
+    message: 'paths: 1 missing (desktop); state not created yet (clips-inbox)',
   })
 })

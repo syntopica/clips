@@ -36,7 +36,7 @@ an earlier one without deleting it.
 
 ```
 clips doctor                   paths, repositories and runtime availability
-clips pull                     clone or fast-forward the configured archive
+clips pull                     hand the browser clipper's inbox to the archive
 clips status                   each clip's derived state and the evidence for it
 clips harvest [--promote]      newsletters and saved articles into clips
 clips drain                    the phone's captures into the clip store

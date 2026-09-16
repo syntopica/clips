@@ -5,8 +5,10 @@ import { syntopicaValueAt } from './syntopica-value-at.ts'
  * be read to understand the other. */
 export function syntopicaScalarFields(document: Record<string, unknown>) {
   return {
-    repositoryUrl: syntopicaValueAt(document, 'clips.repositoryUrl') as
-      string | null,
+    inboxRepositoryUrl: syntopicaValueAt(
+      document,
+      'clips.inboxRepositoryUrl',
+    ) as string | null,
     screeningScope: syntopicaValueAt(
       document,
       'capture.screeningScope',
