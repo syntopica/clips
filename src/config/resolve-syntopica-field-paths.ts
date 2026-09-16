@@ -27,11 +27,9 @@ export function resolveSyntopicaFieldPaths(
     const offset = relative(root, path)
     const contained =
       !field.startsWith('engines.') &&
-      ![
-        'projects.roots',
-        'sessions.desktopRoots',
-        'clips.legacyArchive',
-      ].includes(field)
+      !['projects.roots', 'sessions.desktopRoots', 'clips.inbox'].includes(
+        field,
+      )
     if (
       contained &&
       (offset === '..' || offset.startsWith('../') || isAbsolute(offset))

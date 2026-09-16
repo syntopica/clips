@@ -3,7 +3,8 @@ export const USAGE_TEXT = `clips - ingest capture archive captures into the brai
   clips --data <path> <command>  select a syntopica.config.json data directory
   clips doctor                   check paths, repositories and runtime availability
 
-  clips pull                     clone or fast-forward the configured capture archive
+  clips pull                     fast-forward the browser clipper's inbox and hand
+                                 its pending clips to the archive
   clips status                   print each clip's derived state and evidence
   clips ingest [options]         run the ingest pipeline
   clips harvest [options]        harvest newsletters and saved articles into clips

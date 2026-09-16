@@ -9,8 +9,8 @@ export type SyntopicaConfig = {
   readonly index: string
   readonly ledger: string
   readonly archive: string
-  readonly legacyArchive: string | null
-  readonly repositoryUrl: string | null
+  readonly inbox: string | null
+  readonly inboxRepositoryUrl: string | null
   readonly screeningScope: string
   readonly desktopRoots: readonly string[]
   readonly atriumPath: string
