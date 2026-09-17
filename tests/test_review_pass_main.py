@@ -2,6 +2,7 @@
 
 import json
 
+from tests.brain_engine_required import BRAIN_ENGINE_REQUIRED
 from tests.fixtures.make_data_directory import make_data_directory
 from tests.review_pass_brain import _brain
 from tests.review_pass_build_batches import build_batches
@@ -42,6 +43,7 @@ def test_build_main_writes_the_candidates_beside_the_batches(build_batches, tmp_
     )
 
 
+@BRAIN_ENGINE_REQUIRED
 def test_build_main_falls_back_to_the_default_clip_store(build_batches, tmp_path, monkeypatch):
     data = make_data_directory(tmp_path / "instance")
     monkeypatch.setenv("SYNTOPICA_DATA", str(data))
