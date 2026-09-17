@@ -18,11 +18,16 @@ export function doctorExecutables(
     if (command) commands.add(command)
   }
   if (config.browser !== null) commands.add(config.browser)
-  const missing = [...commands].filter(
-    (command) => !doctorExecutableExists(command, environ),
-  ).length
+  // A count sends the reader into the source to find out which command is
+  // gone; the names are what makes the line repairable.
+  const missing = [...commands]
+    .sort()
+    .filter((command) => !doctorExecutableExists(command, environ))
   return {
-    passed: missing === 0,
-    message: `executables: ${String(missing)} missing`,
+    passed: missing.length === 0,
+    message:
+      missing.length === 0
+        ? 'executables: all present'
+        : `executables: ${String(missing.length)} missing (${missing.join(', ')})`,
   }
 }
