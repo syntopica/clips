@@ -20,6 +20,11 @@ def test_keeper_commit_hook(tmp_path, refuse):
         ["config", "user.name", "Test"],
         ["config", "core.hooksPath", str(repository / ".git" / "hooks")],
         ["remote", "add", "origin", str(origin)],
+        # The keeper's first attempt is a bare `git push`, which needs an
+        # upstream. A developer's global config usually supplies this; a runner's
+        # does not, so the test set it up on the author's machine only and the
+        # push silently fell through to the rebase branch on CI.
+        ["config", "push.autoSetupRemote", "true"],
     ]:
         subprocess.run(["git", "-C", str(repository), *arguments], check=True)
     sources = repository / "sources" / "chatgpt"

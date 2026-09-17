@@ -5,12 +5,17 @@ from pathlib import Path
 
 import pytest
 
+from tests.brain_engine_required import BRAIN_ENGINE_REQUIRED
 from tests.fixtures.make_data_directory import make_data_directory
 from tests.review_pass_clip import _clip
 from tests.review_pass_judged import _judged
 from tests.review_pass_load import _load
 from tests.review_pass_mapped import _mapped
 from tests.tool_paths import TOOLS_ROOT
+
+# The audit adapter reads the instance through the brain engine's configuration
+# reader, so without that checkout there is nothing to read the fixture with.
+pytestmark = BRAIN_ENGINE_REQUIRED
 
 
 @pytest.fixture(scope="module")
