@@ -12,6 +12,9 @@ export function doctorExecutables(
     ['agy-fine', 'agy'],
     ['agy-bulk', 'agy'],
     ['cursor', 'cursor-agent'],
+    // "fallback" chains two transports and ends on agy, so agy is what it
+    // always needs; "manual" and "off" need no command and are absent here.
+    ['fallback', 'agy'],
   ])
   for (const runner of Object.values(config.runners)) {
     const command = runner === null ? undefined : adapters.get(runner)

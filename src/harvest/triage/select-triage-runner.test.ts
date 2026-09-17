@@ -5,8 +5,12 @@ import { runTriageWithFallback } from './run-triage-with-fallback.ts'
 import { selectTriageRunner } from './select-triage-runner.ts'
 
 describe('selectTriageRunner', () => {
-  it('defaults to Gemini through agy, the tier that survives a full corpus', () => {
-    expect(selectTriageRunner(undefined)).toBe(agyBulkTriage)
+  it('refuses to pick a transport for an instance that configured none', () => {
+    // No interactive classifier exists, and the stage reads every harvested
+    // title: choosing agy here spent an unconfigured owner's quota on a model
+    // they had never named.
+    expect(() => selectTriageRunner(null)).toThrow(/runners.triage/)
+    expect(() => selectTriageRunner('manual')).toThrow(/runners.triage/)
   })
 
   it('still offers the pre-2026-08-02 default by name', () => {
@@ -17,19 +21,17 @@ describe('selectTriageRunner', () => {
     expect(selectTriageRunner('codex')).toBe(runTriageCodex)
   })
 
-  it('selects agy for the credit-outage case', () => {
-    expect(selectTriageRunner('agy')).toBe(agyBulkTriage)
+  it('selects the bulk tier, which survives a full corpus', () => {
+    expect(selectTriageRunner('agy-bulk')).toBe(agyBulkTriage)
   })
 
   it('throws on an unrecognised name rather than silently defaulting', () => {
     // A typo must not quietly run the whole harvest on codex when the caller
     // asked for something else.
-    expect(() => selectTriageRunner('agi')).toThrow(
-      /Unknown CLIPS_TRIAGE_RUNNER/,
-    )
+    expect(() => selectTriageRunner('agi')).toThrow(/Unknown triage runner/)
   })
 
   it('throws on an empty value', () => {
-    expect(() => selectTriageRunner('')).toThrow(/Unknown CLIPS_TRIAGE_RUNNER/)
+    expect(() => selectTriageRunner('')).toThrow(/Unknown triage runner/)
   })
 })

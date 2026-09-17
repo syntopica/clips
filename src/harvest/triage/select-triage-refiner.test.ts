@@ -6,11 +6,14 @@ import { runTriageCodex } from './run-triage-codex.ts'
 import { selectTriageRefiner } from './select-triage-refiner.ts'
 
 describe('selectTriageRefiner', () => {
-  it('defaults to codex with Claude behind it, both fine tier', () => {
-    expect(selectTriageRefiner(undefined)).toBe(runRefineWithFallback)
+  it('runs no second pass for an instance that configured none', () => {
+    // The one stage where unconfigured means skipped: a second opinion nobody
+    // asked for is still a model call nobody asked for.
+    expect(selectTriageRefiner(null)).toBeNull()
+    expect(selectTriageRefiner('manual')).toBeNull()
   })
 
-  it('accepts the default by name', () => {
+  it('accepts the two-transport pass by name', () => {
     expect(selectTriageRefiner('fallback')).toBe(runRefineWithFallback)
   })
 
@@ -35,14 +38,10 @@ describe('selectTriageRefiner', () => {
   it('throws on an unrecognised name rather than dropping the pass', () => {
     // Defaulting a typo to null would silently return the harvest to one pass,
     // which reads as "the refiner agreed with everything".
-    expect(() => selectTriageRefiner('none')).toThrow(
-      /Unknown CLIPS_TRIAGE_REFINER/,
-    )
+    expect(() => selectTriageRefiner('none')).toThrow(/Unknown triage refiner/)
   })
 
   it('throws on an empty value', () => {
-    expect(() => selectTriageRefiner('')).toThrow(
-      /Unknown CLIPS_TRIAGE_REFINER/,
-    )
+    expect(() => selectTriageRefiner('')).toThrow(/Unknown triage refiner/)
   })
 })

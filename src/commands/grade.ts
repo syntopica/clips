@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs'
 import { EXIT_CODE } from '../cli/exit-code.ts'
 import { discoverClips } from '../clips/discover-clips.ts'
+import { configuredRunner } from '../config/configured-runner.ts'
 import { computeGradeTotals } from '../grade/compute-grade-totals.ts'
 import { formatGradeReport } from '../grade/format-grade-report.ts'
 import { gradePage } from '../grade/grade-page.ts'
@@ -22,8 +23,8 @@ import { selectGradeRunner } from '../grade/select-grade-runner.ts'
  *
  * `author` is the model that wrote these pages, when a synthesis run is there
  * to report it. Null is the honest answer for a page handed to the standalone
- * command, which has no run behind it, and the guard reads the environment
- * instead. */
+ * command, which has no run behind it, and the guard reads the configured
+ * transport instead. */
 export const grade = async (
   brainRepository: string,
   clipsRepository: string,
@@ -41,7 +42,7 @@ export const grade = async (
       )
       return EXIT_CODE.fatalLocal
     }
-    const runner = selectGradeRunner(process.env['CLIPS_GRADE_RUNNER'], author)
+    const runner = selectGradeRunner(configuredRunner('grade'), author)
     const clips = await discoverClips(clipsRepository)
     const graded = []
     for (const page of pages) {
