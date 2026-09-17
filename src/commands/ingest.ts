@@ -21,7 +21,10 @@ export const ingest = async (
   options: IngestOptions,
   dependencies: IngestDependencies,
 ): Promise<number> => {
-  const preflightExitCode = await runIngestPreflightChecks(repositories)
+  const preflightExitCode = await runIngestPreflightChecks(
+    repositories,
+    !options.dryRun,
+  )
   if (preflightExitCode !== null) return preflightExitCode
 
   if (options.dryRun)

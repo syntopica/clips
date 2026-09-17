@@ -4,6 +4,7 @@ import { doctorApi } from './doctor-api.ts'
 import { doctorArchive } from './doctor-archive.ts'
 import { doctorCredentials } from './doctor-credentials.ts'
 import { doctorExecutables } from './doctor-executables.ts'
+import { doctorIngestReadiness } from './doctor-ingest-readiness.ts'
 import { doctorPaths } from './doctor-paths.ts'
 import { doctorRepositories } from './doctor-repositories.ts'
 
@@ -15,6 +16,7 @@ export function doctorReport(root: string, environ: NodeJS.ProcessEnv): number {
       doctorPaths(config),
       doctorRepositories(config),
       doctorArchive(config.archive),
+      doctorIngestReadiness(config),
       doctorApi(config),
       doctorExecutables(config, environ),
       doctorCredentials(config, environ),

@@ -8,9 +8,17 @@ import type { Repositories } from './repositories.ts'
  * worktree: the clip repository exists, both repositories are on `main` and
  * exactly equal to their `origin/main`, and no pending clip fails its own
  * preflight. Each failure writes its reason to stderr and returns the exit
- * code `ingest` should use; passing returns null. */
+ * code `ingest` should use; passing returns null.
+ *
+ * `publication` is false for a dry run, which writes nothing and pushes
+ * nothing. The branch and `origin/main` checks exist for publication, and
+ * demanding them of a dry run made the advertised first command of a fresh
+ * wiki fail: `syntopica init` creates neither a commit nor a remote, so the
+ * run died on `fatal: ambiguous argument 'HEAD'`, and a dry run that fetches
+ * also contradicts its own "change nothing" help text. */
 export const runIngestPreflightChecks = async (
   repositories: Repositories,
+  publication = true,
 ): Promise<number | null> => {
   if (!existsSync(repositories.clips)) {
     process.stderr.write(
@@ -18,13 +26,14 @@ export const runIngestPreflightChecks = async (
     )
     return EXIT_CODE.fatalLocal
   }
-  for (const repository of [repositories.brain, repositories.clips]) {
-    const preflight = await preflightRepository(repository)
-    if (!preflight.ok) {
-      process.stderr.write(`${preflight.reason}\n`)
-      return EXIT_CODE.fatalLocal
+  if (publication)
+    for (const repository of [repositories.brain, repositories.clips]) {
+      const preflight = await preflightRepository(repository)
+      if (!preflight.ok) {
+        process.stderr.write(`${preflight.reason}\n`)
+        return EXIT_CODE.fatalLocal
+      }
     }
-  }
   const pending = await preflightPendingClips(repositories.clips)
   if (!pending.ok) {
     process.stderr.write(`${pending.reason}\n`)

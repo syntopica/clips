@@ -51,6 +51,12 @@ clips requeue --clip <id>      return an escalated clip to pending
 read, and otherwise the command walks upward to the nearest
 `syntopica.config.json`, stopping at a repository boundary.
 
+`clips ingest` ends in a fast-forward publication, so a real run requires both
+the wiki and the clip archive to be on `main` with an `origin/main` it equals. A
+fresh instance has neither; `clips doctor` says so on its `ingest:` line, and
+`clips ingest --dry-run` runs without them, fetching nothing and writing
+nothing.
+
 ## Models are configuration
 
 No model is hardcoded. `runners` in the instance configuration names which
