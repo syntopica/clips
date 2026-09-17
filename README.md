@@ -47,9 +47,18 @@ clips reconcile --cited        ledger clips the wiki already cites
 clips requeue --clip <id>      return an escalated clip to pending
 ```
 
+`clips` above is shorthand. Installing the dependencies puts no `clips`
+executable on PATH, and neither does the hub: from an instance created by it,
+every command in this README is
+`engines/clips/clips.sh --data "$PWD" <command>`. Create the instance first -
+the hub's onboarding writes `syntopica.config.json` - then start with
+`engines/clips/clips.sh --data "$PWD" status`.
+
 `--data <path>` selects an instance explicitly; otherwise `SYNTOPICA_DATA` is
 read, and otherwise the command walks upward to the nearest
-`syntopica.config.json`, stopping at a repository boundary.
+`syntopica.config.json`, stopping at a repository boundary. `clips.sh` runs the
+CLI from this checkout without moving the caller, which is why the path has to
+be named: discovery would otherwise walk up from the engine.
 
 `clips ingest` ends in a fast-forward publication, so a real run requires both
 the wiki and the clip archive to be on `main` with an `origin/main` it equals. A
@@ -122,7 +131,12 @@ confined, and is worth reading before adding one.
 Node 22 or newer with pnpm, Python 3.12 with [uv](https://docs.astral.sh/uv/)
 for the adapters under `tools/`, and Git.
 
+This engine is a checkout, not a package: clone it - the hub puts it under an
+instance's `engines/` directory - install, and run it from there.
+
 ```bash
+git clone https://github.com/syntopica/clips.git engines/clips
+cd engines/clips
 pnpm install
 pnpm test
 pnpm check
