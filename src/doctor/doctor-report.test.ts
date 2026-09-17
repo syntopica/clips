@@ -54,12 +54,12 @@ describe('doctorReport', () => {
   })
 })
 
-it('reports all seven checks for a healthy instance', () => {
+it('reports all eight checks for a healthy instance', () => {
   const fixture = makeDoctorFixture()
   fixtures.push(fixture.parent)
   const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true)
   expect(doctorReport(fixture.data, fixture.environ)).toBe(0)
-  expect(stdout).toHaveBeenCalledTimes(7)
+  expect(stdout).toHaveBeenCalledTimes(8)
 })
 
 it('requires a token only when capture is enabled', () => {

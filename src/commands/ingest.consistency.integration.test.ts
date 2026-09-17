@@ -53,6 +53,33 @@ describe('clips ingest - repository consistency', () => {
     expect(existsSync(join(brain, '.ingest/lock'))).toBe(false)
   })
 
+  it('dry-runs in a fresh wiki with no commit and no remote', async () => {
+    // What `syntopica init` actually produces: a repository with neither a
+    // commit nor an origin. The publication preflight refused it with `fatal:
+    // ambiguous argument 'HEAD'`, so the first command the onboarding advertises
+    // could not run.
+    const brain = temporaryDir('ing-fresh-brain')
+    const clips = temporaryDir('ing-fresh-clips')
+    for (const repository of [brain, clips])
+      execFileSync('git', [
+        'init',
+        '--quiet',
+        '--initial-branch=main',
+        repository,
+      ])
+    const exit = await ingest(
+      { brain, clips },
+      { clipFilter: null, dryRun: true },
+      {
+        synthesizer: writingSynthesizer(PAGE_BODY),
+        grader: null,
+        reviewer: verdictReviewer('apply'),
+      },
+    )
+    expect(exit).toBe(0)
+    expect(existsSync(join(brain, '.git/FETCH_HEAD'))).toBe(false)
+  })
+
   it('recovers from a rejected push by cherry-picking onto the new origin/main', async () => {
     const { brain, clips, brainOrigin } = fixture()
     const synthesizer: Synthesizer = {
