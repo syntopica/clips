@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { BRAIN_ENGINE_PRESENT } from './brain-engine-present.ts'
 import { fixture } from './ingest-test-fixture.ts'
 import { options } from './ingest-test-options.ts'
 import { PAGE_BODY } from './ingest-test-page-body.ts'
@@ -30,7 +31,8 @@ const reportedIngest = async (
   return written.join('')
 }
 
-describe('clips ingest - summary output', () => {
+// The fixture copies the real index generator out of a brain checkout.
+describe.skipIf(!BRAIN_ENGINE_PRESENT)('clips ingest - summary output', () => {
   it('closes a run that changed nothing by saying so', async () => {
     expect(await reportedIngest(options)).toContain(
       '1 clips examined, nothing was ingested (1 skipped)',

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { git } from '../testing/git.ts'
 import { installCommitMessageHook } from '../testing/install-commit-message-hook.ts'
+import { BRAIN_ENGINE_PRESENT } from './brain-engine-present.ts'
 import { CLIP_ID } from './ingest-test-clip-id.ts'
 import { fixture } from './ingest-test-fixture.ts'
 import { options } from './ingest-test-options.ts'
@@ -9,7 +10,8 @@ import { verdictReviewer } from './ingest-test-verdict-reviewer.ts'
 import { writingSynthesizer } from './ingest-test-writing-synthesizer.ts'
 import { ingest } from './ingest.ts'
 
-describe('ingest commit messages', () => {
+// The fixture copies the real index generator out of a brain checkout.
+describe.skipIf(!BRAIN_ENGINE_PRESENT)('ingest commit messages', () => {
   it('routes a validation failure through a conventional-commit hook', async () => {
     const { brain, clips } = fixture()
     installCommitMessageHook(clips)

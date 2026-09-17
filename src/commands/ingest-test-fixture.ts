@@ -2,10 +2,10 @@ import { clipMetadata } from './ingest-test-clip-metadata.ts'
 import { CLIP_RELATIVE } from './ingest-test-clip-relative.ts'
 import { ingestTestDataConfig } from './ingest-test-data-config.ts'
 import { ingestTestEngineDirectory } from './ingest-test-engine-directory.ts'
-import { INDEX_BUILDER_FILES } from './ingest-test-index-builder.ts'
+import { indexBuilderFiles } from './ingest-test-index-builder.ts'
 import { pendingState } from './ingest-test-pending-state.ts'
 import { repositoryWithOrigin } from './ingest-test-repository-with-origin.ts'
-import { INGEST_TEST_SCHEMA_FILE } from './ingest-test-schema-file.ts'
+import { ingestTestSchemaFile } from './ingest-test-schema-file.ts'
 
 /** A brain and a clips repository, both clean on main == origin/main, with one
  * pending clip. */
@@ -14,8 +14,8 @@ export const fixture = (
 ): { brain: string; clips: string; brainOrigin: string } => {
   const brain = repositoryWithOrigin('ing-brain', {
     'index.md': '# brain\n',
-    ...INDEX_BUILDER_FILES,
-    ...INGEST_TEST_SCHEMA_FILE,
+    ...indexBuilderFiles(),
+    ...ingestTestSchemaFile(),
     ...ingestTestDataConfig(
       ingestTestEngineDirectory(),
       ingestTestEngineDirectory(),
