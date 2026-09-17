@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { git } from '../testing/git.ts'
+import { BRAIN_ENGINE_PRESENT } from './brain-engine-present.ts'
 import { fixture } from './ingest-test-fixture.ts'
 import { options } from './ingest-test-options.ts'
 import { PAGE_BODY } from './ingest-test-page-body.ts'
@@ -10,7 +11,8 @@ import { verdictReviewer } from './ingest-test-verdict-reviewer.ts'
 import { writingSynthesizer } from './ingest-test-writing-synthesizer.ts'
 import { ingest } from './ingest.ts'
 
-describe('clips ingest - the run lock', () => {
+// The fixture copies the real index generator out of a brain checkout.
+describe.skipIf(!BRAIN_ENGINE_PRESENT)('clips ingest - the run lock', () => {
   it('is blocked by a live lock', async () => {
     const { brain, clips } = fixture()
     const { processStartTime } = await import('../lock/process-start-time.ts')
