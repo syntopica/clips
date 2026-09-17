@@ -124,7 +124,10 @@ jobs:
       # that could reach the owner's data directory or clip archive.
       - name: Run both suites against a synthetic instance
         run: |
-          uv run --project clips pytest -q
+          # --directory as well as --project: pytest resolves `tests.` against
+          # its working directory, and from the workspace root every module in
+          # clips/tests failed to import.
+          uv run --directory clips pytest -q
           pnpm --dir clips test
 
   security:
