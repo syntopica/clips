@@ -11,6 +11,5 @@ export const SYNTHESIS_BINARIES: Readonly<Record<string, string>> = {
   cursor: 'cursor-agent',
   'agy-fine': 'agy',
   'agy-bulk': 'agy',
-  agy: 'agy',
   fallback: 'agy',
 }

@@ -1,3 +1,4 @@
+import { configuredRunner } from '../config/configured-runner.ts'
 import { isCodexOutOfCredits } from '../harvest/triage/is-codex-out-of-credits.ts'
 import { fallbackGraderAfterCodex } from './fallback-grader-after-codex.ts'
 import type { GradeRunner } from './grade-runner.ts'
@@ -21,9 +22,10 @@ import { runCodexGrade } from './run-codex-grade.ts'
  *
  * `author` is the model the synthesis run reported for itself, or null where
  * there is no run to ask - the standalone `clips grade`. It is a parameter
- * rather than an environment read because the environment names the transport
- * that was requested, and `selectSynthesizer` overrides that request in three
- * ways; the guard needs what wrote the page, not what was asked for. */
+ * rather than a configuration read because the configuration names the
+ * transport that was requested, and `selectSynthesizer` overrides that request
+ * in three ways; the guard needs what wrote the page, not what was asked
+ * for. */
 export const gradeWithFallback = (author: string | null): GradeRunner => ({
   // The primary transport's, not the smaller of the two: a page codex can
   // grade must not be refused up front because the fallback it may never
@@ -34,7 +36,7 @@ export const gradeWithFallback = (author: string | null): GradeRunner => ({
     if (!isCodexOutOfCredits('', codex.stderrTail)) return codex
     const grader = fallbackGraderAfterCodex(
       author,
-      process.env['CLIPS_SYNTHESIS_RUNNER'],
+      configuredRunner('synthesis') ?? undefined,
     )
     const overCeiling = await gradeableEvidence(
       evidencePaths,

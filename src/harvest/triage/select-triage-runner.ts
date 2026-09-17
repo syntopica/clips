@@ -3,9 +3,15 @@ import { runTriageCodex } from './run-triage-codex.ts'
 import { runTriageWithFallback } from './run-triage-with-fallback.ts'
 import type { TriageRunner } from './triage-runner.ts'
 
-/** Pick the bulk classification transport from `CLIPS_TRIAGE_RUNNER`.
+/** Pick the bulk classification transport from `runners.triage`, which
+ * `CLIPS_TRIAGE_RUNNER` overrides through the configuration loader.
  *
- * Unset means agy, changed from codex on 2026-08-02 at the owner's direction:
+ * An instance that configured none stops with the fix in the message: there is
+ * no interactive classifier, and a harvest reads every title it collected, so
+ * picking a transport on the owner's behalf is the one thing this stage must
+ * not do.
+ *
+ * `agy-bulk` is what the owner runs, changed from codex on 2026-08-02:
  * codex empties its workspace credits long before agy exhausts its quota, and
  * this stage reads every harvested title, so it is where that difference gets
  * paid. codex is not gone, it moved - `selectTriageRefiner` spends it on the
@@ -18,21 +24,26 @@ import type { TriageRunner } from './triage-runner.ts'
  * prompt-injection payload hidden in a title. What limits the damage is
  * unchanged - an id outside the article range is dropped, and a verdict can
  * only move an article between three buckets - but the exposure is real, and it
- * is why `CLIPS_TRIAGE_RUNNER=codex` still exists.
+ * is why the codex transport still exists.
  *
- * `codex` and `agy` pin a single transport for a run that must not mix models;
- * `fallback` is the pre-2026-08-02 default, codex first with agy behind it on
- * the credit wall.
+ * `codex` and `agy-bulk` pin a single transport for a run that must not mix
+ * models; `fallback` is the pre-2026-08-02 behaviour, codex first with agy
+ * behind it on the credit wall.
  *
- * An unrecognised value throws instead of defaulting. A typo in the variable
- * would otherwise run the whole harvest on a transport the caller did not
- * choose. */
-export const selectTriageRunner = (name: string | undefined): TriageRunner => {
-  if (name === undefined) return agyBulkTriage
+ * An unrecognised value throws instead of defaulting. A typo would otherwise
+ * run the whole harvest on a transport the caller did not choose. */
+export const selectTriageRunner = (name: string | null): TriageRunner => {
+  if (name === null || name === 'manual') {
+    throw new Error(
+      'No triage transport is configured. Set runners.triage in ' +
+        'syntopica.config.json to "codex", "agy-bulk" or "fallback", or ' +
+        'export CLIPS_TRIAGE_RUNNER for one run.',
+    )
+  }
   if (name === 'codex') return runTriageCodex
-  if (name === 'agy') return agyBulkTriage
+  if (name === 'agy-bulk') return agyBulkTriage
   if (name === 'fallback') return runTriageWithFallback
   throw new Error(
-    `Unknown CLIPS_TRIAGE_RUNNER "${name}" - expected "codex", "agy" or "fallback".`,
+    `Unknown triage runner "${name}" - expected "codex", "agy-bulk" or "fallback".`,
   )
 }

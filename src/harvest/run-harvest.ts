@@ -1,5 +1,6 @@
 import { EXIT_CODE } from '../cli/exit-code.ts'
 import type { HarvestOptions } from '../commands/harvest-options.ts'
+import { configuredRunner } from '../config/configured-runner.ts'
 import { collectHarvest } from './collect-harvest.ts'
 import { formatHarvestSummary } from './format-harvest-summary.ts'
 import { reportTriageGaps } from './report-triage-gaps.ts'
@@ -54,8 +55,8 @@ export const runHarvest = async (
 
   const triaged = await classifyArticles(
     run.articles,
-    selectTriageRunner(process.env['CLIPS_TRIAGE_RUNNER']),
-    selectTriageRefiner(process.env['CLIPS_TRIAGE_REFINER']),
+    selectTriageRunner(configuredRunner('triage')),
+    selectTriageRefiner(configuredRunner('triageRefiner')),
   )
   writeTriageOutput({
     brainRepository,

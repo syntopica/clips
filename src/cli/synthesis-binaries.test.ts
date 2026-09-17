@@ -9,7 +9,7 @@ describe('SYNTHESIS_BINARIES', () => {
     expect(SYNTHESIS_BINARIES['cursor']).toBe('cursor-agent')
   })
 
-  it('keeps codex and every agy spelling on their own binaries', () => {
+  it('keeps codex and both agy tiers on their own binaries', () => {
     expect(SYNTHESIS_BINARIES['codex']).toBe('codex')
     expect(SYNTHESIS_BINARIES['agy-fine']).toBe('agy')
     expect(SYNTHESIS_BINARIES['agy-bulk']).toBe('agy')
@@ -19,14 +19,7 @@ describe('SYNTHESIS_BINARIES', () => {
   it('covers every name selectSynthesisTransport accepts', () => {
     // A transport missing here falls through to agy, which is the old defect
     // rather than a safe default.
-    for (const name of [
-      'codex',
-      'cursor',
-      'agy-fine',
-      'agy-bulk',
-      'agy',
-      'fallback',
-    ])
+    for (const name of ['codex', 'cursor', 'agy-fine', 'agy-bulk', 'fallback'])
       expect(SYNTHESIS_BINARIES[name]).toBeDefined()
   })
 })

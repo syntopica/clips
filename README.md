@@ -57,15 +57,56 @@ fresh instance has neither; `clips doctor` says so on its `ingest:` line, and
 `clips ingest --dry-run` runs without them, fetching nothing and writing
 nothing.
 
+## Publishing: the two repositories
+
+Ingest ends by pushing, so the `ingest:` line stays at
+`publication not configured yet` until two Git repositories exist and this
+instance can push both:
+
+- **the wiki**, the `brain.pages` directory's repository - the data directory
+  itself in the ordinary layout, which `syntopica init` created for you;
+- **the clip archive**, the `clips.archive` directory's repository, which holds
+  the captured text every page cites.
+
+Each needs a first commit, a branch named `main`, and an `origin` remote you can
+push to - two private repositories you own, on any host. Nothing here is created
+for you, and the destination is deliberately yours to choose: these are your
+notes and the articles behind them.
+
+```bash
+cd <the archive or the wiki>
+git init --initial-branch=main        # skip where init already did this
+git add -A && git commit -m "first"
+git remote add origin git@github.com:<you>/<repository>.git
+git push -u origin main
+```
+
+`clips doctor` turns the line to `ingest: ready to publish` once both are on
+`main` with an `origin/main` they equal. Until then `clips pull`,
+`clips status`, `clips harvest` and `clips ingest --dry-run` all work: capture
+and review never needed a remote.
+
 ## Models are configuration
 
-No model is hardcoded. `runners` in the instance configuration names which
-transport runs each stage, and the engine enforces one rule of its own: **the
-model that wrote a page may not grade it**. An author asked to verify itself
-reports clean.
+`runners` in the instance configuration names which transport runs each stage -
+`synthesis`, `grade`, `triage` and `triageRefiner` - and the corresponding
+`CLIPS_SYNTHESIS_RUNNER`, `CLIPS_GRADE_RUNNER`, `CLIPS_TRIAGE_RUNNER` and
+`CLIPS_TRIAGE_REFINER` override one run through the same loader, so what doctor
+reports is what executes. Each takes `codex`, `agy-fine`, `agy-bulk`, `cursor`
+or `fallback`, the two-transport pass that degrades on the credit wall.
 
-Which transports exist and what they cost is your decision; the engine's job is
-to make the split between author and verifier impossible to forget.
+**An unconfigured stage runs no model.** Synthesis falls to the interactive
+synthesizer and says so; grading and triage stop with the fix in the message;
+the refinement pass is simply skipped. Until 2026-09-17 these selectors read the
+environment directly and an empty configuration reached for agy on its own,
+which is how a first run called a transport its owner had never named.
+
+Model identifiers are not configuration yet: which model each transport asks for
+is a constant under `src/models/`, and `clips doctor` checks that a configured
+transport's command is on PATH, never that it is authenticated or in credit.
+
+The engine enforces one rule of its own: **the model that wrote a page may not
+grade it**, pins included. An author asked to verify itself reports clean.
 
 ## Untrusted text
 

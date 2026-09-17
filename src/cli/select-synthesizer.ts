@@ -1,5 +1,6 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
+import { configuredRunner } from '../config/configured-runner.ts'
 import { BOUNDARY_DECISION_PATH } from '../sandbox/boundary-decision-path.ts'
 import { readBoundaryDecision } from '../sandbox/read-boundary-decision.ts'
 import { interactiveSynthesizer } from '../synthesis/interactive-synthesizer.ts'
@@ -14,11 +15,17 @@ import { SYNTHESIS_BINARIES } from './synthesis-binaries.ts'
  * needs no model, no credits and no boundary decision, which is what makes it
  * the floor this pipeline never falls through.
  *
- * Otherwise the transport comes from `CLIPS_SYNTHESIS_RUNNER`, defaulting to
- * agy since 2026-08-02. Each transport keeps its own preconditions and each
- * failure degrades to interactive rather than stopping the run: codex still
- * answers to the recorded boundary decision, and either binary being absent
- * means there is nothing to call. */
+ * Otherwise the transport is `runners.synthesis`, which `CLIPS_SYNTHESIS_RUNNER`
+ * overrides through the configuration loader. An instance that configured none
+ * gets the interactive synthesizer and is told so: an unconfigured wiki used to
+ * reach for agy on its own, which meant a first run either called a model the
+ * owner had never chosen or reported `agy not available` for a binary they had
+ * no reason to install.
+ *
+ * Each transport keeps its own preconditions and each failure degrades to
+ * interactive rather than stopping the run: codex still answers to the recorded
+ * boundary decision, and either binary being absent means there is nothing to
+ * call. */
 export const selectSynthesizer = async (
   manual: boolean,
 ): Promise<Synthesizer> => {
@@ -26,9 +33,15 @@ export const selectSynthesizer = async (
     process.stdout.write('synthesizer: interactive (--manual)\n')
     return interactiveSynthesizer
   }
-  const name = process.env['CLIPS_SYNTHESIS_RUNNER']
+  const name = configuredRunner('synthesis')
+  if (name === null || name === 'manual') {
+    const reason =
+      name === null ? 'runners.synthesis unset' : 'runners.synthesis'
+    process.stdout.write(`synthesizer: interactive (${reason})\n`)
+    return interactiveSynthesizer
+  }
   const transport = selectSynthesisTransport(name)
-  const binary = SYNTHESIS_BINARIES[name ?? 'fallback'] ?? 'agy'
+  const binary = SYNTHESIS_BINARIES[name] ?? 'agy'
   if (binary === 'codex') {
     const decision = readBoundaryDecision(BOUNDARY_DECISION_PATH)
     if (decision.decision === 'CODEX_DISABLED') {
