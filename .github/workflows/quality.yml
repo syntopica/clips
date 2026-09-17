@@ -14,8 +14,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      # Nested layout, matching the integration job: the ingest suites copy the
+      # real index generator out of a sibling brain checkout, and a clips-only
+      # clone skips them - nine suites' worth, which is below the coverage
+      # thresholds this job enforces.
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
+          path: clips
+          persist-credentials: false
+
+      - name: Read the pinned engine commit
+        id: engine
+        run: echo "ref=$(cat clips/.brain-engine-ref)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: syntopica/brain
+          ref: ${{ steps.engine.outputs.ref }}
+          path: brain
           persist-credentials: false
 
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
@@ -26,11 +42,20 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+          cache-dependency-path: clips/pnpm-lock.yaml
 
-      - run: pnpm install --frozen-lockfile
+      - name: Install uv
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+        with:
+          enable-cache: true
+
+      - run: pnpm --dir clips install --frozen-lockfile
+
+      - name: Install the brain engine the fixtures run
+        run: uv sync --project brain --locked --all-extras --all-groups
 
       - name: check:ci
-        run: pnpm run check:ci
+        run: pnpm --dir clips run check:ci
 
   gate:
     name: python gate
