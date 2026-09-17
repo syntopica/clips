@@ -27,5 +27,26 @@ it('checks enabled adapters once and leaves manual runners independent', () => {
       },
       fixture.environ,
     ),
-  ).toEqual({ passed: false, message: 'executables: 4 missing' })
+  ).toMatchObject({ passed: false })
+  expect(
+    doctorExecutables(
+      {
+        ...config,
+        runners: {
+          grade: 'agy-fine',
+          triage: 'agy-bulk',
+          synthesis: 'cursor',
+          triageRefiner: 'codex',
+        },
+        browser: config.index,
+      },
+      fixture.environ,
+    ).message,
+  ).toContain('executables: 4 missing (')
+  expect(
+    doctorExecutables(
+      { ...config, runners: { ...config.runners, grade: 'codex' } },
+      fixture.environ,
+    ).message,
+  ).toContain('codex')
 })
