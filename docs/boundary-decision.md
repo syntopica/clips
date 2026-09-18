@@ -45,8 +45,10 @@ review gate.
 
 ## What an operator who wants a model synthesizer is accepting
 
-Replace `boundary-decision.json` with your own. Record which mechanisms you
-evaluated, the probe rows that justify an enabled decision, and - if you are
+Write your own decision inside your data directory and point
+`clips.boundaryDecision` at it in `syntopica.config.json`; the engine's copy
+stays refusing and is used only when that key is null. Record which mechanisms
+you evaluated, the probe rows that justify an enabled decision, and - if you are
 overriding rather than sandboxing - say so in the justification and state what
 you accepted. The reader re-checks the rows rather than trusting the verdict,
 and a hand-edited verdict with no evidence behind it is refused.

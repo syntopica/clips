@@ -4,6 +4,7 @@ import { syntopicaScalarPathFields } from './syntopica-scalar-path-fields.ts'
 export function syntopicaPathsByField(
   paths: ResolvedSyntopicaPaths,
   inbox: string | null,
+  boundaryDecision: string | null,
   desktopRoots: readonly string[],
 ): ReadonlyMap<string, readonly string[]> {
   const fields = new Map<string, readonly string[]>()
@@ -14,6 +15,10 @@ export function syntopicaPathsByField(
   fields.set('brain.pages', paths.pages)
   fields.set('projects.roots', paths.projectRoots)
   fields.set('clips.inbox', inbox === null ? [] : [inbox])
+  fields.set(
+    'clips.boundaryDecision',
+    boundaryDecision === null ? [] : [boundaryDecision],
+  )
   fields.set('sessions.desktopRoots', desktopRoots)
   return fields
 }
