@@ -10,6 +10,7 @@ export type SyntopicaConfig = {
   readonly ledger: string
   readonly archive: string
   readonly inbox: string | null
+  readonly boundaryDecision: string | null
   readonly inboxRepositoryUrl: string | null
   readonly screeningScope: string
   readonly desktopRoots: readonly string[]

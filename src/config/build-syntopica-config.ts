@@ -25,6 +25,15 @@ export function buildSyntopicaConfig({
     syntopicaValueAt(document, 'clips.inbox') === null
       ? null
       : resolveSyntopicaFieldPath(document, origins, root, 'clips.inbox')
+  const boundaryDecision =
+    syntopicaValueAt(document, 'clips.boundaryDecision') === null
+      ? null
+      : resolveSyntopicaFieldPath(
+          document,
+          origins,
+          root,
+          'clips.boundaryDecision',
+        )
   const desktopRoots = resolveSyntopicaFieldPaths(
     document,
     origins,
@@ -32,7 +41,7 @@ export function buildSyntopicaConfig({
     'sessions.desktopRoots',
   )
   const pathKinds = classifySyntopicaPaths(
-    syntopicaPathsByField(paths, inbox, desktopRoots),
+    syntopicaPathsByField(paths, inbox, boundaryDecision, desktopRoots),
     schema,
   )
   return Object.freeze({
@@ -41,6 +50,7 @@ export function buildSyntopicaConfig({
     ...syntopicaScalarFields(document),
     dataRoot: root,
     inbox,
+    boundaryDecision,
     desktopRoots,
     browser: resolveSyntopicaBrowser(
       syntopicaValueAt(document, 'browser.executable') as string | null,

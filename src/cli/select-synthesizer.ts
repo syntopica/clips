@@ -1,7 +1,7 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { configuredRunner } from '../config/configured-runner.ts'
-import { BOUNDARY_DECISION_PATH } from '../sandbox/boundary-decision-path.ts'
+import { configuredBoundaryDecisionPath } from '../sandbox/configured-boundary-decision-path.ts'
 import { readBoundaryDecision } from '../sandbox/read-boundary-decision.ts'
 import { interactiveSynthesizer } from '../synthesis/interactive-synthesizer.ts'
 import type { Synthesizer } from '../synthesis/synthesizer.ts'
@@ -24,7 +24,8 @@ import { SYNTHESIS_BINARIES } from './synthesis-binaries.ts'
  *
  * Each transport keeps its own preconditions and each failure degrades to
  * interactive rather than stopping the run: codex still answers to the recorded
- * boundary decision, and either binary being absent means there is nothing to
+ * boundary decision - the instance's `clips.boundaryDecision`, else the
+ * engine's refusing one - and either binary being absent means there is nothing to
  * call. */
 export const selectSynthesizer = async (
   manual: boolean,
@@ -43,7 +44,7 @@ export const selectSynthesizer = async (
   const transport = selectSynthesisTransport(name)
   const binary = SYNTHESIS_BINARIES[name] ?? 'agy'
   if (binary === 'codex') {
-    const decision = readBoundaryDecision(BOUNDARY_DECISION_PATH)
+    const decision = readBoundaryDecision(configuredBoundaryDecisionPath())
     if (decision.decision === 'CODEX_DISABLED') {
       process.stdout.write('synthesizer: interactive (codex disabled)\n')
       return interactiveSynthesizer
