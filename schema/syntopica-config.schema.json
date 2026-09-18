@@ -197,22 +197,55 @@
       "properties": {
         "synthesis": {
           "type": ["string", "null"],
-          "enum": [null, "codex", "agy-fine", "agy-bulk", "cursor", "manual"],
+          "enum": [
+            null,
+            "codex",
+            "agy-fine",
+            "agy-bulk",
+            "cursor",
+            "manual",
+            "fallback"
+          ],
           "default": null
         },
         "grade": {
           "type": ["string", "null"],
-          "enum": [null, "codex", "agy-fine", "agy-bulk", "cursor", "manual"],
+          "enum": [
+            null,
+            "codex",
+            "agy-fine",
+            "agy-bulk",
+            "cursor",
+            "manual",
+            "fallback"
+          ],
           "default": null
         },
         "triage": {
           "type": ["string", "null"],
-          "enum": [null, "codex", "agy-fine", "agy-bulk", "cursor", "manual"],
+          "enum": [
+            null,
+            "codex",
+            "agy-fine",
+            "agy-bulk",
+            "cursor",
+            "manual",
+            "fallback"
+          ],
           "default": null
         },
         "triageRefiner": {
           "type": ["string", "null"],
-          "enum": [null, "codex", "agy-fine", "agy-bulk", "cursor", "manual"],
+          "enum": [
+            null,
+            "codex",
+            "agy-fine",
+            "agy-bulk",
+            "cursor",
+            "manual",
+            "fallback",
+            "off"
+          ],
           "default": null
         }
       }
@@ -251,6 +284,18 @@
           "minLength": 1,
           "pattern": "^(?!/)(?![\\s\\S]*(?:^|/)\\.\\.(?:/|(?![\\s\\S])))[^\\u0000]+(?![\\s\\S])",
           "default": ".config/newsletter-rejected-booking.json"
+        },
+        "triageProfile": {
+          "type": "string",
+          "default": ""
+        },
+        "triageTopics": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?![\\s\\S])"
+          },
+          "default": ["ai-agents", "llm-engineering", "saas", "seo", "devtools"]
         }
       }
     },

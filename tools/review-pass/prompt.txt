@@ -1,11 +1,6 @@
 You are deciding which already-captured articles are worth synthesizing into a personal knowledge wiki.
 
-The owner's work and interests:
-- AI coding agents, Claude Code, MCP, agent architectures, context engineering
-- LLM engineering: RAG, embeddings, vector search, fine-tuning, local models, inference cost
-- SaaS building: multi-tenant architecture, launch readiness, pricing, billing, security
-- SEO and organic acquisition
-- Dev tooling: TypeScript, Next.js, React, Rust, Kubernetes, Postgres/Supabase, Drupal/PHP
+{{PROFILE}}
 
 Unlike the first triage pass, you are reading the article's own opening text, not just its title. Judge the text, not the headline: a clickbait title over a substantive article is a keep, and a promising title over recycled filler is a skip.
 

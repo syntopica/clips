@@ -1,6 +1,6 @@
 import { countBucket } from './count-bucket.ts'
-import { TRIAGE_TOPICS } from './triage-topic.ts'
 import type { TriagedArticle } from './triaged-article.ts'
+import { triagedTopics } from './triaged-topics.ts'
 
 /** The README a triage run drops beside its topic files: what was harvested,
  * how much deduplication removed, and where to click next. The link count is
@@ -29,7 +29,7 @@ export const buildTriageIndex = (
     '| Topic | Articles |',
     '| --- | --- |',
   ]
-  for (const topic of TRIAGE_TOPICS) {
+  for (const topic of triagedTopics(articles)) {
     const total = articles.filter((article) => article.topic === topic).length
     if (total > 0) lines.push(`| [${topic}](${topic}.md) | ${String(total)} |`)
   }

@@ -26,6 +26,13 @@ export function syntopicaScalarFields(document: Record<string, unknown>) {
     captureOrigin: syntopicaValueAt(document, 'capture.origin') as
       string | null,
     captureMirror: syntopicaValueAt(document, 'capture.mirror') as boolean,
+    triageProfile: syntopicaValueAt(
+      document,
+      'newsletter.triageProfile',
+    ) as string,
+    triageTopics: Object.freeze([
+      ...(syntopicaValueAt(document, 'newsletter.triageTopics') as string[]),
+    ]),
     runners: Object.freeze({
       ...(syntopicaValueAt(document, 'runners') as Record<
         string,
