@@ -30,6 +30,14 @@
     "clips": {
       "path": "../syntopica-clips",
       "apiVersion": 1
+    },
+    "atrium": {
+      "path": "../syntopica-atrium",
+      "apiVersion": 1
+    },
+    "agents": {
+      "path": "../syntopica-agents",
+      "apiVersion": 1
     }
   },
   "capture": {
@@ -48,7 +56,9 @@
   "newsletter": {
     "acceptedSenders": ".config/newsletter-accepted.json",
     "rejectedSenders": ".config/newsletter-rejected.json",
-    "rejectedBookingSenders": ".config/newsletter-rejected-booking.json"
+    "rejectedBookingSenders": ".config/newsletter-rejected-booking.json",
+    "triageProfile": "",
+    "triageTopics": ["ai-agents", "llm-engineering", "saas", "seo", "devtools"]
   },
   "projects": {
     "roots": [],

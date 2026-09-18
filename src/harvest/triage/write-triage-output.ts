@@ -5,7 +5,7 @@ import { buildTriageIndex } from './build-triage-index.ts'
 import { readGoneUrls } from './read-gone-urls.ts'
 import { triageOutputPath } from './triage-output-path.ts'
 import type { TriageOutputRequest } from './triage-output-request.ts'
-import { TRIAGE_TOPICS } from './triage-topic.ts'
+import { triagedTopics } from './triaged-topics.ts'
 
 /** Write a triage run to disk and return the directory it landed in.
  *
@@ -19,7 +19,7 @@ export const writeTriageOutput = (request: TriageOutputRequest): string => {
   // hand-applied `[gone-410]` markers only exist in the files being replaced.
   const goneUrls = readGoneUrls(directory)
   mkdirSync(directory, { recursive: true })
-  for (const topic of TRIAGE_TOPICS) {
+  for (const topic of triagedTopics(request.articles)) {
     const rows = request.articles.filter((article) => article.topic === topic)
     if (rows.length === 0) continue
     writeFileSync(

@@ -1,8 +1,10 @@
 import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { currentSyntopicaConfig } from '../../config/current-syntopica-config.ts'
 import { runCommand } from '../run-command.ts'
-import { TRIAGE_OUTPUT_SCHEMA } from './triage-output-schema.ts'
+import { configuredTriageTopics } from './configured-triage-topics.ts'
+import { triageOutputSchema } from './triage-output-schema.ts'
 import { triagePrompt } from './triage-prompt.ts'
 import type { TriageRunner } from './triage-runner.ts'
 import { unwrapAgyResponse } from './unwrap-agy-response.ts'
@@ -36,12 +38,13 @@ export const agyTriageRunner = (model: string): TriageRunner => ({
   run: async (batch) => {
     const scratch = await mkdtemp(join(tmpdir(), 'clips-triage-agy-'))
     const schemaPath = join(scratch, 'output-schema.json')
-    await writeFile(schemaPath, JSON.stringify(TRIAGE_OUTPUT_SCHEMA))
+    const topics = configuredTriageTopics()
+    await writeFile(schemaPath, JSON.stringify(triageOutputSchema(topics)))
     const result = await runCommand(
       'agy',
       [
         '-p',
-        triagePrompt(batch),
+        triagePrompt(batch, currentSyntopicaConfig().triageProfile, topics),
         '--model',
         model,
         '--json-schema',

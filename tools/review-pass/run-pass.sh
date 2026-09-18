@@ -16,11 +16,22 @@ work="$1"
 here="${0:A:h}"
 mkdir -p "$work/out"
 
+# Whose interests the judge weighs is the instance's `newsletter.triageProfile`,
+# the same paragraph the first triage pass is handed. The local layer wins over
+# the tracked file, as it does for the engine's own loader.
+data="${SYNTOPICA_DATA:-$PWD}"
+profile="$(jq -rs 'map(.newsletter.triageProfile // empty) | last // ""' \
+  "$data/syntopica.config.json" \
+  $([ -f "$data/syntopica.local.json" ] && echo "$data/syntopica.local.json"))"
+[ -n "$profile" ] || profile="No interest profile is configured. Judge each article on general technical usefulness to a working software developer."
+instructions="$(cat "$here/prompt.txt")"
+instructions="${instructions//\{\{PROFILE\}\}/$profile}"
+
 for batch in "$work"/batches/*.txt; do
   name="${batch:t:r}"
   verdicts="$work/out/$name.json"
   [ -s "$verdicts" ] && { echo "skip $name (done)"; continue; }
-  prompt="$(cat "$here/prompt.txt")
+  prompt="$instructions
 
 INPUT:
 $(cat "$batch")"

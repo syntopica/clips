@@ -26,6 +26,8 @@ export type SyntopicaConfig = {
   readonly newsletterAcceptedSenders: string
   readonly newsletterRejectedSenders: string
   readonly newsletterRejectedBookingSenders: string
+  readonly triageProfile: string
+  readonly triageTopics: readonly string[]
   readonly projectAliases: string
   readonly projectRoots: readonly string[]
 }

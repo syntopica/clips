@@ -59,8 +59,11 @@ describe('loadSyntopicaConfig', () => {
       projectRoots: [],
       projectAliases: join(data, '.config/project-aliases.json'),
       newsletterAcceptedSenders: join(data, '.config/newsletter-accepted.json'),
+      triageProfile: '',
+      triageTopics: ['ai-agents', 'llm-engineering', 'saas', 'seo', 'devtools'],
     })
     expect(Object.isFrozen(config)).toBe(true)
+    expect(Object.isFrozen(config.triageTopics)).toBe(true)
     expect(Object.isFrozen(config.pages)).toBe(true)
     expect(Object.isFrozen(config.projectRoots)).toBe(true)
     expect(Object.isFrozen(config.runners)).toBe(true)

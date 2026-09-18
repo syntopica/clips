@@ -1,10 +1,12 @@
 import { mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { currentSyntopicaConfig } from '../../config/current-syntopica-config.ts'
 import { runCommand } from '../run-command.ts'
 import type { CodexTriageResult } from './codex-triage-result.ts'
+import { configuredTriageTopics } from './configured-triage-topics.ts'
 import { isCodexOutOfCredits } from './is-codex-out-of-credits.ts'
-import { TRIAGE_OUTPUT_SCHEMA } from './triage-output-schema.ts'
+import { triageOutputSchema } from './triage-output-schema.ts'
 import { triagePrompt } from './triage-prompt.ts'
 
 /** One codex classification call, reporting the credit wall separately.
@@ -30,12 +32,13 @@ export const runCodexTriageBatch = async (
   const scratch = await mkdtemp(join(tmpdir(), 'clips-triage-'))
   const schemaPath = join(scratch, 'output-schema.json')
   const lastMessagePath = join(scratch, 'last-message.json')
-  await writeFile(schemaPath, JSON.stringify(TRIAGE_OUTPUT_SCHEMA))
+  const topics = configuredTriageTopics()
+  await writeFile(schemaPath, JSON.stringify(triageOutputSchema(topics)))
   const pending = runCommand(
     'codex',
     [
       'exec',
-      triagePrompt(batch),
+      triagePrompt(batch, currentSyntopicaConfig().triageProfile, topics),
       '-C',
       scratch,
       '-m',
