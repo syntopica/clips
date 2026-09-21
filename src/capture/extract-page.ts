@@ -12,7 +12,7 @@ import { stripNonContentElements } from './strip-non-content-elements.ts'
  * Defuddle first, because it ships site-specific extractors for the hosts this
  * brain is fed from - X, Reddit, YouTube, GitHub, Hacker News, Substack,
  * Wikipedia, Medium and twenty-odd others - and only falls back to heuristics
- * otherwise. The chain below it is brain-clipper's, unchanged, so a page both
+ * otherwise. The chain below it is the clipper's, unchanged, so a page both
  * lanes capture reads the same either way.
  *
  * `parse()` rather than `parseAsync()`: the async path is what reaches the

@@ -15,7 +15,7 @@ import { renderPage } from './render-page.ts'
  * When the render succeeds, the rendered DOM replaces it: `source.html` is
  * defined as what extraction ran against, and `source_html_sha256` hashes it.
  * That is also the only record a clip keeps of having been rendered - the
- * schema is shared with brain-clipper and gains no field for it, on the
+ * schema is shared with the clipper and gains no field for it, on the
  * precedent set for the body-less clip's own `extractor`.
  * SPEC: docs/superpowers/specs/2026-08-04-general-extraction-design.md */
 export const renderedCapture = async (

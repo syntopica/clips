@@ -1,6 +1,6 @@
 import type { PageExtractor } from './page-extractor.ts'
 
-/** The DOM-shape fallbacks, in the order brain-clipper tries them: the most
+/** The DOM-shape fallbacks, in the order the clipper tries them: the most
  * specific container first, the whole document last. Tried only when Defuddle
  * returned nothing substantial, which is the honest reading of an extractor
  * that found no article. */

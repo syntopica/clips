@@ -81,7 +81,7 @@ but the harvest verified on 2026-07-29 that a member-only article returns only
 its intro to an anonymous fetch, and cookies cost nothing. Send them when the
 host is Medium, send a bare browser User-Agent otherwise.
 
-**One extractor: Defuddle over jsdom, copied from brain-clipper.** The extension
+**One extractor: Defuddle over jsdom, copied from the clipper.** The extension
 already runs `defuddle/full` and its own test suite runs under
 `environment: 'jsdom'`, which is the evidence that it works outside a browser.
 Same fallback chain - `defuddle` -> `article` -> `main` -> `body` ->
@@ -89,7 +89,7 @@ Same fallback chain - `defuddle` -> `article` -> `main` -> `body` ->
 Markdown through `turndown` plus the GFM plugin, as the extension does.
 
 Copied rather than shared as a package: the precedent is
-`clip-metadata-schema.ts`, copied from brain-clipper deliberately and recorded
+`clip-metadata-schema.ts`, copied from the clipper deliberately and recorded
 as such in its own header.
 
 **`extractor` and `site_extractor` keep meaning what they already mean.** Both
@@ -154,7 +154,7 @@ reaches arbitrary hosts rather than one.
 - A total timeout.
 
 What this does **not** need is the loopback reasoning from the capture service's
-design: that mattered because the fetch would have run on server-a, beside two
+design: that mattered because the fetch would have run on the server, beside two
 password-less Redis instances. This runs on the Mac, in the same process family
 that already fetches Medium daily.
 
@@ -251,7 +251,7 @@ host.
 `extractor` stays `'defuddle'` with `siteExtractor: true` rather than gaining a
 `'transcript'` member. It is accurate - Defuddle's own YouTube extractor is what
 ran - and `PageExtractor` is the union `ClipMetadataSchema` validates, shared
-with brain-clipper, so widening it is a change to both lanes for a value nothing
+with the clipper, so widening it is a change to both lanes for a value nothing
 routes on. The same reasoning the body-less clip's `extractor` field got above.
 
 **Verified end to end** through `capturePage`: the video returns 19,210
@@ -324,7 +324,7 @@ same URL, same 5,686-character body**.
 Nothing, deliberately, beyond `source.html` - which holds the rendered DOM,
 because `source.html` is defined as what extraction ran against and
 `source_html_sha256` hashes it. No new `extractor` member and no new field: the
-schema is shared with brain-clipper, and this is the same trade already recorded
+schema is shared with the clipper, and this is the same trade already recorded
 for the body-less clip's own `extractor`. The limit is real and stated here
 rather than worked around - a reader of a clip cannot tell a rendered capture
 from a raw one except by the shape of its HTML.

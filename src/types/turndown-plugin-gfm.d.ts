@@ -1,4 +1,4 @@
-// The package ships no types. Copied from brain-clipper's declaration of the
+// The package ships no types. Copied from the clipper's declaration of the
 // same module, so both lanes describe the plugin identically.
 declare module 'turndown-plugin-gfm' {
   import type TurndownService from 'turndown'

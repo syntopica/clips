@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { ULID_PATTERN } from './ulid-pattern.ts'
 
-/** Copied from brain-clipper's src/shared/clip-metadata-schema.ts, not shared
+/** Copied from the clipper's src/shared/clip-metadata-schema.ts, not shared
  * as a package: SPEC:192-197. One deliberate divergence - site_extractor is
  * optional here. The extension requires it, but three of the seven captured
  * clips predate the field, and schema_version is 1 for all of them, so the

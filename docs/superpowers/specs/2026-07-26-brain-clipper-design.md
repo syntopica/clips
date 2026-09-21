@@ -1,4 +1,4 @@
-# brain-clipper - design
+# the clipper - design
 
 Date: 2026-07-26 Status: approved, ready to implement Revision: 3
 
@@ -106,7 +106,7 @@ while the extension holds broad host permissions and cookies. Without a policy,
 proxy that commits the response to GitHub. Asset fetching is therefore
 restricted by an explicit allow policy (below).
 
-The extension's token is scoped to `brain-clips` only, so neither path can reach
+The extension's token is scoped to `the clip repository` only, so neither path can reach
 the brain repo through the token.
 
 ## Clip format
@@ -437,7 +437,7 @@ Three consequences worth stating:
   the device-flow endpoints live on the web host, not the API host.
 
 The resulting token is scoped by the app installation, so it can only ever reach
-`brain-clips` - a stronger guarantee than a fine-grained PAT, whose scope can be
+`the clip repository` - a stronger guarantee than a fine-grained PAT, whose scope can be
 widened later without the extension noticing.
 
 Stored in `chrome.storage.local`, **never** `chrome.storage.sync`, and hardened:
