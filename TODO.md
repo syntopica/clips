@@ -37,15 +37,15 @@
       when it shares a location with state. Verify with `pnpm check` and
       `uv run pytest -q`; regression fixtures are synthetic instances.
 
-- [ ] A fresh clone fails `pnpm test`: the ten `*.integration.test.ts`
-      files gate on `BRAIN_ENGINE_PRESENT` and skip without a `brain` checkout
-      beside the repository, and coverage then lands at 72.08% lines, 73.78%
-      functions, 71.89% statements and 66.01% branches against thresholds of
-      76/78/76/68. Measured 2026-09-22 on an untouched clone of `origin/main`
-      (1156 passed, 24 skipped); the same tree with the engine present is 1180
-      passed and exit 0. Smallest step: have the setup guide, or the test
-      script, state that the engine must be cloned first, or scope the
-      thresholds to what runs without it.
+- [ ] A fresh clone fails `pnpm test`: the ten `*.integration.test.ts` files
+      gate on `BRAIN_ENGINE_PRESENT` and skip without a `brain` checkout beside
+      the repository, and coverage then lands at 72.08% lines, 73.78% functions,
+      71.89% statements and 66.01% branches against thresholds of 76/78/76/68.
+      Measured 2026-09-22 on an untouched clone of `origin/main` (1156 passed,
+      24 skipped); the same tree with the engine present is 1180 passed and
+      exit 0. Smallest step: have the setup guide, or the test script, state
+      that the engine must be cloned first, or scope the thresholds to what runs
+      without it.
 
 ## Shared package scope migration (2026-09-14)
 
