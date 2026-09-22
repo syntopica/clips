@@ -106,8 +106,8 @@ while the extension holds broad host permissions and cookies. Without a policy,
 proxy that commits the response to GitHub. Asset fetching is therefore
 restricted by an explicit allow policy (below).
 
-The extension's token is scoped to `the clip repository` only, so neither path can reach
-the brain repo through the token.
+The extension's token is scoped to `the clip repository` only, so neither path
+can reach the brain repo through the token.
 
 ## Clip format
 
@@ -409,8 +409,7 @@ to a different extension identity on each machine.
 ### Auth
 
 A GitHub App named `brain clipper`, `Contents: read+write`, installed on
-`<owner>/<clips-repo>` alone, authorized per device through the **device
-flow**.
+`<owner>/<clips-repo>` alone, authorized per device through the **device flow**.
 
 Revised 2026-07-27, replacing the original "one fine-grained PAT pasted into the
 options page". The PAT was never created, so there is nothing to migrate.
@@ -437,8 +436,8 @@ Three consequences worth stating:
   the device-flow endpoints live on the web host, not the API host.
 
 The resulting token is scoped by the app installation, so it can only ever reach
-`the clip repository` - a stronger guarantee than a fine-grained PAT, whose scope can be
-widened later without the extension noticing.
+`the clip repository` - a stronger guarantee than a fine-grained PAT, whose
+scope can be widened later without the extension noticing.
 
 Stored in `chrome.storage.local`, **never** `chrome.storage.sync`, and hardened:
 

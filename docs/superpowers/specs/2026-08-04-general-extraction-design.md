@@ -89,8 +89,8 @@ Same fallback chain - `defuddle` -> `article` -> `main` -> `body` ->
 Markdown through `turndown` plus the GFM plugin, as the extension does.
 
 Copied rather than shared as a package: the precedent is
-`clip-metadata-schema.ts`, copied from the clipper deliberately and recorded
-as such in its own header.
+`clip-metadata-schema.ts`, copied from the clipper deliberately and recorded as
+such in its own header.
 
 **`extractor` and `site_extractor` keep meaning what they already mean.** Both
 fields are in `ClipMetadataSchema` because the extension writes them; a drained
