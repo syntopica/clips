@@ -69,10 +69,10 @@
       `prose-quality` skill (rocket-agents `49a1744a`) names the patterns. A
       2026-09-27 grep over the 273 published pages in the private instance found
       few real hits: most matches for its word list are technical ("syntax
-      highlighting", "robust algorithm") or quoted titles ("Game- Changing
+      highlighting", "robust algorithm") or quoted titles ("Game-Changing
       Features"); 14 "is not X but Y" contrasts, several of them legitimate
       corrections. The instruction's rule is one line per measured rejection,
-      and none of the recorded rejections is this failure, so the prompt stays
-      unchanged. Smallest next step: count reviewer rejections that cite puffery
-      or `-ing` tails over the next ingest batch, and add a line only if they
-      recur.
+      and none of the rejections documented there is this failure, so the prompt
+      stays unchanged. Smallest next step: count reviewer rejections that cite
+      puffery or `-ing` tails over the next ingest batch, and add a line only if
+      they recur.
