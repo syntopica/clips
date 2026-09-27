@@ -64,3 +64,15 @@
       ship. Smallest step: run one file alone with `--reporter verbose` and read
       the synthesizer it selects; the fixture likely needs a runner the host no
       longer has on `PATH`.
+
+- [ ] Decide whether `WIKI_REGISTER_INSTRUCTION` needs an AI-prose line. The
+      `prose-quality` skill (rocket-agents `49a1744a`) names the patterns. A
+      2026-09-27 grep over the 273 published pages in the private instance found
+      few real hits: most matches for its word list are technical ("syntax
+      highlighting", "robust algorithm") or quoted titles ("Game- Changing
+      Features"); 14 "is not X but Y" contrasts, several of them legitimate
+      corrections. The instruction's rule is one line per measured rejection,
+      and none of the recorded rejections is this failure, so the prompt stays
+      unchanged. Smallest next step: count reviewer rejections that cite puffery
+      or `-ing` tails over the next ingest batch, and add a line only if they
+      recur.
