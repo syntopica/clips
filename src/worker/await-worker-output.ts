@@ -13,7 +13,11 @@ import { workerRequest } from './worker-request.ts'
  * `split_requested` is declined: a triage batch is a single prompt, and the
  * coordinator parks a declined job until an idle period long enough for it.
  * Every result is acknowledged once read, so the coordinator can drop the
- * payload rather than hold it to the unacked deadline. */
+ * payload rather than hold it to the unacked deadline.
+ *
+ * A task parked behind its runner's quota wall returns null at once: waiting
+ * out a cooldown per job would stall a run for hours, and the job stays queued
+ * for a later run to collect by its key. */
 export const awaitWorkerOutput = async (
   jobId: string,
   { pollMs, waitMs }: { pollMs: number; waitMs: number },
@@ -21,7 +25,8 @@ export const awaitWorkerOutput = async (
   const path = `/v1/jobs/${encodeURIComponent(jobId)}`
   const deadline = Date.now() + waitMs
   for (;;) {
-    const { result } = (await workerRequest('GET', path)) as WorkerJobState
+    const job = (await workerRequest('GET', path)) as WorkerJobState
+    const result = job.result
     if (result !== null) {
       const decline = result.control === 'split_requested'
       await workerRequest('POST', `${path}/ack`, {
@@ -35,7 +40,8 @@ export const awaitWorkerOutput = async (
       }
       if (!decline) return null
     }
-    if (Date.now() >= deadline) return null
+    if (Date.now() >= deadline || (job.cooling_until ?? null) !== null)
+      return null
     await sleep(pollMs)
   }
 }

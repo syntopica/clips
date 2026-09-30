@@ -17,9 +17,18 @@ import { workerRefineRunner } from './run-refine-worker.ts'
 describe('workerRefineRunner', () => {
   let server: Server
   let calls: { method: string; path: string; body: unknown }[]
+  let jobState: unknown
 
   beforeEach(async () => {
     calls = []
+    jobState = {
+      state: 'succeeded',
+      result: {
+        result_id: 'r-1',
+        control: null,
+        output: { json: { verdicts: [] } },
+      },
+    }
     const handle = async (
       request: IncomingMessage,
       response: ServerResponse,
@@ -33,14 +42,7 @@ describe('workerRefineRunner', () => {
           method === 'POST' && path === '/v1/jobs'
             ? { id: 'j-1', created: true }
             : method === 'GET'
-              ? {
-                  state: 'succeeded',
-                  result: {
-                    result_id: 'r-1',
-                    control: null,
-                    output: { json: { verdicts: [] } },
-                  },
-                }
+              ? jobState
               : {}
         response.writeHead(200, { 'Content-Type': 'application/json' })
         response.end(JSON.stringify(payload))
@@ -79,5 +81,14 @@ describe('workerRefineRunner', () => {
     expect(input['inputs']).toEqual([])
     expect(input['output_schema']).toBeTypeOf('object')
     expect(calls.at(-1)?.path).toBe('/v1/jobs/j-1/ack')
+  })
+
+  it("stops waiting on a task parked behind its runner's quota wall", async () => {
+    jobState = { state: 'queued', result: null, cooling_until: 1e12 }
+    const answer = await withFixtureSyntopicaConfig(async () =>
+      workerRefineRunner({ pollMs: 0, waitMs: 60_000 }).run('1\tt\tt'),
+    )
+    expect(answer).toBeNull()
+    expect(calls.filter((call) => call.method === 'GET')).toHaveLength(2)
   })
 })
