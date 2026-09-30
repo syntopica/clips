@@ -67,6 +67,7 @@ describe('workerGradeRunner', () => {
     const run = await withFixtureSyntopicaConfig(async () => {
       const root = currentSyntopicaConfig().dataRoot
       mkdirSync(join(root, 'clips'), { recursive: true })
+      writeFileSync(join(root, 'clips', 'b.md'), 'evidence')
       return workerGradeRunner('codex', timing).run(
         root,
         join(root, 'brain', 'topics', 'a.md'),

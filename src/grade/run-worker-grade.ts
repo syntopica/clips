@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { readFile } from 'node:fs/promises'
 import { currentSyntopicaConfig } from '../config/current-syntopica-config.ts'
 import { awaitWorkerOutput } from '../worker/await-worker-output.ts'
 import { submitWorkerJob } from '../worker/submit-worker-job.ts'
@@ -35,9 +36,12 @@ export const workerGradeRunner = (
       return { exitCode: 1, lastMessage: null, stderrTail: inputs }
     const [page = '', ...evidence] = inputs
     const prompt = gradePrompt(page, evidence)
-    const digest = createHash('sha256')
-      .update(`${prompt}\n${inputs.join('\n')}`)
-      .digest('hex')
+    // The files' bytes, not only their names: a page edited since an earlier
+    // run must not collect that run's verdict by the same key.
+    const hash = createHash('sha256').update(prompt)
+    for (const path of [pagePath, ...evidencePaths])
+      hash.update(await readFile(path).catch(() => Buffer.alloc(0)))
+    const digest = hash.digest('hex')
     const jobId = await submitWorkerJob({
       contract: 1,
       kind: 'task',
