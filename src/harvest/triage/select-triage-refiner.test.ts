@@ -4,6 +4,7 @@ import { agyFineTriage } from './agy-fine-triage.ts'
 import { runRefineWithFallback } from './run-refine-with-fallback.ts'
 import { runTriageCodex } from './run-triage-codex.ts'
 import { selectTriageRefiner } from './select-triage-refiner.ts'
+import { workerRefine } from './worker-refine.ts'
 
 describe('selectTriageRefiner', () => {
   it('runs no second pass for an instance that configured none', () => {
@@ -29,6 +30,10 @@ describe('selectTriageRefiner', () => {
     // Barely a second opinion - it is the model that produced the first - but
     // a weak second pass beats none.
     expect(selectTriageRefiner('agy-bulk')).toBe(agyBulkTriage)
+  })
+
+  it('hands the pass to the worker queue by name', () => {
+    expect(selectTriageRefiner('worker')).toBe(workerRefine)
   })
 
   it('returns null for off, leaving the bulk pass alone', () => {

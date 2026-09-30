@@ -253,7 +253,8 @@
             "cursor",
             "manual",
             "fallback",
-            "off"
+            "off",
+            "worker"
           ],
           "default": null
         }

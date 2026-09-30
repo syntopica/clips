@@ -3,6 +3,7 @@ import { agyFineTriage } from './agy-fine-triage.ts'
 import { runRefineWithFallback } from './run-refine-with-fallback.ts'
 import { runTriageCodex } from './run-triage-codex.ts'
 import type { TriageRunner } from './triage-runner.ts'
+import { workerRefine } from './worker-refine.ts'
 
 /** Pick the refinement transport from `runners.triageRefiner`, which
  * `CLIPS_TRIAGE_REFINER` overrides through the configuration loader.
@@ -24,7 +25,11 @@ import type { TriageRunner } from './triage-runner.ts'
  * `off` says the same thing deliberately, for an instance that configured the
  * other stages and wants this one skipped while the codex workspace is walled.
  * An unrecognised value throws rather than defaulting, so a typo cannot
- * silently drop the second pass. */
+ * silently drop the second pass.
+ *
+ * `worker` hands the pass to the worker queue as a task job, where the
+ * instance's `clips.refine` profile picks the CLI and a credit wall parks the
+ * job instead of failing the batch. */
 export const selectTriageRefiner = (
   name: string | null,
 ): TriageRunner | null => {
@@ -33,7 +38,8 @@ export const selectTriageRefiner = (
   if (name === 'codex') return runTriageCodex
   if (name === 'agy-fine') return agyFineTriage
   if (name === 'agy-bulk') return agyBulkTriage
+  if (name === 'worker') return workerRefine
   throw new Error(
-    `Unknown triage refiner "${name}" - expected "codex", "agy-fine", "agy-bulk", "fallback" or "off".`,
+    `Unknown triage refiner "${name}" - expected "codex", "agy-fine", "agy-bulk", "fallback", "worker" or "off".`,
   )
 }
