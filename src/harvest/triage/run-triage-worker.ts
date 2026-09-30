@@ -41,7 +41,9 @@ export const workerTriageRunner = (
       currentSyntopicaConfig().triageProfile,
       topics,
     )
-    const digest = createHash('sha256').update(`${model}\n${prompt}`).digest('hex')
+    const digest = createHash('sha256')
+      .update(`${model}\n${prompt}`)
+      .digest('hex')
     const jobId = await submitWorkerJob({
       contract: 1,
       kind: 'inference',

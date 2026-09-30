@@ -12,7 +12,12 @@ export const workerEndpoint = (
 ): { url: string; token: string } => {
   const url = environ['CLIPS_WORKER_URL']
   const tokenFile = environ['CLIPS_WORKER_TOKEN_FILE']
-  if (url === undefined || url === '' || tokenFile === undefined || tokenFile === '')
+  if (
+    url === undefined ||
+    url === '' ||
+    tokenFile === undefined ||
+    tokenFile === ''
+  )
     throw new Error(
       'The worker transport needs CLIPS_WORKER_URL and CLIPS_WORKER_TOKEN_FILE ' +
         '(a producer token issued by `worker token add --kind producer`).',

@@ -1,9 +1,9 @@
 import { workerEndpoint } from './worker-endpoint.ts'
+import { workerErrorCode } from './worker-error-code.ts'
 
 /** One authenticated JSON request to the worker coordinator.
  *
- * A refusal throws with the coordinator's error code, which contract v1 keeps
- * free of provider and generated text, so the message is safe to print. */
+ * A refusal throws with the coordinator's error code, never its body. */
 export const workerRequest = async (
   method: 'GET' | 'POST',
   path: string,
@@ -20,14 +20,9 @@ export const workerRequest = async (
     signal: AbortSignal.timeout(60_000),
   })
   const text = await response.text()
-  if (!response.ok) {
-    let code = 'unknown'
-    try {
-      code = String((JSON.parse(text) as { error?: unknown }).error ?? code)
-    } catch {
-      // A non-JSON refusal keeps the generic code.
-    }
-    throw new Error(`worker ${method} ${path} refused: ${String(response.status)} ${code}`)
-  }
+  if (!response.ok)
+    throw new Error(
+      `worker ${method} ${path} refused: ${String(response.status)} ${workerErrorCode(text)}`,
+    )
   return text === '' ? null : (JSON.parse(text) as unknown)
 }

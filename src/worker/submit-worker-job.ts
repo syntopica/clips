@@ -1,8 +1,7 @@
 import type { WorkerJobState } from './worker-job-state.ts'
 import { workerRequest } from './worker-request.ts'
+import { WORKER_RETRY_SUFFIXES } from './worker-retry-suffixes.ts'
 import { WORKER_TERMINAL_STATES } from './worker-terminal-states.ts'
-
-const RETRY_SUFFIXES = ['', ':r1', ':r2', ':r3'] as const
 
 /** Submit a job and return the id of a live one for this content.
  *
@@ -14,7 +13,7 @@ const RETRY_SUFFIXES = ['', ':r1', ':r2', ':r3'] as const
 export const submitWorkerJob = async (
   job: Record<string, unknown> & { idempotency_key: string },
 ): Promise<string> => {
-  for (const suffix of RETRY_SUFFIXES) {
+  for (const suffix of WORKER_RETRY_SUFFIXES) {
     const posted = (await workerRequest('POST', '/v1/jobs', {
       ...job,
       idempotency_key: job.idempotency_key + suffix,
