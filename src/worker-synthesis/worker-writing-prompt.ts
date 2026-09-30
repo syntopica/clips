@@ -33,10 +33,9 @@ ${input.pagePaths.join('\n')}
 
 ${workerWritingRules(input.directories, input.today)}
 ${input.guidance === '' ? '' : `\n${input.guidance}\n`}
-Answer with only the JSON object: pages (each {path, content}: the path
-relative to the repository and the page's complete new text), needs_claude
-(true if the clip needs human judgement you cannot supply - then pages is
-empty), reason (one sentence). If pages holds a page that does not exist yet,
-it must also hold one of the pages shown above, rewritten with a [[link]] to
-the new page - an answer with an unlinked new page is rejected whole.`
+Answer with only the JSON object: pages (each {path, content, link_from}: the
+path relative to the repository, the page's complete new text, and - only for a
+page that does not exist yet - link_from, the path of the page shown above that
+should link to it), needs_claude (true if the clip needs human judgement you
+cannot supply - then pages is empty), reason (one sentence).`
 }

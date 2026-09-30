@@ -37,5 +37,7 @@ ${WIKI_REGISTER_INSTRUCTION}
   web page, then a social post. Never decide it by which is newer.
 ${SUPERSESSION_INSTRUCTION}
 ${SATURATION_INSTRUCTION}
-- A page you create must be linked FROM at least one page shown above: return
-  that page too, with the link added.`
+- A page you create names, in link_from, the page shown above that should link
+  to it. The link is added for you; you need not return that page.
+- Never state a connection between the clip's subject and a wiki page, project
+  or person that neither the clip nor a shown page states.`

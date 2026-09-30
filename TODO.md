@@ -56,16 +56,22 @@
       The worker does not declare the queue yet (`403 queue_not_granted`); the
       contract is `docs/worker-synthesis-contract.md` and the request is in the
       wiki's `TODO.md`.
-- [ ] Worker synthesis on qwen3.6:35b does not yet produce a publishable page.
-      Three runs of the TaxHacker clip, 2026-09-30: once the selection named
-      pages without `.md` (now resolved leniently); twice the writing pass
-      created a new page and returned no page linking to it, so the validator
-      refused it (`no other page links to it`), even with the rule stated twice
-      in the prompt. One selection also invented a relation (the tool "developed
-      for InteliFactu"). The prose itself was clean and attributed. Smallest
-      next step: make the link structural - ask for `link_from` (a shown page)
-      on every new page and let the engine append the `[[link]]` line - then
-      rerun the same clip before the queue is used on the backlog.
+- [~] Worker synthesis on qwen3.6:35b does not yet produce a publishable page.
+  Three runs of the TaxHacker clip, 2026-09-30: once the selection named pages
+  without `.md` (now resolved leniently); twice the writing pass created a new
+  page and returned no page linking to it, so the validator refused it
+  (`no other page links to it`), even with the rule stated twice in the prompt.
+  One selection also invented a relation (the tool "developed for InteliFactu").
+  Fix landed the same day: each new page names a shown page in `link_from`, the
+  engine inserts the `[[link]]` (into a Related / See also list, else a
+  `See also:` line ahead of `## Contested`), and an answer whose new page names
+  no shown page is refused whole; the writing rules also forbid stating a
+  connection neither the clip nor a shown page states. Unverified on the model:
+  the rerun on the real `clips.synthesis` queue (declared in wiki `80bb0d74`)
+  sat queued 36 min without being leased, while the local Ollama answered 500
+  after 4-17 min and swap stood at 23.6 of 24.5 GB. Next step: rerun `smoke` on
+  the same clip three times once the worker drains, and close this only if the
+  validator accepts the results.
 - [ ] `pnpm check` failed once with 4 integration tests throwing
       `Cannot inspect configured Git repository` from
       `makeSyntopicaConfigFixture` (2026-09-30, machine under heavy load), and

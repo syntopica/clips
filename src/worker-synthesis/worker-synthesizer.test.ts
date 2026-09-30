@@ -1,94 +1,17 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { fakeWorkerSynthesisPort as fakePort } from '../testing/fake-worker-synthesis-port.ts'
+import { ollamaWorkerAnswer as answer } from '../testing/ollama-worker-answer.ts'
+import { runWorkerSynthesisFixture as run } from '../testing/run-worker-synthesis-fixture.ts'
 import { temporaryDir } from '../testing/temporary-dir.ts'
-import type { WorkerInferenceAnswer } from './worker-inference-answer.ts'
-import type { WorkerSynthesisPort } from './worker-synthesis-port.ts'
 import { workerSynthesizer } from './worker-synthesizer.ts'
-
-const ollama = { node: 'n', provider: 'ollama', model: 'qwen3.6:35b' }
-
-type Call = { step: string; prompt: string; reserveBytes: number }
-
-const fakePort = (
-  select: WorkerInferenceAnswer,
-  write: WorkerInferenceAnswer,
-): { port: WorkerSynthesisPort; calls: Call[] } => {
-  const calls: Call[] = []
-  return {
-    calls,
-    port: {
-      infer: async (step, prompt, _schema, reserveBytes) => {
-        calls.push({ step, prompt, reserveBytes })
-        return Promise.resolve(step === 'select' ? select : write)
-      },
-    },
-  }
-}
-
-const answer = (json: unknown): WorkerInferenceAnswer => ({
-  text: JSON.stringify(json),
-  executor: ollama,
-})
 
 const TOPIC_A = 'topics/a.md'
 
-const chose = answer({
-  pages: [TOPIC_A],
-  needs_claude: false,
-  reason: 'r',
-})
-
-const fixture = (): { clip: string; worktree: string } => {
-  const clip = temporaryDir('worker-clip-')
-  writeFileSync(join(clip, 'index.md'), '---\nurl: https://x\n---\nBody.\n')
-  const worktree = temporaryDir('worker-wt-')
-  mkdirSync(join(worktree, 'topics'))
-  writeFileSync(join(worktree, 'index.md'), '- [[topics/a]] - about a\n')
-  writeFileSync(join(worktree, 'topics', 'a.md'), 'old a\n')
-  writeFileSync(join(worktree, 'topics', 'c.md'), 'old c\n')
-  return { clip, worktree }
-}
-
-const run = async (port: WorkerSynthesisPort, guidance = '') => {
-  const { clip, worktree } = fixture()
-  const result = await workerSynthesizer(port, () => '2026-09-30').synthesize({
-    clipDirectory: clip,
-    worktree,
-    guidance,
-  })
-  return { result, worktree }
-}
+const chose = answer({ pages: [TOPIC_A], needs_claude: false, reason: 'r' })
 
 describe('workerSynthesizer', () => {
-  it('writes the pages the worker returned and names its executor as author', async () => {
-    const { port } = fakePort(
-      chose,
-      answer({
-        pages: [
-          { path: TOPIC_A, content: 'new a [[topics/b]]' },
-          { path: 'topics/b.md', content: 'new b' },
-        ],
-        needs_claude: false,
-        reason: 'wrote two pages',
-      }),
-    )
-    const { result, worktree } = await run(port)
-
-    expect(result.needsClaude).toBe(false)
-    expect(result.pagesTouched).toEqual([TOPIC_A, 'topics/b.md'])
-    expect(readFileSync(join(worktree, 'topics', 'a.md'), 'utf8')).toBe(
-      'new a [[topics/b]]\n',
-    )
-    expect(readFileSync(join(worktree, 'topics', 'b.md'), 'utf8')).toBe(
-      'new b\n',
-    )
-    // Who the coordinator says answered, not who was asked for.
-    expect(result.identity.model).toBe('worker:ollama/qwen3.6:35b')
-    expect(result.identity.boundary).toBe('worker-inference-no-tools')
-    expect(result.identity.promptSha256).toMatch(/^[0-9a-f]{64}$/)
-  })
-
   it('shows the selection pass the index and the writing pass the chosen page whole', async () => {
     const { port, calls } = fakePort(
       chose,
@@ -204,8 +127,8 @@ describe('workerSynthesizer', () => {
 
   it('escalates an answer of the wrong shape as PROMPT_OUTPUT_INVALID', async () => {
     const { port } = fakePort(chose, {
+      ...answer({}),
       text: 'I wrote the page.',
-      executor: ollama,
     })
     const { result } = await run(port)
 
