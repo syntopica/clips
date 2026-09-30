@@ -1,5 +1,6 @@
 import { setTimeout as sleep } from 'node:timers/promises'
 import type { WorkerJobState } from './worker-job-state.ts'
+import { workerOutputText } from './worker-output-text.ts'
 import { workerRequest } from './worker-request.ts'
 
 /** Wait for a job's output, acknowledge it, and return its text.
@@ -33,11 +34,7 @@ export const awaitWorkerOutput = async (
         result_id: result.result_id,
         decline,
       })
-      if (result.control === null) {
-        const output = result.output
-        if (output?.json !== undefined) return JSON.stringify(output.json)
-        return output?.text ?? null
-      }
+      if (result.control === null) return workerOutputText(result.output)
       if (!decline) return null
     }
     if (Date.now() >= deadline || (job.cooling_until ?? null) !== null)
