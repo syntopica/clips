@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { AGY_FINE_MODEL } from '../models/agy-fine-model.ts'
-import { INTERACTIVE_IDENTITY } from '../synthesis/interactive-identity.ts'
+import { INTERACTIVE_MODEL } from '../synthesis/interactive-model.ts'
 import { EVERY_GRADE_TIER } from './every-grade-tier.ts'
 import { modelsThatWroteBatch } from './models-that-wrote-batch.ts'
 
@@ -18,9 +18,7 @@ describe('modelsThatWroteBatch', () => {
 
   it('prefers the reported author over the configured transport', () => {
     // The environment is what was asked for; the author is what ran.
-    expect(
-      modelsThatWroteBatch(INTERACTIVE_IDENTITY.model, 'agy-fine'),
-    ).toEqual([])
+    expect(modelsThatWroteBatch(INTERACTIVE_MODEL, 'agy-fine')).toEqual([])
   })
 
   it('narrows to the one tier an unattended author used', () => {

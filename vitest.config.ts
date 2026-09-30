@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],
+    setupFiles: ['src/testing/wiki-layout-fallback.setup.ts'],
     testTimeout: 30_000,
     coverage: {
       provider: 'v8',

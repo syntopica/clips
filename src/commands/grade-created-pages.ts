@@ -1,5 +1,6 @@
 import { createdPages } from '../grade/created-pages.ts'
 import type { PageGrader } from '../grade/page-grader.ts'
+import { wikiPagePath } from '../layout/wiki-page-path.ts'
 import type { PublishApprovedClipInput } from '../publish/publish-approved-clip-input.ts'
 import type { Repositories } from './repositories.ts'
 
@@ -15,18 +16,23 @@ import type { Repositories } from './repositories.ts'
  * because `identity` joined `baseSha` and `validatedPaths` here: the grader
  * needs to know who wrote the page so it refuses only the models that could
  * have. Which is to say the ledger's provenance record and the author/verifier
- * guard want the same value, and there is no reason to pull it apart. */
+ * guard want the same value, and there is no reason to pull it apart.
+ *
+ * The validated paths are repository paths and the grader takes page paths, so
+ * they are converted here: the sensitive-directory refusal is matched on the
+ * page path, and a repository path under a subdirectory would slip past it. */
 export const gradeCreatedPages = async (
   repositories: Repositories,
   input: PublishApprovedClipInput,
   grader: PageGrader | null,
 ): Promise<void> => {
   if (grader === null) return
-  const created = await createdPages(
-    repositories.brain,
-    input.baseSha,
-    input.validatedPaths,
-  )
+  const created = (
+    await createdPages(repositories.brain, input.baseSha, input.validatedPaths)
+  ).flatMap((path) => {
+    const page = wikiPagePath(path)
+    return page === null ? [] : [page]
+  })
   if (created.length === 0) {
     process.stdout.write('grade: this clip created no new page; not graded\n')
     return

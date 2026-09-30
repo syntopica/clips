@@ -7,6 +7,7 @@ import { git } from '../testing/git.ts'
 import { temporaryDir } from '../testing/temporary-dir.ts'
 import { BRAIN_ENGINE_PRESENT } from './brain-engine-present.ts'
 import { fixture } from './ingest-test-fixture.ts'
+import { ingestInInstance } from './ingest-test-in-instance.ts'
 import { options } from './ingest-test-options.ts'
 import { PAGE_BODY } from './ingest-test-page-body.ts'
 import { PAGE } from './ingest-test-page.ts'
@@ -26,7 +27,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
       // fast-forward that ends the run would have succeeded.
       const { brain, clips } = fixture()
       writeFileSync(join(brain, 'someone-elses-draft.md'), 'x\n')
-      const exit = await ingest({ brain, clips }, options, {
+      const exit = await ingestInInstance({ brain, clips }, options, {
         synthesizer: writingSynthesizer(PAGE_BODY),
         grader: null,
         reviewer: verdictReviewer('apply'),
@@ -41,6 +42,8 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
         git(brainOrigin, 'rev-parse', 'main'),
         git(clips, 'rev-parse', 'main'),
       ]
+      // No configuration exists yet, so nothing is loaded: the dry run must
+      // not need one to report an empty queue.
       const exit = await ingest(
         { brain, clips },
         { clipFilter: null, dryRun: true },
@@ -71,6 +74,8 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
           '--initial-branch=main',
           repository,
         ])
+      // No configuration exists yet, so nothing is loaded: the dry run must
+      // not need one to report an empty queue.
       const exit = await ingest(
         { brain, clips },
         { clipFilter: null, dryRun: true },
@@ -110,7 +115,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
           })
         },
       }
-      const exit = await ingest({ brain, clips }, options, {
+      const exit = await ingestInInstance({ brain, clips }, options, {
         synthesizer,
         grader: null,
         reviewer: verdictReviewer('apply'),

@@ -1,5 +1,6 @@
 import { readdirSync } from 'node:fs'
 import { join } from 'node:path'
+import { currentWikiLayout } from '../layout/current-wiki-layout.ts'
 
 /** The scraped thread file under `sources/x/` for an X status url, or `null`.
  *
@@ -24,7 +25,7 @@ export const xThreadSourcePath = (
       url,
     )?.[1]
   if (id === undefined) return null
-  const root = join(brainRepository, 'sources', 'x')
+  const root = join(brainRepository, currentWikiLayout().sources, 'x')
   let entries: string[]
   try {
     entries = readdirSync(root, { recursive: true, encoding: 'utf8' })

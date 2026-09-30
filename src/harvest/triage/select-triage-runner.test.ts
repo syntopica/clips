@@ -3,6 +3,7 @@ import { agyBulkTriage } from './agy-bulk-triage.ts'
 import { runTriageCodex } from './run-triage-codex.ts'
 import { runTriageWithFallback } from './run-triage-with-fallback.ts'
 import { selectTriageRunner } from './select-triage-runner.ts'
+import { workerTriage } from './worker-triage.ts'
 
 describe('selectTriageRunner', () => {
   it('refuses to pick a transport for an instance that configured none', () => {
@@ -23,6 +24,10 @@ describe('selectTriageRunner', () => {
 
   it('selects the bulk tier, which survives a full corpus', () => {
     expect(selectTriageRunner('agy-bulk')).toBe(agyBulkTriage)
+  })
+
+  it('selects the worker queue by name', () => {
+    expect(selectTriageRunner('worker')).toBe(workerTriage)
   })
 
   it('throws on an unrecognised name rather than silently defaulting', () => {

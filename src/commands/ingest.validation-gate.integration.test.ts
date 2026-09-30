@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest'
 import { git } from '../testing/git.ts'
 import { BRAIN_ENGINE_PRESENT } from './brain-engine-present.ts'
 import { fixture } from './ingest-test-fixture.ts'
+import { ingestInInstance } from './ingest-test-in-instance.ts'
 import { options } from './ingest-test-options.ts'
 import { PAGE_BODY } from './ingest-test-page-body.ts'
 import { SCRIPTED_IDENTITY } from './ingest-test-scripted-identity.ts'
 import type { StateOnDisk } from './ingest-test-state-on-disk.ts'
 import { verdictReviewer } from './ingest-test-verdict-reviewer.ts'
 import { writingSynthesizer } from './ingest-test-writing-synthesizer.ts'
-import { ingest } from './ingest.ts'
 
 // The fixture copies the real index generator out of a brain checkout.
 describe.skipIf(!BRAIN_ENGINE_PRESENT)(
@@ -17,7 +17,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
     it('routes a page outside the allowlist to needs-claude, brain untouched', async () => {
       const { brain, clips, brainOrigin } = fixture()
       const before = git(brainOrigin, 'rev-parse', 'main')
-      const exit = await ingest({ brain, clips }, options, {
+      const exit = await ingestInInstance({ brain, clips }, options, {
         synthesizer: writingSynthesizer(PAGE_BODY, 'secrets/evil.md'),
         grader: null,
         reviewer: verdictReviewer('apply'),
@@ -40,7 +40,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
     it('routes a private clip to needs-claude without running synthesis', async () => {
       const { brain, clips } = fixture('private')
       let ran = false
-      const exit = await ingest({ brain, clips }, options, {
+      const exit = await ingestInInstance({ brain, clips }, options, {
         synthesizer: {
           synthesize: async () => {
             ran = true
@@ -66,7 +66,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
     it('refuses a new page no other page links to', async () => {
       const { brain, clips, brainOrigin } = fixture()
       const before = git(brainOrigin, 'rev-parse', 'main')
-      const exit = await ingest({ brain, clips }, options, {
+      const exit = await ingestInInstance({ brain, clips }, options, {
         synthesizer: writingSynthesizer(PAGE_BODY, 'topics/orphan.md'),
         grader: null,
         reviewer: verdictReviewer('apply'),

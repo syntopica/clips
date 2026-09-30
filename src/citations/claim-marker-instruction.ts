@@ -2,7 +2,7 @@
  *
  * One constant rather than three copies, because three prompts need it -
  * `codexPrompt`, `agySynthesisPrompt` and the interactive
- * `SYNTHESIS_INSTRUCTIONS` - and a rule that validation enforces cannot be
+ * `synthesisInstructions` - and a rule that validation enforces cannot be
  * allowed to drift between the transports that have to satisfy it.
  *
  * It states the scheme rather than listing this run's refs, which is a

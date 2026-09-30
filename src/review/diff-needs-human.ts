@@ -1,3 +1,4 @@
+import { indexRepositoryPath } from '../layout/index-repository-path.ts'
 import { diffFileSection } from './diff-file-section.ts'
 import { indexEntryId } from './index-entry-id.ts'
 
@@ -35,7 +36,7 @@ import { indexEntryId } from './index-entry-id.ts'
  * still never decides a real removal, because a removal takes the entry's id
  * out of the list and nothing puts it back. */
 export const diffNeedsHuman = (diff: string): string | null => {
-  const index = diffFileSection(diff, 'index.md')
+  const index = diffFileSection(diff, indexRepositoryPath())
   if (index === null) return null
   const lines = index.split('\n')
   const added = new Set(

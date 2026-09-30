@@ -4,13 +4,13 @@ import { installCommitMessageHook } from '../testing/install-commit-message-hook
 import { BRAIN_ENGINE_PRESENT } from './brain-engine-present.ts'
 import { CLIP_ID } from './ingest-test-clip-id.ts'
 import { fixture } from './ingest-test-fixture.ts'
+import { ingestInInstance } from './ingest-test-in-instance.ts'
 import { options } from './ingest-test-options.ts'
 import { PAGE_BODY } from './ingest-test-page-body.ts'
 import { PAGE } from './ingest-test-page.ts'
 import type { StateOnDisk } from './ingest-test-state-on-disk.ts'
 import { verdictReviewer } from './ingest-test-verdict-reviewer.ts'
 import { writingSynthesizer } from './ingest-test-writing-synthesizer.ts'
-import { ingest } from './ingest.ts'
 
 // The fixture copies the real index generator out of a brain checkout.
 describe.skipIf(!BRAIN_ENGINE_PRESENT)(
@@ -20,7 +20,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
       const { brain, clips, brainOrigin } = fixture()
       installCommitMessageHook(brain)
       installCommitMessageHook(clips)
-      const exit = await ingest({ brain, clips }, options, {
+      const exit = await ingestInInstance({ brain, clips }, options, {
         synthesizer: writingSynthesizer(PAGE_BODY),
         grader: null,
         reviewer: verdictReviewer('apply'),
@@ -55,7 +55,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
 
     it('publishes an index.md derived from the new page, not written by the model', async () => {
       const { brain, clips, brainOrigin } = fixture()
-      const exit = await ingest({ brain, clips }, options, {
+      const exit = await ingestInInstance({ brain, clips }, options, {
         synthesizer: writingSynthesizer(PAGE_BODY),
         grader: null,
         reviewer: verdictReviewer('apply'),
@@ -72,7 +72,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
 
     it('records the transport that actually wrote the page', async () => {
       const { brain, clips, brainOrigin } = fixture()
-      const exit = await ingest({ brain, clips }, options, {
+      const exit = await ingestInInstance({ brain, clips }, options, {
         synthesizer: writingSynthesizer(PAGE_BODY),
         grader: null,
         reviewer: verdictReviewer('apply'),

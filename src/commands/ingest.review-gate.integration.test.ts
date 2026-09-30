@@ -8,11 +8,11 @@ import { CLIP_ID } from './ingest-test-clip-id.ts'
 import { CLIP_RELATIVE } from './ingest-test-clip-relative.ts'
 import { discardKeptWorktree } from './ingest-test-discard-kept-worktree.ts'
 import { fixture } from './ingest-test-fixture.ts'
+import { ingestInInstance } from './ingest-test-in-instance.ts'
 import { options } from './ingest-test-options.ts'
 import { PAGE_BODY } from './ingest-test-page-body.ts'
 import { verdictReviewer } from './ingest-test-verdict-reviewer.ts'
 import { writingSynthesizer } from './ingest-test-writing-synthesizer.ts'
-import { ingest } from './ingest.ts'
 
 const CLIPS_PENDING = 'clips/pending'
 
@@ -23,7 +23,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
     it('leaves a skipped clip pending and the brain untouched', async () => {
       const { brain, clips, brainOrigin } = fixture()
       const before = git(brainOrigin, 'rev-parse', 'main')
-      const exit = await ingest({ brain, clips }, options, {
+      const exit = await ingestInInstance({ brain, clips }, options, {
         synthesizer: writingSynthesizer(PAGE_BODY),
         grader: null,
         reviewer: verdictReviewer('skip'),
@@ -36,7 +36,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
     it('keeps the reviewer reason on a skipped clip and pushes it', async () => {
       const { brain, clips } = fixture()
       installCommitMessageHook(clips)
-      const exit = await ingest({ brain, clips }, options, {
+      const exit = await ingestInInstance({ brain, clips }, options, {
         synthesizer: writingSynthesizer(PAGE_BODY),
         grader: null,
         reviewer: verdictReviewer('skip'),
@@ -52,7 +52,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
 
     it('reports the branch a skipped run kept instead of dying inside git', async () => {
       const { brain, clips, brainOrigin } = fixture()
-      const first = await ingest({ brain, clips }, options, {
+      const first = await ingestInInstance({ brain, clips }, options, {
         synthesizer: writingSynthesizer(PAGE_BODY),
         grader: null,
         reviewer: verdictReviewer('skip'),
@@ -72,7 +72,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
         // Re-running the same clip without the operator's cleanup used to reach
         // `git worktree add -b` and end the whole batch on `fatal: a branch named
         // 'ingest/<clip_id>' already exists`, before any synthesis.
-        exit = await ingest({ brain, clips }, options, {
+        exit = await ingestInInstance({ brain, clips }, options, {
           synthesizer: {
             synthesize: () => {
               throw new Error('synthesis must not run on a kept branch')
@@ -102,7 +102,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
     it('routes a clip to needs-claude once the reviewer has rejected five drafts', async () => {
       const { brain, clips } = fixture()
       for (let attempt = 0; attempt < 5; attempt += 1) {
-        await ingest({ brain, clips }, options, {
+        await ingestInInstance({ brain, clips }, options, {
           synthesizer: writingSynthesizer(PAGE_BODY),
           grader: null,
           reviewer: verdictReviewer('skip'),

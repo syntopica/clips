@@ -1,4 +1,5 @@
 import { SENSITIVE_PAGE_DIRECTORIES } from '../grade/sensitive-page-directories.ts'
+import { repositoryPagePath } from '../layout/repository-page-path.ts'
 
 /** Why a diff must not be sent to an automatic reviewer, or null when it may
  * be.
@@ -13,12 +14,16 @@ import { SENSITIVE_PAGE_DIRECTORIES } from '../grade/sensitive-page-directories.
  * list, because the header is what the transmitted text actually is. A match
  * escalates to a person instead of refusing outright: unlike grading, the work
  * still has to be decided, and a human gate is the reviewer these pages were
- * always supposed to get. */
+ * always supposed to get.
+ *
+ * The headers carry repository paths, so each directory is matched under the
+ * page root: `a/business/` alone stopped matching anything the day the owner's
+ * pages moved to `brain/business/`. */
 export const sensitiveDiffRefusal = (diff: string): string | null => {
   for (const line of diff.split('\n')) {
     if (!line.startsWith('diff --git ')) continue
     const directory = SENSITIVE_PAGE_DIRECTORIES.find((prefix) =>
-      line.includes(` a/${prefix}`),
+      line.includes(` a/${repositoryPagePath(prefix)}`),
     )
     if (directory !== undefined)
       return `the diff touches a ${directory} page, which is never sent to an automatic reviewer`

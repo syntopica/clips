@@ -1,4 +1,5 @@
-import { ALLOWED_PAGE_DIRECTORIES } from './allowed-page-directories.ts'
+import { isConfiguredPagePath } from '../layout/is-configured-page-path.ts'
+import { wikiPagePath } from '../layout/wiki-page-path.ts'
 import { linkedPageIds } from './linked-page-ids.ts'
 import { pageId } from './page-id.ts'
 
@@ -14,19 +15,23 @@ import { pageId } from './page-id.ts'
  * Only pages this synthesis created are checked. An existing page that lost its
  * last inbound link is a different problem, and failing an unrelated clip for it
  * would be the always-fires check this repo has already switched off once. A
- * link from the page to itself does not count, and neither does one from
- * `index.md` - see `linkedPageIds`. */
+ * link from the page to itself does not count, and neither does one from the
+ * index - see `linkedPageIds`.
+ *
+ * `createdPaths` are repository paths, as git reports them; the id each is
+ * looked up by is its page path, because that is what a wikilink names. */
 export const orphanPageFailure = async (
   worktree: string,
   createdPaths: readonly string[],
 ): Promise<string | null> => {
-  const created = createdPaths.filter((path) =>
-    ALLOWED_PAGE_DIRECTORIES.has(path.split('/')[0] ?? ''),
-  )
+  const created = createdPaths.flatMap((path) => {
+    const page = wikiPagePath(path)
+    return page !== null && isConfiguredPagePath(page) ? [{ path, page }] : []
+  })
   if (created.length === 0) return null
   const links = await linkedPageIds(worktree)
-  for (const path of created) {
-    const id = pageId(path)
+  for (const { path, page } of created) {
+    const id = pageId(page)
     const linkers = [...(links.get(id) ?? [])].filter((linker) => linker !== id)
     if (linkers.length === 0)
       return `${path}: no other page links to it - cross-link it from the page it serves, or shelve it`

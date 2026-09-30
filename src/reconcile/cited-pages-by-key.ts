@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { wikiPages } from '../audit/wiki-pages.ts'
 import { citationDedupKey } from '../grade/citation-dedup-key.ts'
 import { pageSourceUrls } from '../grade/page-source-urls.ts'
+import { wikiDirectory } from '../layout/wiki-directory.ts'
 
 /** Every `sources:` url in the wiki as a dedup key, mapped to the pages that
  * cite it. Keys rather than raw urls for the same reason `evidenceClipPaths`
@@ -15,10 +16,9 @@ export const citedPagesByKey = async (
   brainRepository: string,
 ): Promise<Map<string, string[]>> => {
   const cited = new Map<string, string[]>()
+  const root = wikiDirectory(brainRepository)
   for (const page of await wikiPages(brainRepository)) {
-    const text = await readFile(join(brainRepository, page), 'utf8').catch(
-      () => null,
-    )
+    const text = await readFile(join(root, page), 'utf8').catch(() => null)
     if (text === null) continue
     for (const url of pageSourceUrls(text)) {
       const key = citationDedupKey(url)

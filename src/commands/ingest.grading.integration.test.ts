@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { BRAIN_ENGINE_PRESENT } from './brain-engine-present.ts'
 import { fixture } from './ingest-test-fixture.ts'
+import { ingestInInstance } from './ingest-test-in-instance.ts'
 import { options } from './ingest-test-options.ts'
 import { PAGE_BODY } from './ingest-test-page-body.ts'
 import { PAGE } from './ingest-test-page.ts'
 import { verdictReviewer } from './ingest-test-verdict-reviewer.ts'
 import { writingSynthesizer } from './ingest-test-writing-synthesizer.ts'
-import { ingest } from './ingest.ts'
 
 // The fixture copies the real index generator out of a brain checkout.
 describe.skipIf(!BRAIN_ENGINE_PRESENT)(
@@ -15,7 +15,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
     it('grades the pages a published clip created, and only those', async () => {
       const { brain, clips } = fixture()
       const graded: string[][] = []
-      const exit = await ingest({ brain, clips }, options, {
+      const exit = await ingestInInstance({ brain, clips }, options, {
         synthesizer: writingSynthesizer(PAGE_BODY),
         grader: {
           grade: async (_brain, _clips, pages) => {
@@ -35,7 +35,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
 
     it('does not grade when no grader is wired', async () => {
       const { brain, clips } = fixture()
-      const exit = await ingest({ brain, clips }, options, {
+      const exit = await ingestInInstance({ brain, clips }, options, {
         synthesizer: writingSynthesizer(PAGE_BODY),
         grader: null,
         reviewer: verdictReviewer('apply'),

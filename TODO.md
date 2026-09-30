@@ -46,6 +46,31 @@
       exit 0. Smallest step: have the setup guide, or the test script, state
       that the engine must be cloned first, or scope the thresholds to what runs
       without it.
+- [x] Derive the wiki layout from `brain.*` instead of the repository root
+      (broken 2026-09-14, fixed 2026-09-30). The owner's instance moved its
+      pages under `brain/` in wiki commit 644fa090; from then no clip ingest
+      published. Evidence: `clips ingest --clip 01M3QXGJ` wrote
+      `brain/topics/claude-code-configuration.md` and validation refused it as
+      `outside the allowed directories (brain)` (wiki eb404f11). The same audit
+      reported 0 findings because it read pages and ledgers at the root. Three
+      more silent breaks sat behind it: the index generator was run as
+      `tools/index/build.py` in the worktree (it moved to the brain engine, and
+      the worktree's relative engine paths fail its config load), the read probe
+      read the root `SCHEMA.md` that no longer exists, and the sensitive-diff
+      guard matched ` a/business/`, which no nested header contains.
+      `src/layout/` now derives the page root (the index's directory), page
+      directories, sources and ledger from the config; page ids, ledgers, audit
+      subjects and `grade --page` stay page-root-relative; the index builder
+      runs from `engines.brain.path` with a temporary `syntopica.local.json`
+      pinning engine paths absolute. Verified by `pnpm check` (263 files, 1198
+      tests), new nested-layout suites, and on the instance: the kept 01M3QXGJ
+      worktree now validates and regenerates `brain/index.md`;
+      `clips ingest --dry-run --clip 01M3QXGF` routes; `clips audit` 0 -> 145
+      findings (a flat-layout clone of the same content gives 153, the 8 extra
+      being gitignored X threads and one `clips/` source absent from the clone);
+      `clips status` now sees ledgers and reports two clips
+      (01M097NSDEKSQJV2MX20DPCQRA, 01M097NSDET32KW1MAM73BNBED)
+      reconciliation-pending.
 
 ## Shared package scope migration (2026-09-14)
 

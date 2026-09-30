@@ -1,9 +1,9 @@
 import type { Clip } from '../clips/clip.ts'
 import { generateIndexMap } from '../index-map/generate-index-map.ts'
 import { indexMapChanged } from '../index-map/index-map-changed.ts'
+import { indexRepositoryPath } from '../layout/index-repository-path.ts'
 import { routeToNeedsClaude } from '../reconcile/route-to-needs-claude.ts'
 import { formatWorktreePages } from '../validation/format-worktree-pages.ts'
-import { INDEX_PAGE_PATH } from '../validation/index-page-path.ts'
 import type { ClipOutcome } from './clip-outcome.ts'
 import type { Repositories } from './repositories.ts'
 
@@ -30,10 +30,11 @@ export const regenerateIndexMap = async (
     return { outcome: 'needs-claude' }
   }
   if (!(await indexMapChanged(worktree))) return { paths }
+  const index = indexRepositoryPath()
   const formatFailure = await formatWorktreePages(
     repositories.brain,
     worktree,
-    [INDEX_PAGE_PATH],
+    [index],
   )
   if (formatFailure !== null) {
     await routeToNeedsClaude(repositories.clips, clip, {
@@ -43,5 +44,5 @@ export const regenerateIndexMap = async (
     })
     return { outcome: 'needs-claude' }
   }
-  return { paths: [...paths, INDEX_PAGE_PATH].sort() }
+  return { paths: [...paths, index].sort() }
 }

@@ -3,6 +3,7 @@ import type { Repositories } from '../commands/repositories.ts'
 import { fastForward } from '../git/fast-forward.ts'
 import { fetchOrigin } from '../git/fetch-origin.ts'
 import { instanceCommitMessage } from '../git/instance-commit-message.ts'
+import { wikiPagePath } from '../layout/wiki-page-path.ts'
 import { ledgerRelativePath } from '../ledger/ledger-relative-path.ts'
 import { clipRelativePath } from '../reconcile/clip-relative-path.ts'
 import { reconcileClip } from '../reconcile/reconcile-clip.ts'
@@ -14,7 +15,10 @@ import { publishBranch } from './publish-branch.ts'
 
 /** Steps 9-11 for an approved diff: one atomic wiki+ledger commit, publication
  * to origin/main before local integration, then clip reconciliation
- * (SPEC:394-433). Returns the sha origin/main carries. */
+ * (SPEC:394-433). Returns the sha origin/main carries.
+ *
+ * The ledger records page paths, the spelling every earlier ledger carries,
+ * while the commit stages the same files by their repository paths. */
 export const publishApprovedClip = async (
   repositories: Repositories,
   clip: Clip,
@@ -25,7 +29,9 @@ export const publishApprovedClip = async (
     clipSourcePath: clipRelativePath(repositories.clips, clip.directory),
     clipRepoCommit: input.clipRepoCommit,
     brainBaseCommit: input.baseSha,
-    pagesTouched: input.validatedPaths,
+    pagesTouched: input.validatedPaths.map(
+      (path) => wikiPagePath(path) ?? path,
+    ),
     pagesRead: input.pagesRead,
     identity: input.identity,
   })

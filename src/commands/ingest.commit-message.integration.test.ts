@@ -4,18 +4,18 @@ import { installCommitMessageHook } from '../testing/install-commit-message-hook
 import { BRAIN_ENGINE_PRESENT } from './brain-engine-present.ts'
 import { CLIP_ID } from './ingest-test-clip-id.ts'
 import { fixture } from './ingest-test-fixture.ts'
+import { ingestInInstance } from './ingest-test-in-instance.ts'
 import { options } from './ingest-test-options.ts'
 import { PAGE_BODY } from './ingest-test-page-body.ts'
 import { verdictReviewer } from './ingest-test-verdict-reviewer.ts'
 import { writingSynthesizer } from './ingest-test-writing-synthesizer.ts'
-import { ingest } from './ingest.ts'
 
 // The fixture copies the real index generator out of a brain checkout.
 describe.skipIf(!BRAIN_ENGINE_PRESENT)('ingest commit messages', () => {
   it('routes a validation failure through a conventional-commit hook', async () => {
     const { brain, clips } = fixture()
     installCommitMessageHook(clips)
-    const exit = await ingest({ brain, clips }, options, {
+    const exit = await ingestInInstance({ brain, clips }, options, {
       synthesizer: writingSynthesizer(PAGE_BODY, 'secrets/evil.md'),
       grader: null,
       reviewer: verdictReviewer('apply'),
@@ -35,7 +35,7 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)('ingest commit messages', () => {
     const { brain, clips } = fixture()
     const before = git(clips, 'rev-parse', 'HEAD')
     installCommitMessageHook(clips, true)
-    const failure = await ingest({ brain, clips }, options, {
+    const failure = await ingestInInstance({ brain, clips }, options, {
       synthesizer: writingSynthesizer(PAGE_BODY, 'secrets/evil.md'),
       grader: null,
       reviewer: verdictReviewer('apply'),

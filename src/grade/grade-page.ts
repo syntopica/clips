@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import type { Clip } from '../clips/clip.ts'
 import type { ThinClip } from '../clips/thin-clip.ts'
+import { wikiDirectory } from '../layout/wiki-directory.ts'
 import { exemptPage } from './exempt-page.ts'
 import { gradeRunFailure } from './grade-run-failure.ts'
 import type { GradeRunner } from './grade-runner.ts'
@@ -34,6 +35,7 @@ import { ungradedPage } from './ungraded-page.ts'
  * company credential table. The others were shielded only by carrying
  * `verification: exempt`, which is a statement about what can verify a page
  * and never was one about what may leave the machine. */
+/* `page` is a page path, relative to the page root - see `WikiLayout`. */
 export const gradePage = async (
   brainRepository: string,
   page: string,
@@ -43,9 +45,8 @@ export const gradePage = async (
   const refusal = sensitivePageRefusal(page)
   if (refusal !== null) return ungradedPage(page, refusal)
 
-  const text = await readFile(join(brainRepository, page), 'utf8').catch(
-    () => null,
-  )
+  const absolute = join(wikiDirectory(brainRepository), page)
+  const text = await readFile(absolute, 'utf8').catch(() => null)
   if (text === null) return ungradedPage(page, 'page not found')
   if (pageVerificationExempt(text)) return exemptPage(page)
 
@@ -75,11 +76,7 @@ export const gradePage = async (
   if (overBudget !== null)
     return { ...counted, result: null, failure: overBudget }
 
-  const run = await runner.run(
-    brainRepository,
-    join(brainRepository, page),
-    clipPaths,
-  )
+  const run = await runner.run(brainRepository, absolute, clipPaths)
   const result = parseGradeOutput(run.lastMessage)
   if (result === null)
     return { ...counted, result: null, failure: gradeRunFailure(run) }

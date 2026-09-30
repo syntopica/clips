@@ -2,6 +2,7 @@ import { agyBulkTriage } from './agy-bulk-triage.ts'
 import { runTriageCodex } from './run-triage-codex.ts'
 import { runTriageWithFallback } from './run-triage-with-fallback.ts'
 import type { TriageRunner } from './triage-runner.ts'
+import { workerTriage } from './worker-triage.ts'
 
 /** Pick the bulk classification transport from `runners.triage`, which
  * `CLIPS_TRIAGE_RUNNER` overrides through the configuration loader.
@@ -26,6 +27,10 @@ import type { TriageRunner } from './triage-runner.ts'
  * only move an article between three buckets - but the exposure is real, and it
  * is why the codex transport still exists.
  *
+ * `worker` hands each batch to the worker queue as a local inference job,
+ * added 2026-09-30 when the worker became the one arbiter of the owner's
+ * model: no quota spent, and no tool surface for an injected title to reach.
+ *
  * `codex` and `agy-bulk` pin a single transport for a run that must not mix
  * models; `fallback` is the pre-2026-08-02 behaviour, codex first with agy
  * behind it on the credit wall.
@@ -36,14 +41,15 @@ export const selectTriageRunner = (name: string | null): TriageRunner => {
   if (name === null || name === 'manual') {
     throw new Error(
       'No triage transport is configured. Set runners.triage in ' +
-        'syntopica.config.json to "codex", "agy-bulk" or "fallback", or ' +
+        'syntopica.config.json to "codex", "agy-bulk", "worker" or "fallback", or ' +
         'export CLIPS_TRIAGE_RUNNER for one run.',
     )
   }
   if (name === 'codex') return runTriageCodex
   if (name === 'agy-bulk') return agyBulkTriage
   if (name === 'fallback') return runTriageWithFallback
+  if (name === 'worker') return workerTriage
   throw new Error(
-    `Unknown triage runner "${name}" - expected "codex", "agy-bulk" or "fallback".`,
+    `Unknown triage runner "${name}" - expected "codex", "agy-bulk", "worker" or "fallback".`,
   )
 }

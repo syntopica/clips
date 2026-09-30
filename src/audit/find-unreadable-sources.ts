@@ -2,6 +2,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { pageSourceUrls } from '../grade/page-source-urls.ts'
 import { resolveLocalSource } from '../grade/resolve-local-source.ts'
+import { wikiDirectory } from '../layout/wiki-directory.ts'
 import type { AuditFinding } from './audit-finding.ts'
 import { pageSources } from './page-sources.ts'
 import { wikiPages } from './wiki-pages.ts'
@@ -30,7 +31,7 @@ import { wikiPages } from './wiki-pages.ts'
  * `resolveLocalSource` both refuse.
  *
  * Scoped to entries that **claim to be in this repository** - a relative path
- * whose first segment is a real directory at the root. Everything else the
+ * whose first segment is a real directory at the page root. Everything else the
  * disagreement catches is not a defect: a `projects/` page citing an absolute
  * path into the repository it describes is the declared-exempt class SCHEMA
  * names, and a bare domain or address is a source with a rank and nothing to
@@ -44,15 +45,14 @@ export const findUnreadableSources = async (
   brainRepository: string,
 ): Promise<AuditFinding[]> => {
   const findings: AuditFinding[] = []
+  const root = wikiDirectory(brainRepository)
   const roots = new Set(
-    (await readdir(brainRepository, { withFileTypes: true }))
+    (await readdir(root, { withFileTypes: true }))
       .filter((entry) => entry.isDirectory())
       .map((entry) => entry.name),
   )
   for (const page of await wikiPages(brainRepository)) {
-    const text = await readFile(join(brainRepository, page), 'utf8').catch(
-      () => null,
-    )
+    const text = await readFile(join(root, page), 'utf8').catch(() => null)
     if (text === null) continue
     const urls = new Set(pageSourceUrls(text))
     const unreadable = pageSources(text).filter(

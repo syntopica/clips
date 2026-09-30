@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { CURSOR_IDENTITY_MODEL } from '../cursor/cursor-identity-model.ts'
 import { AGY_BULK_MODEL } from '../models/agy-bulk-model.ts'
 import { AGY_FINE_MODEL } from '../models/agy-fine-model.ts'
-import { INTERACTIVE_IDENTITY } from '../synthesis/interactive-identity.ts'
+import { INTERACTIVE_MODEL } from '../synthesis/interactive-model.ts'
 import { agyFineGrader } from './agy-fine-grader.ts'
 import { cursorGrader } from './cursor-grader.ts'
 import { fallbackGraderAfterCodex } from './fallback-grader-after-codex.ts'
@@ -43,9 +43,9 @@ describe('fallbackGraderAfterCodex', () => {
       // The 2026-08-03 failure: a Claude session in the operator's terminal
       // wrote the pages, so no unattended model could have been the author, and
       // the environment's worst case refused a batch that was provably safe.
-      expect(
-        fallbackGraderAfterCodex(INTERACTIVE_IDENTITY.model, undefined),
-      ).toBe(cursorGrader)
+      expect(fallbackGraderAfterCodex(INTERACTIVE_MODEL, undefined)).toBe(
+        cursorGrader,
+      )
     })
 
     it('believes the author over an environment that disagrees', () => {
@@ -53,9 +53,9 @@ describe('fallbackGraderAfterCodex', () => {
       // disabled boundary decision and on a missing binary. The variable says
       // cursor; the interactive synthesizer is what actually ran, so cursor is
       // free and the variable's claim that it is not carries no weight.
-      expect(
-        fallbackGraderAfterCodex(INTERACTIVE_IDENTITY.model, 'cursor'),
-      ).toBe(cursorGrader)
+      expect(fallbackGraderAfterCodex(INTERACTIVE_MODEL, 'cursor')).toBe(
+        cursorGrader,
+      )
     })
 
     it('refuses the cursor tier when cursor is the author', () => {

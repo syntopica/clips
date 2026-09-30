@@ -2,14 +2,14 @@ import { describe, expect, it } from 'vitest'
 import { CODEX_IDENTITY_MODEL } from '../codex/codex-identity-model.ts'
 import { AGY_BULK_MODEL } from '../models/agy-bulk-model.ts'
 import { AGY_FINE_MODEL } from '../models/agy-fine-model.ts'
-import { INTERACTIVE_IDENTITY } from '../synthesis/interactive-identity.ts'
+import { INTERACTIVE_MODEL } from '../synthesis/interactive-model.ts'
 import { gradeTiersOfAuthor } from './grade-tiers-of-author.ts'
 
 describe('gradeTiersOfAuthor', () => {
   it('rules out nothing for an interactive author', () => {
     // Not a grading model at all: the pages were written by a Claude session in
     // the operator's own terminal, so every tier is free to verify them.
-    expect(gradeTiersOfAuthor(INTERACTIVE_IDENTITY.model)).toEqual([])
+    expect(gradeTiersOfAuthor(INTERACTIVE_MODEL)).toEqual([])
   })
 
   it('rules out the codex tier for a codex author', () => {

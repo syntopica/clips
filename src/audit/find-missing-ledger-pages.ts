@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Clip } from '../clips/clip.ts'
 import type { ThinClip } from '../clips/thin-clip.ts'
+import { wikiDirectory } from '../layout/wiki-directory.ts'
 import type { AuditFinding } from './audit-finding.ts'
 import { collectLedgerFindings } from './collect-ledger-findings.ts'
 
@@ -21,9 +22,10 @@ export const findMissingLedgerPages = async (
   brainRepository: string,
   clips: readonly (Clip | ThinClip)[],
 ): Promise<AuditFinding[]> => {
+  const root = wikiDirectory(brainRepository)
   return collectLedgerFindings(brainRepository, clips, (clip, ledger) => {
     const gone = ledger.pagesTouched.filter(
-      (page) => !existsSync(join(brainRepository, page)),
+      (page) => !existsSync(join(root, page)),
     )
     if (gone.length === 0) return []
     return [
