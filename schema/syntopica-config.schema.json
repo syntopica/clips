@@ -225,7 +225,8 @@
             "agy-bulk",
             "cursor",
             "manual",
-            "fallback"
+            "fallback",
+            "worker"
           ],
           "default": null
         },

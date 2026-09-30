@@ -1,5 +1,10 @@
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { CODEX_IDENTITY_MODEL } from '../codex/codex-identity-model.ts'
+import { currentSyntopicaConfig } from '../config/current-syntopica-config.ts'
 import { AGY_FINE_MODEL } from '../models/agy-fine-model.ts'
+import { withFixtureSyntopicaConfig } from '../testing/with-fixture-syntopica-config.ts'
 import { agyBulkGrader } from './agy-bulk-grader.ts'
 import { agyFineGrader } from './agy-fine-grader.ts'
 import { cursorGrader } from './cursor-grader.ts'
@@ -68,6 +73,32 @@ describe('selectGradeRunner', () => {
     expect(() => selectGradeRunner('gemini-pro', null)).toThrow(
       /Unknown grade runner/,
     )
+  })
+
+  it('grades through the worker on the tier its profile runs', async () => {
+    const withProfile = async <T>(runner: string, body: () => T): Promise<T> =>
+      withFixtureSyntopicaConfig(async () => {
+        const worker = join(currentSyntopicaConfig().dataRoot, 'worker')
+        mkdirSync(worker, { recursive: true })
+        writeFileSync(
+          join(worker, 'config.json'),
+          JSON.stringify({ profiles: { 'clips.grade': { runner } } }),
+        )
+        return await Promise.resolve(body())
+      })
+    const runner = await withProfile('cursor', () =>
+      selectGradeRunner('worker', CODEX_IDENTITY_MODEL),
+    )
+    expect(runner).not.toBe(cursorGrader)
+    // `worker` names no model, so the guard must see the profile's CLI.
+    await expect(
+      withProfile('codex', () =>
+        selectGradeRunner('worker', CODEX_IDENTITY_MODEL),
+      ),
+    ).rejects.toThrow(/\(codex\) is a tier/)
+    await expect(
+      withProfile('agy', () => selectGradeRunner('worker', null)),
+    ).rejects.toThrow(/clips\.grade/)
   })
 
   it('throws on an empty value', () => {

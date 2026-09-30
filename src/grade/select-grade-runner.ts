@@ -2,6 +2,9 @@ import type { GradeRunner } from './grade-runner.ts'
 import { gradeWithFallback } from './grade-with-fallback.ts'
 import { modelsThatWroteBatch } from './models-that-wrote-batch.ts'
 import { PINNED_GRADE_RUNNERS } from './pinned-grade-runners.ts'
+import { workerGradeRunner } from './run-worker-grade.ts'
+import { workerGradeTier } from './worker-grade-tier.ts'
+import { WORKER_GRADE_TIMING } from './worker-grade-timing.ts'
 
 /** Pick the grading transport from `runners.grade`, which
  * `CLIPS_GRADE_RUNNER` overrides through the configuration loader.
@@ -31,6 +34,9 @@ import { PINNED_GRADE_RUNNERS } from './pinned-grade-runners.ts'
  * refuses only the tiers that actually wrote them. Null where no run can be
  * asked, and the environment is then the only evidence.
  *
+ * `worker` hands each page to the worker's `clips.grade` queue. The guard
+ * checks the tier its profile runs, since `worker` itself names no model.
+ *
  * An unrecognised value throws instead of defaulting, so a typo cannot quietly
  * grade the wiki on a model the caller did not choose. */
 export const selectGradeRunner = (
@@ -40,15 +46,19 @@ export const selectGradeRunner = (
   if (name === null || name === 'manual') {
     throw new Error(
       'No grading transport is configured. Set runners.grade in ' +
-        'syntopica.config.json to "codex", "cursor", "agy-fine", "agy-bulk" ' +
-        'or "fallback", or export CLIPS_GRADE_RUNNER for one run.',
+        'syntopica.config.json to "codex", "cursor", "agy-fine", "agy-bulk", ' +
+        '"worker" or "fallback", or export CLIPS_GRADE_RUNNER for one run.',
     )
   }
   if (name === 'fallback') return gradeWithFallback(author)
-  const runner = PINNED_GRADE_RUNNERS[name]
+  const tier = name === 'worker' ? workerGradeTier() : name
+  const runner =
+    name === 'worker'
+      ? workerGradeRunner(tier, WORKER_GRADE_TIMING)
+      : PINNED_GRADE_RUNNERS[name]
   if (runner === undefined) {
     throw new Error(
-      `Unknown grade runner "${name}" - expected "codex", "cursor", "agy-fine", "agy-bulk" or "fallback".`,
+      `Unknown grade runner "${name}" - expected "codex", "cursor", "agy-fine", "agy-bulk", "worker" or "fallback".`,
     )
   }
   if (author === null) {
@@ -61,9 +71,9 @@ export const selectGradeRunner = (
     )
     return runner
   }
-  if (modelsThatWroteBatch(author, undefined).includes(name)) {
+  if (modelsThatWroteBatch(author, undefined).includes(tier)) {
     throw new Error(
-      `The configured grade runner "${name}" is a tier that wrote this batch ` +
+      `The configured grade runner "${name}" (${tier}) is a tier that wrote this batch ` +
         `(author=${author}), so grading it would be the author verifying ` +
         'itself. Configure a tier that did not write it, or "fallback" and ' +
         'let it choose.',
