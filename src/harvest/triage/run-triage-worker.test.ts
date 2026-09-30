@@ -191,11 +191,4 @@ describe('workerTriageRunner', () => {
       { result_id: 'r-3', decline: false },
     ])
   })
-
-  it('stops with the variables to set when the model is not named', async () => {
-    vi.stubEnv('CLIPS_WORKER_MODEL', '')
-    await expect(
-      withConfig(async () => workerTriageRunner(timing).run('1\tt\tt')),
-    ).rejects.toThrow(/CLIPS_WORKER_MODEL/)
-  })
 })

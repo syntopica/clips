@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { currentSyntopicaConfig } from '../../config/current-syntopica-config.ts'
 import { awaitWorkerOutput } from '../../worker/await-worker-output.ts'
 import { submitWorkerJob } from '../../worker/submit-worker-job.ts'
+import { workerModel } from '../../worker/worker-model.ts'
 import { configuredTriageTopics } from './configured-triage-topics.ts'
 import { triageOutputSchema } from './triage-output-schema.ts'
 import { triagePrompt } from './triage-prompt.ts'
@@ -18,8 +19,8 @@ import type { TriageRunner } from './triage-runner.ts'
  * also the strongest boundary this stage has had against an injected title: a
  * chat call with no tools at all.
  *
- * The model is `CLIPS_WORKER_MODEL`, read at call time: the worker only runs
- * models its instance pins, and which one that is belongs to the instance.
+ * The model is the one the instance's worker pins, or `CLIPS_WORKER_MODEL`
+ * where it pins several; the worker runs nothing else.
  * The queue name is this engine's, and the instance grants it to a producer.
  *
  * `waitMs` covers a queue that is not reached at once - the node yields to its
@@ -30,11 +31,7 @@ export const workerTriageRunner = (
   environ: NodeJS.ProcessEnv = process.env,
 ): TriageRunner => ({
   run: async (batch) => {
-    const model = environ['CLIPS_WORKER_MODEL']
-    if (model === undefined || model === '')
-      throw new Error(
-        'The worker transport needs CLIPS_WORKER_MODEL, a model the worker instance pins.',
-      )
+    const model = workerModel(environ)
     const topics = configuredTriageTopics()
     const prompt = triagePrompt(
       batch,
