@@ -5,6 +5,7 @@ import { codexSynthesizer } from '../codex/codex-synthesizer.ts'
 import { runCodexExec } from '../codex/run-codex-exec.ts'
 import { cursorFineSynthesizer } from '../cursor/cursor-fine-synthesizer.ts'
 import type { Synthesizer } from '../synthesis/synthesizer.ts'
+import { workerQueueSynthesizer } from '../worker-synthesis/worker-queue-synthesizer.ts'
 
 /** Pick the unattended synthesis transport from `CLIPS_SYNTHESIS_RUNNER`.
  *
@@ -12,7 +13,9 @@ import type { Synthesizer } from '../synthesis/synthesizer.ts'
  * decided by the owner on 2026-08-02 and widened on 2026-08-03 once the fine
  * quota proved to last about two clips. `agy-fine` and `agy-bulk` pin one model
  * and degrade rather than switching; `codex` pins the old transport, for a
- * workspace with credits. The unconfigured and `manual` cases never arrive
+ * workspace with credits. `worker` submits the clip to the instance's worker
+ * queue, which runs it on the model the worker pins - on this machine, not
+ * on an account. The unconfigured and `manual` cases never arrive
  * here: `selectSynthesizer` answers them with the interactive synthesizer.
  *
  * An unrecognised value throws rather than defaulting, so a typo cannot quietly
@@ -31,7 +34,8 @@ export const selectSynthesisTransport = (name: string): Synthesizer => {
   if (name === 'agy-bulk') return agyBulkSynthesizer
   if (name === 'codex') return codexSynthesizer(runCodexExec)
   if (name === 'cursor') return cursorFineSynthesizer
+  if (name === 'worker') return workerQueueSynthesizer
   throw new Error(
-    `Unknown synthesis runner "${name}" - expected "codex", "cursor", "agy-fine", "agy-bulk", "fallback" or "manual".`,
+    `Unknown synthesis runner "${name}" - expected "codex", "cursor", "agy-fine", "agy-bulk", "worker", "fallback" or "manual".`,
   )
 }

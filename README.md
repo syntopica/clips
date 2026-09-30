@@ -104,6 +104,17 @@ and review never needed a remote.
 reports is what executes. Each takes `codex`, `agy-fine`, `agy-bulk`, `cursor`
 or `fallback`, the two-transport pass that degrades on the credit wall.
 
+Each also takes `worker`, which hands the stage to the instance's worker queue
+(`clips.synthesis`, `clips.grade`, `clips.triage`, `clips.refine`) and runs it
+on whatever that worker is configured to run - for synthesis, the model it pins
+on the owner's own machine. The address, the `clips` producer token and the
+model come from the instance's `worker/` directory; `CLIPS_WORKER_URL`,
+`CLIPS_WORKER_TOKEN_FILE` and `CLIPS_WORKER_MODEL` override them. Worker
+synthesis is two tool-less inference jobs - choose the pages, then return them
+whole - and the engine writes the answer into the worktree itself, confined to
+the page directories. What the worker must declare for it is in
+`docs/worker-synthesis-contract.md`.
+
 **An unconfigured stage runs no model.** Synthesis falls to the interactive
 synthesizer and says so; grading and triage stop with the fix in the message;
 the refinement pass is simply skipped. Until 2026-09-17 these selectors read the

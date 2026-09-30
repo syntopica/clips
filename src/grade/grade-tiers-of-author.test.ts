@@ -24,6 +24,11 @@ describe('gradeTiersOfAuthor', () => {
     expect(gradeTiersOfAuthor(AGY_BULK_MODEL)).toEqual(['agy-bulk'])
   })
 
+  it('reads a worker author through the provider the coordinator reported', () => {
+    expect(gradeTiersOfAuthor('worker:ollama/qwen3.6:35b')).toEqual(['local'])
+    expect(gradeTiersOfAuthor('worker:unreported')).toBeNull()
+  })
+
   it('returns null for a model it does not recognise', () => {
     // Deliberately not the empty set. A new transport widens this map before
     // its pages can be graded, rather than being read as harmless by default.

@@ -1,3 +1,5 @@
+import { LOCAL_GRADE_TIER } from './local-grade-tier.ts'
+
 /** Which models a synthesis run may have used, from `CLIPS_SYNTHESIS_RUNNER`.
  *
  * The grade lane needs this because the page in front of it was written by one
@@ -19,7 +21,10 @@ export const synthesisModelNames = (
   if (name === 'agy-bulk') return ['agy-bulk']
   if (name === 'codex') return ['codex']
   if (name === 'cursor') return ['cursor']
+  // An inference job pins the worker's model by name, and only a local
+  // backend serving that model can take it.
+  if (name === 'worker') return [LOCAL_GRADE_TIER]
   throw new Error(
-    `Unknown CLIPS_SYNTHESIS_RUNNER "${name}" - expected "codex", "cursor", "agy-fine", "agy-bulk" or "fallback".`,
+    `Unknown CLIPS_SYNTHESIS_RUNNER "${name}" - expected "codex", "cursor", "agy-fine", "agy-bulk", "worker" or "fallback".`,
   )
 }

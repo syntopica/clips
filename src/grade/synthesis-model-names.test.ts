@@ -19,6 +19,12 @@ describe('synthesisModelNames', () => {
     expect(synthesisModelNames('codex')).toEqual(['codex'])
   })
 
+  it('places the worker transport in the local tier', () => {
+    // Its jobs pin the worker's local model by name, so no account-backed
+    // grader shares the author.
+    expect(synthesisModelNames('worker')).toEqual(['local'])
+  })
+
   it('throws on an unrecognised name rather than assuming a set', () => {
     // Guessing narrow would let the author grade itself; guessing wide would
     // refuse a grader that was always safe.

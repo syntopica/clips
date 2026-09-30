@@ -37,6 +37,42 @@
       when it shares a location with state. Verify with `pnpm check` and
       `uv run pytest -q`; regression fixtures are synthetic instances.
 
+- [x] Add a synthesis runner that runs on this machine instead of an account
+      (2026-09-30, owner order: codex forbidden, cursor cancelled, only agy and
+      local models). `CLIPS_SYNTHESIS_RUNNER=worker` sends each clip to the
+      worker's `clips.synthesis` queue as two tool-less `inference` jobs (select
+      pages from the index, then return those pages whole); the engine writes
+      the answer into the worktree, refusing any non-page path and any existing
+      page the model was not shown. The author is `worker:<provider>/<model>`
+      from the result's `executor`, and the grade guard maps `ollama` to a
+      `local` tier. A direct agent CLI on Ollama was probed first and dropped:
+      opencode confines its tools to the worktree (`external_directory: deny`,
+      measured), but Ollama's OpenAI endpoint cannot pin `num_ctx`, and one such
+      call reloaded the 22 GB model at 262,144 tokens under Vexa. The brain
+      engine's schema accepts `worker` for synthesis since brain `0463313`.
+      Verified by `pnpm check` (274 files, 1248 tests) and three real runs on a
+      throwaway copy of the pages, never the wiki repo: 436 s, 181 s and 93 s
+      per clip on qwen3.6:35b. None was publishable - see the open item below.
+      The worker does not declare the queue yet (`403 queue_not_granted`); the
+      contract is `docs/worker-synthesis-contract.md` and the request is in the
+      wiki's `TODO.md`.
+- [ ] Worker synthesis on qwen3.6:35b does not yet produce a publishable page.
+      Three runs of the TaxHacker clip, 2026-09-30: once the selection named
+      pages without `.md` (now resolved leniently); twice the writing pass
+      created a new page and returned no page linking to it, so the validator
+      refused it (`no other page links to it`), even with the rule stated twice
+      in the prompt. One selection also invented a relation (the tool "developed
+      for InteliFactu"). The prose itself was clean and attributed. Smallest
+      next step: make the link structural - ask for `link_from` (a shown page)
+      on every new page and let the engine append the `[[link]]` line - then
+      rerun the same clip before the queue is used on the backlog.
+- [ ] `pnpm check` failed once with 4 integration tests throwing
+      `Cannot inspect configured Git repository` from
+      `makeSyntopicaConfigFixture` (2026-09-30, machine under heavy load), and
+      passed on the two reruns with no change. A git spawn failing under load
+      reads as a config error. Smallest step: have `runSyntopicaGit` include the
+      spawn error code in the message so the next occurrence says whether it was
+      `EAGAIN`.
 - [ ] A fresh clone fails `pnpm test`: the ten `*.integration.test.ts` files
       gate on `BRAIN_ENGINE_PRESENT` and skip without a `brain` checkout beside
       the repository, and coverage then lands at 72.08% lines, 73.78% functions,

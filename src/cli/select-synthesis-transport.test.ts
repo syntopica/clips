@@ -3,7 +3,14 @@ import { selectSynthesisTransport } from './select-synthesis-transport.ts'
 
 describe('selectSynthesisTransport', () => {
   it('accepts every transport by name', () => {
-    for (const name of ['agy-fine', 'agy-bulk', 'codex', 'cursor', 'fallback'])
+    for (const name of [
+      'agy-fine',
+      'agy-bulk',
+      'codex',
+      'cursor',
+      'worker',
+      'fallback',
+    ])
       expect(selectSynthesisTransport(name)).toBeDefined()
   })
 

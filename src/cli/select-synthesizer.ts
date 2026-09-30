@@ -26,7 +26,7 @@ import { SYNTHESIS_BINARIES } from './synthesis-binaries.ts'
  * interactive rather than stopping the run: codex still answers to the recorded
  * boundary decision - the instance's `clips.boundaryDecision`, else the
  * engine's refusing one - and either binary being absent means there is nothing to
- * call. */
+ * call. `worker` calls no binary, so it has nothing to probe. */
 export const selectSynthesizer = async (
   manual: boolean,
 ): Promise<Synthesizer> => {
@@ -42,6 +42,12 @@ export const selectSynthesizer = async (
     return interactiveSynthesizer
   }
   const transport = selectSynthesisTransport(name)
+  if (name === 'worker') {
+    // No binary to probe: the worker is a service, and a coordinator that is
+    // down fails the first job with its address in the message.
+    process.stdout.write('synthesizer: worker\n')
+    return transport
+  }
   const binary = SYNTHESIS_BINARIES[name] ?? 'agy'
   if (binary === 'codex') {
     const decision = readBoundaryDecision(configuredBoundaryDecisionPath())
