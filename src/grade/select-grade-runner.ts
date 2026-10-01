@@ -1,10 +1,8 @@
+import { gradeRunnerNamed } from './grade-runner-named.ts'
 import type { GradeRunner } from './grade-runner.ts'
 import { gradeWithFallback } from './grade-with-fallback.ts'
 import { modelsThatWroteBatch } from './models-that-wrote-batch.ts'
-import { PINNED_GRADE_RUNNERS } from './pinned-grade-runners.ts'
-import { workerGradeRunner } from './run-worker-grade.ts'
-import { workerGradeTier } from './worker-grade-tier.ts'
-import { WORKER_GRADE_TIMING } from './worker-grade-timing.ts'
+import { workerGradeTiers } from './worker-grade-tiers.ts'
 
 /** Pick the grading transport from `runners.grade`, which
  * `CLIPS_GRADE_RUNNER` overrides through the configuration loader.
@@ -34,8 +32,10 @@ import { WORKER_GRADE_TIMING } from './worker-grade-timing.ts'
  * refuses only the tiers that actually wrote them. Null where no run can be
  * asked, and the environment is then the only evidence.
  *
- * `worker` hands each page to the worker's `clips.grade` queue. The guard
- * checks the tier its profile runs, since `worker` itself names no model.
+ * `worker` hands each page to the worker's `clips.grade` queue as an
+ * inference job on its executor ladder. The guard checks the tier the queue's
+ * first rung - the `clips.grade` profile - runs, since `worker` itself names no
+ * model, and the runner checks every answer against the executor that gave it.
  *
  * An unrecognised value throws instead of defaulting, so a typo cannot quietly
  * grade the wiki on a model the caller did not choose. */
@@ -51,17 +51,11 @@ export const selectGradeRunner = (
     )
   }
   if (name === 'fallback') return gradeWithFallback(author)
-  const tier = name === 'worker' ? workerGradeTier() : name
-  const runner =
-    name === 'worker'
-      ? workerGradeRunner(tier, WORKER_GRADE_TIMING)
-      : PINNED_GRADE_RUNNERS[name]
-  if (runner === undefined) {
-    throw new Error(
-      `Unknown grade runner "${name}" - expected "codex", "cursor", "agy-fine", "agy-bulk", "worker" or "fallback".`,
-    )
-  }
-  if (author === null) {
+  const forbidden =
+    author === null ? null : modelsThatWroteBatch(author, undefined)
+  const runner = gradeRunnerNamed(name, forbidden)
+  const tiers = name === 'worker' ? workerGradeTiers() : [name]
+  if (forbidden === null) {
     // No run to ask, so there is no evidence either way: the standalone
     // command is handed a page and no history. Refusing here would block the
     // ordinary `clips grade --page`, so it reports what it cannot check.
@@ -71,10 +65,11 @@ export const selectGradeRunner = (
     )
     return runner
   }
-  if (modelsThatWroteBatch(author, undefined).includes(tier)) {
+  const shared = tiers.find((tier) => forbidden.includes(tier))
+  if (shared !== undefined) {
     throw new Error(
-      `The configured grade runner "${name}" (${tier}) is a tier that wrote this batch ` +
-        `(author=${author}), so grading it would be the author verifying ` +
+      `The configured grade runner "${name}" (${shared}) is a tier that wrote this batch ` +
+        `(author=${String(author)}), so grading it would be the author verifying ` +
         'itself. Configure a tier that did not write it, or "fallback" and ' +
         'let it choose.',
     )

@@ -112,7 +112,11 @@ model come from the instance's `worker/` directory; `CLIPS_WORKER_URL`,
 `CLIPS_WORKER_TOKEN_FILE` and `CLIPS_WORKER_MODEL` override them. Worker
 synthesis is two tool-less inference jobs - choose the pages, then return them
 whole - and the engine writes the answer into the worktree itself, confined to
-the page directories. What the worker must declare for it is in
+the page directories. Worker grading is one tool-less inference job per page,
+the evidence inlined (512 KB at most, and the whole job within the worker's
+`max_payload_bytes`); the queue's executor ladder picks the model, so the engine
+checks the author/verifier split against whichever executor answered and
+discards a verdict that fails it. What the worker must declare for it is in
 `docs/worker-synthesis-contract.md`.
 
 **An unconfigured stage runs no model.** Synthesis falls to the interactive

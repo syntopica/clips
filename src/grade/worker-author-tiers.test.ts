@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { AGY_BULK_MODEL } from '../models/agy-bulk-model.ts'
+import { AGY_FINE_MODEL } from '../models/agy-fine-model.ts'
 import { workerAuthorTiers } from './worker-author-tiers.ts'
 
 describe('workerAuthorTiers', () => {
@@ -15,6 +17,24 @@ describe('workerAuthorTiers', () => {
       'agy-fine',
       'agy-bulk',
     ])
+    expect(workerAuthorTiers('worker:agy/')).toEqual(['agy-fine', 'agy-bulk'])
+  })
+
+  it('places agy on one tier when its profile pins a known model', () => {
+    // The grade queue's first rung pins Gemini, so a page Claude wrote through
+    // agy can still be graded there.
+    expect(workerAuthorTiers(`worker:agy/${AGY_BULK_MODEL}`)).toEqual([
+      'agy-bulk',
+    ])
+    expect(workerAuthorTiers(`worker:agy/${AGY_FINE_MODEL}`)).toEqual([
+      'agy-fine',
+    ])
+  })
+
+  it('places every OpenRouter model in one tier', () => {
+    expect(
+      workerAuthorTiers('worker:openrouter/qwen/qwen3.8-27b:free'),
+    ).toEqual(['openrouter'])
   })
 
   it('does not place an unreported or unknown executor', () => {

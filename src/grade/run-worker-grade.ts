@@ -1,70 +1,68 @@
-import { createHash } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
+import { relative } from 'node:path'
 import { currentSyntopicaConfig } from '../config/current-syntopica-config.ts'
-import { awaitWorkerOutput } from '../worker/await-worker-output.ts'
+import { awaitWorkerResult } from '../worker/await-worker-result.ts'
+import { readWorkerMaxPayloadBytes } from '../worker/read-worker-max-payload-bytes.ts'
 import { submitWorkerJob } from '../worker/submit-worker-job.ts'
-import { workerTaskInputs } from '../worker/worker-task-inputs.ts'
-import { EVIDENCE_BYTE_BUDGET } from './evidence-byte-budget.ts'
-import { GRADE_OUTPUT_SCHEMA } from './grade-output-schema.ts'
-import { gradePrompt } from './grade-prompt.ts'
+import { workerModel } from '../worker/worker-model.ts'
+import { AGY_EVIDENCE_CEILING_BYTES } from './agy-evidence-ceiling-bytes.ts'
 import type { GradeRunner } from './grade-runner.ts'
+import { readInlineSources } from './read-inline-sources.ts'
+import { workerGradeAnswer } from './worker-grade-answer.ts'
+import { workerGradeJob } from './worker-grade-job.ts'
+import { workerGradePrompt } from './worker-grade-prompt.ts'
 
-/** Grading as a `task` job on the worker's `clips.grade` queue.
+/** Grading as an `inference` job on the worker's `clips.grade` queue.
  *
- * The page and its evidence travel as a manifest relative to the instance
- * root; the worker copies exactly those files into an empty workspace and runs
- * the profile's CLI there, so the grader reads the cited sources and nothing
- * else - narrower than the direct codex grader, which is pointed at the whole
- * brain repository.
+ * A chat call with no tools, so the page and its evidence are inlined into
+ * the prompt, and the strongest boundary any grader here has had against a
+ * clip carrying instructions. Which model answers is the queue's executor
+ * ladder's decision, so the author/verifier split and the local window are
+ * checked against the executor the coordinator reports, and a verdict that
+ * fails either is discarded as an ungraded page - never reported as clean.
  *
- * `runner` is sent with the job so the coordinator refuses it if the profile
- * has been repointed since the author/verifier guard read it.
+ * Two bounds keep the inlined evidence sendable. Pre-flight, the evidence may
+ * not exceed `AGY_EVIDENCE_CEILING_BYTES` (512 KB), because the first rung
+ * runs agy with the prompt in one argv and that is the size measured working
+ * there. Then the whole job body, page and JSON escaping included, must fit
+ * the coordinator's `max_payload_bytes` (1 MiB unless the instance says
+ * otherwise); over it the page is refused with both numbers.
  *
- * A job that ends without an answer comes back as a failed run carrying no
- * message, which the grade lane reports as an ungraded page. */
+ * `forbidden` is the tiers that wrote the batch, or null where no author is
+ * known. A job that ends without an answer comes back as a failed run carrying
+ * no message, which the grade lane reports as an ungraded page. */
 export const workerGradeRunner = (
-  runner: string,
+  forbidden: readonly string[] | null,
   timing: { pollMs: number; waitMs: number },
+  environ: NodeJS.ProcessEnv = process.env,
 ): GradeRunner => ({
-  evidenceCeilingBytes: EVIDENCE_BYTE_BUDGET,
-  run: async (_root, pagePath, evidencePaths) => {
-    const inputs = workerTaskInputs(currentSyntopicaConfig().dataRoot, [
-      pagePath,
-      ...evidencePaths,
-    ])
-    if (typeof inputs === 'string')
-      return { exitCode: 1, lastMessage: null, stderrTail: inputs }
-    const [page = '', ...evidence] = inputs
-    const prompt = gradePrompt(page, evidence)
-    // The files' bytes, not only their names: a page edited since an earlier
-    // run must not collect that run's verdict by the same key.
-    const hash = createHash('sha256').update(prompt)
-    for (const path of [pagePath, ...evidencePaths])
-      hash.update(await readFile(path).catch(() => Buffer.alloc(0)))
-    const digest = hash.digest('hex')
-    const jobId = await submitWorkerJob({
-      contract: 1,
-      kind: 'task',
-      queue: 'clips.grade',
-      idempotency_key: `grade:${digest}`,
-      priority: 40,
-      privacy: 'internal',
-      max_attempts: 2,
-      input: {
-        runner,
-        profile: 'clips.grade',
-        prompt,
-        inputs,
-        output_schema: GRADE_OUTPUT_SCHEMA,
-      },
+  evidenceCeilingBytes: AGY_EVIDENCE_CEILING_BYTES,
+  run: async (root, pagePath, evidencePaths) => {
+    const pageText = await readFile(pagePath, 'utf8').catch(() => null)
+    if (pageText === null)
+      return { exitCode: 1, lastMessage: null, stderrTail: 'page not readable' }
+    const prompt = workerGradePrompt(
+      relative(root, pagePath) || pagePath,
+      pageText,
+      await readInlineSources(root, evidencePaths),
+    )
+    const { dataRoot } = currentSyntopicaConfig()
+    const model = workerModel(environ)
+    const job = workerGradeJob(model, prompt)
+    const bytes = Buffer.byteLength(JSON.stringify(job), 'utf8')
+    const limit = readWorkerMaxPayloadBytes(dataRoot)
+    if (bytes > limit)
+      return {
+        exitCode: 1,
+        lastMessage: null,
+        stderrTail: `the grade job is ${String(bytes)} bytes, over the worker's ${String(limit)}-byte max_payload_bytes`,
+      }
+    const jobId = await submitWorkerJob(job)
+    return workerGradeAnswer(jobId, await awaitWorkerResult(jobId, timing), {
+      forbidden,
+      promptBytes: Buffer.byteLength(prompt, 'utf8'),
+      dataRoot,
+      model,
     })
-    const answer = await awaitWorkerOutput(jobId, timing)
-    return answer === null
-      ? {
-          exitCode: 1,
-          lastMessage: null,
-          stderrTail: `worker job ${jobId} ended without an answer`,
-        }
-      : { exitCode: 0, lastMessage: answer, stderrTail: '' }
   },
 })

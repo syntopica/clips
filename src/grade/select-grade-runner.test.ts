@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { CODEX_IDENTITY_MODEL } from '../codex/codex-identity-model.ts'
 import { currentSyntopicaConfig } from '../config/current-syntopica-config.ts'
+import { AGY_BULK_MODEL } from '../models/agy-bulk-model.ts'
 import { AGY_FINE_MODEL } from '../models/agy-fine-model.ts'
 import { withFixtureSyntopicaConfig } from '../testing/with-fixture-syntopica-config.ts'
 import { agyBulkGrader } from './agy-bulk-grader.ts'
@@ -75,29 +76,41 @@ describe('selectGradeRunner', () => {
     )
   })
 
-  it('grades through the worker on the tier its profile runs', async () => {
-    const withProfile = async <T>(runner: string, body: () => T): Promise<T> =>
+  it('grades through the worker, guarding the tier its first rung runs', async () => {
+    const withProfile = async <T>(
+      profile: Record<string, string>,
+      body: () => T,
+    ): Promise<T> =>
       withFixtureSyntopicaConfig(async () => {
         const worker = join(currentSyntopicaConfig().dataRoot, 'worker')
         mkdirSync(worker, { recursive: true })
         writeFileSync(
           join(worker, 'config.json'),
-          JSON.stringify({ profiles: { 'clips.grade': { runner } } }),
+          JSON.stringify({ profiles: { 'clips.grade': profile } }),
         )
         return await Promise.resolve(body())
       })
-    const runner = await withProfile('cursor', () =>
+    const gemini = { runner: 'agy', model: AGY_BULK_MODEL }
+    const runner = await withProfile(gemini, () =>
       selectGradeRunner('worker', CODEX_IDENTITY_MODEL),
     )
-    expect(runner).not.toBe(cursorGrader)
-    // `worker` names no model, so the guard must see the profile's CLI.
-    await expect(
-      withProfile('codex', () =>
-        selectGradeRunner('worker', CODEX_IDENTITY_MODEL),
+    expect(runner.evidenceCeilingBytes).toBe(512 * 1024)
+    expect(
+      await withProfile(gemini, () =>
+        selectGradeRunner('worker', AGY_FINE_MODEL),
       ),
-    ).rejects.toThrow(/\(codex\) is a tier/)
+    ).toBeDefined()
+    // `worker` names no model, so the guard must see the profile's.
     await expect(
-      withProfile('agy', () => selectGradeRunner('worker', null)),
+      withProfile(gemini, () => selectGradeRunner('worker', AGY_BULK_MODEL)),
+    ).rejects.toThrow(/\(agy-bulk\) is a tier/)
+    await expect(
+      withProfile({ runner: 'agy' }, () =>
+        selectGradeRunner('worker', AGY_FINE_MODEL),
+      ),
+    ).rejects.toThrow(/\(agy-fine\) is a tier/)
+    await expect(
+      withProfile({}, () => selectGradeRunner('worker', null)),
     ).rejects.toThrow(/clips\.grade/)
   })
 
