@@ -4,6 +4,7 @@
  * Codes for a passing check name what the pass still has to say. */
 export type DoctorCode =
   | 'ok'
+  | 'skipped'
   | 'config_invalid'
   | 'paths_missing'
   | 'paths_state_absent'

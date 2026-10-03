@@ -35,7 +35,7 @@ an earlier one without deleting it.
 ## Commands
 
 ```
-clips doctor [--json]          paths, repositories and runtime availability
+clips doctor [--json [--skip NAME]...]  paths, repositories and runtime availability
 clips pull                     hand the browser clipper's inbox to the archive
 clips status [--json]          each clip's derived state and the evidence for it
 clips harvest [--promote]      newsletters and saved articles into clips
@@ -51,7 +51,9 @@ clips requeue --clip <id>      return an escalated clip to pending
 poll. `clips status --json` holds counts per derived state, the capture time of
 the oldest clip in each state other than `reconciled`, and clips captured per
 UTC day over the last 30 days; `clips doctor --json` holds each check's `name`,
-`ok` and a fixed machine `code`. Neither carries a clip id, title, url, path or
+`ok` and a fixed machine `code`; `--skip NAME` (repeatable, only after `--json`,
+a known check name) reports that check `ok` with code `skipped`, for a poller
+that runs without credentials. Neither carries a clip id, title, url, path or
 any other text, and both keep the exit code of the human report.
 
 `clips` above is shorthand. Installing the dependencies puts no `clips`

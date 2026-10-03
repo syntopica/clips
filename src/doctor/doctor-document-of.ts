@@ -1,10 +1,20 @@
+import type { DoctorCheckName } from './doctor-check-name.ts'
 import type { DoctorCheck } from './doctor-check.ts'
 import type { DoctorDocument } from './doctor-document.ts'
 
+/** A skipped check still appears, passing with code `skipped`. */
 export const doctorDocumentOf = (
   checks: readonly DoctorCheck[],
-): DoctorDocument => ({
-  schemaVersion: 1,
-  ok: checks.every((check) => check.passed),
-  checks: checks.map(({ name, passed, code }) => ({ name, ok: passed, code })),
-})
+  skip: readonly DoctorCheckName[] = [],
+): DoctorDocument => {
+  const entries = checks.map(({ name, passed, code }) =>
+    skip.includes(name)
+      ? { name, ok: true, code: 'skipped' as const }
+      : { name, ok: passed, code },
+  )
+  return {
+    schemaVersion: 1,
+    ok: entries.every((entry) => entry.ok),
+    checks: entries,
+  }
+}

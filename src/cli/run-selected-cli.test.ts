@@ -97,6 +97,7 @@ describe('runSelectedCli', () => {
       repositories.brain,
       process.env,
       false,
+      [],
     )
     expect(loadSyntopicaConfig).not.toHaveBeenCalled()
   })
@@ -106,7 +107,34 @@ describe('runSelectedCli', () => {
       repositories.brain,
       process.env,
       true,
+      [],
     )
+  })
+  it('passes repeated --skip names to the JSON report', async () => {
+    await expect(
+      runSelectedCli([
+        'doctor',
+        '--json',
+        '--skip',
+        'credentials',
+        '--skip',
+        'api',
+      ]),
+    ).resolves.toBe(0)
+    expect(doctorReport).toHaveBeenLastCalledWith(
+      repositories.brain,
+      process.env,
+      true,
+      ['credentials', 'api'],
+    )
+  })
+  it.each([
+    [['doctor', '--skip', 'credentials']],
+    [['doctor', '--json', '--skip']],
+    [['doctor', '--json', '--skip', 'nonsense']],
+    [['doctor', '--json', '--skip', 'api', '--extra']],
+  ])('rejects malformed doctor skip arguments %j', async (argv) => {
+    await expect(runSelectedCli(argv)).rejects.toThrow('doctor')
   })
   it('rejects doctor --json followed by anything else', async () => {
     await expect(

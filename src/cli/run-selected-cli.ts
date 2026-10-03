@@ -2,6 +2,7 @@ import { findDataDirectory } from '../config/find-data-directory.ts'
 import { loadSyntopicaConfig } from '../config/load-syntopica-config.ts'
 import { withSyntopicaConfig } from '../config/with-syntopica-config.ts'
 import { doctorReport } from '../doctor/doctor-report.ts'
+import { parseDoctorSkipArguments } from '../doctor/parse-doctor-skip-arguments.ts'
 import { EXIT_CODE } from './exit-code.ts'
 import { parseCliArgumentsOrReport } from './parse-cli-arguments-or-report.ts'
 import { parseDataArguments } from './parse-data-arguments.ts'
@@ -13,13 +14,16 @@ import { USAGE_TEXT } from './usage-text.ts'
 export const runSelectedCli = async (argv: string[]): Promise<number> => {
   const selected = parseDataArguments(argv)
   if (selected.arguments[0] === 'doctor') {
-    const json = selected.arguments[1] === '--json'
-    if (selected.arguments.length !== (json ? 2 : 1))
+    const rest = selected.arguments.slice(1)
+    if (rest.length > 0 && rest[0] !== '--json')
       throw new Error('doctor does not accept additional arguments')
+    const json = rest.length > 0
+    const skip = json ? parseDoctorSkipArguments(rest) : []
     return doctorReport(
       findDataDirectory(selected.explicit, process.env, process.cwd()),
       process.env,
       json,
+      skip,
     )
   }
   const args = parseCliArgumentsOrReport(selected.arguments)

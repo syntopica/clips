@@ -109,3 +109,27 @@ it('reports an invalid configuration in JSON as one config_invalid check', () =>
   })
   expect(written).not.toContain(token)
 })
+
+it('reports a skipped check as ok/skipped and lifts the top-level ok', () => {
+  const fixture = makeDoctorFixture()
+  fixtures.push(fixture.parent)
+  const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true)
+  const environ = {
+    ...fixture.environ,
+    CLIPS_GRADE_RUNNER: 'cursor',
+    CAPTURE_MIRROR: 'on',
+  }
+  expect(doctorReport(fixture.data, environ, true)).toBe(1)
+  stdout.mockClear()
+  expect(
+    doctorReport(fixture.data, environ, true, ['executables', 'credentials']),
+  ).toBe(0)
+  const document = JSON.parse(String(stdout.mock.calls[0]?.[0])) as Document
+  expect(document.ok).toBe(true)
+  expect(document.checks).toContainEqual({
+    name: 'credentials',
+    ok: true,
+    code: 'skipped',
+  })
+  expect(document.checks).toHaveLength(8)
+})
