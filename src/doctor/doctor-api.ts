@@ -4,7 +4,9 @@ import type { DoctorCheck } from './doctor-check.ts'
 export function doctorApi(config: SyntopicaConfig): DoctorCheck {
   const supported = config.brainApiVersion === 1 && config.clipsApiVersion === 1
   return {
+    name: 'api',
     passed: supported,
+    code: supported ? 'ok' : 'api_unsupported',
     message: supported ? 'api: supported' : 'api: unsupported engine version',
   }
 }

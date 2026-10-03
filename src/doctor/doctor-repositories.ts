@@ -10,10 +10,17 @@ export function doctorRepositories(config: SyntopicaConfig): DoctorCheck {
       config.brainPath,
       config.clipsPath,
     ])
-    return { passed: true, message: 'repositories: valid Git identities' }
+    return {
+      name: 'repositories',
+      passed: true,
+      code: 'ok',
+      message: 'repositories: valid Git identities',
+    }
   } catch {
     return {
+      name: 'repositories',
       passed: false,
+      code: 'repositories_invalid',
       message: 'repositories: invalid Git identities or remotes',
     }
   }

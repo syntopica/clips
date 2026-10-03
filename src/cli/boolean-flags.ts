@@ -9,6 +9,7 @@ export const BOOLEAN_FLAGS: Record<string, BooleanFlagKey> = {
   '--cited': 'cited',
   '--dry-run': 'dryRun',
   '--grade': 'grade',
+  '--json': 'json',
   '--manual': 'manual',
   '--promote': 'promote',
 }

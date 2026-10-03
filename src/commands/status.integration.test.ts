@@ -147,4 +147,29 @@ describe('clips status, end to end', () => {
     expect(stdout).toContain('3 clips, 1 inconsistent, 1 unreadable')
     expect(exitCode).toBe(EXIT_CODE.clipsStopped)
   })
+
+  it('reports a processed clip at its full sha, abbreviated or not', async () => {
+    const brain = newBrain()
+    const head = git(brain, 'rev-parse', 'HEAD')
+    const store = newStore()
+    for (const [name, clipId, commit] of [
+      ['processed-full', '01KYGGCNH0HN292WZ1VQGVR2XA', head],
+      ['processed-short', '01KYGGCNH0HN292WZ1VQGVR2XB', head.slice(0, 7)],
+    ] as const) {
+      writeClip(store, 'processed', name, {
+        'metadata.json': JSON.stringify(metadata(clipId)),
+        'state.json': JSON.stringify({
+          status: 'processed',
+          updatedAt: '2026-07-27T19:07:35Z',
+          failure: null,
+          brainCommit: commit,
+        }),
+        'index.md': '# p\n',
+      })
+    }
+    const { exitCode, stdout } = await runStatus(brain, store)
+    expect(stdout.split(`under processed/ at ${head}`)).toHaveLength(3)
+    expect(stdout).toContain('4 clips, 0 inconsistent, 1 unreadable')
+    expect(exitCode).toBe(EXIT_CODE.success)
+  })
 })

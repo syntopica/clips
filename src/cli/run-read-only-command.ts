@@ -1,6 +1,4 @@
-import { grade } from '../commands/grade.ts'
 import type { Repositories } from '../commands/repositories.ts'
-import { status } from '../commands/status.ts'
 import type { CliArguments } from './cli-arguments.ts'
 import { EXIT_CODE } from './exit-code.ts'
 import { USAGE_TEXT } from './usage-text.ts'
@@ -16,14 +14,25 @@ export const runReadOnlyCommand = async (
     process.stdout.write(USAGE_TEXT)
     return EXIT_CODE.success
   }
-  if (args.command === 'status')
+  // Each command is imported when it is chosen, not at startup: loading the
+  // whole CLI graph cost about a second and 90 MB before `clips status --json`,
+  // which a dashboard polls under a 2 s budget, read a single file.
+  if (args.command === 'status' && args.json) {
+    const { statusJson } = await import('../status-json/status-json.ts')
+    return statusJson(repositories.brain, repositories.clips, new Date())
+  }
+  if (args.command === 'status') {
+    const { status } = await import('../commands/status.ts')
     return status(repositories.brain, repositories.clips)
+  }
   // Grade reads both repositories and writes nothing, so it needs no lock and
   // is safe to run against a wiki an ingest is still writing to.
   // A null author: the command is handed page paths and no synthesis run, so
   // there is nothing to ask who wrote them and the guard falls back to reading
   // CLIPS_SYNTHESIS_RUNNER.
-  if (args.command === 'grade')
+  if (args.command === 'grade') {
+    const { grade } = await import('../commands/grade.ts')
     return grade(repositories.brain, repositories.clips, args.pages, null)
+  }
   return null
 }

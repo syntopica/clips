@@ -14,6 +14,8 @@ export type CliArguments = {
   limit: string | null
   dryRun: boolean
   grade: boolean
+  /** `--json`: `clips status` prints one counts-only JSON document. */
+  json: boolean
   manual: boolean
   promote: boolean
   captureAll: boolean

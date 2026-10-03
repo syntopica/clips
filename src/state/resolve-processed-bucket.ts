@@ -10,6 +10,7 @@ import type { StateEvidence } from './state-evidence.ts'
 export const resolveProcessedBucket = async (
   brainRepository: string,
   clipState: ClipState,
+  resolvedCommits?: ReadonlyMap<string, string>,
 ): Promise<StateEvidence> => {
   if (clipState.status !== 'processed') {
     return {
@@ -23,10 +24,11 @@ export const resolveProcessedBucket = async (
       reason: 'under processed/ with no brainCommit',
     }
 
-  const resolved = await resolveBrainCommit(
-    brainRepository,
-    clipState.brainCommit,
-  )
+  const batched = resolvedCommits?.get(clipState.brainCommit)
+  const resolved =
+    batched === undefined
+      ? await resolveBrainCommit(brainRepository, clipState.brainCommit)
+      : { ok: true as const, sha: batched }
   return resolved.ok
     ? { state: 'reconciled', reason: `under processed/ at ${resolved.sha}` }
     : {

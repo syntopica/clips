@@ -9,6 +9,7 @@ describe('parseArguments', () => {
       limit: null,
       dryRun: false,
       grade: false,
+      json: false,
       manual: false,
       promote: false,
       autoReview: false,
@@ -28,6 +29,7 @@ describe('parseArguments', () => {
       limit: null,
       dryRun: false,
       grade: false,
+      json: false,
       manual: false,
       promote: false,
       autoReview: false,
@@ -49,6 +51,7 @@ describe('parseArguments', () => {
       limit: null,
       dryRun: true,
       grade: false,
+      json: false,
       manual: false,
       promote: false,
       autoReview: false,
@@ -68,6 +71,7 @@ describe('parseArguments', () => {
       limit: null,
       dryRun: false,
       grade: false,
+      json: false,
       manual: false,
       promote: true,
       autoReview: false,
@@ -87,6 +91,7 @@ describe('parseArguments', () => {
       limit: null,
       dryRun: false,
       grade: false,
+      json: false,
       manual: false,
       promote: false,
       autoReview: false,
@@ -108,6 +113,7 @@ describe('parseArguments', () => {
       limit: null,
       dryRun: false,
       grade: false,
+      json: false,
       manual: false,
       promote: true,
       autoReview: false,
@@ -124,6 +130,13 @@ describe('parseArguments', () => {
     expect(() => parseArguments(['refresh'])).toThrow(
       /unknown command: refresh/,
     )
+  })
+
+  it('reads --json as a boolean flag', () => {
+    expect(parseArguments(['status', '--json'])).toMatchObject({
+      command: 'status',
+      json: true,
+    })
   })
 
   it('rejects an unknown flag', () => {

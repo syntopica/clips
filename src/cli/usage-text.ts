@@ -1,11 +1,13 @@
 export const USAGE_TEXT = `clips - ingest capture archive captures into the brain
 
   clips --data <path> <command>  select a syntopica.config.json data directory
-  clips doctor                   check paths, repositories and runtime availability
+  clips doctor [--json]          check paths, repositories and runtime availability
 
   clips pull                     fast-forward the browser clipper's inbox and hand
                                  its pending clips to the archive
-  clips status                   print each clip's derived state and evidence
+  clips status [--json]          print each clip's derived state and evidence;
+                                 --json prints counts per state, oldest capture
+                                 per waiting state and daily intake, no content
   clips ingest [options]         run the ingest pipeline
   clips harvest [options]        harvest newsletters and saved articles into clips
   clips grade --page <path>...   grade pages against the clips they cite

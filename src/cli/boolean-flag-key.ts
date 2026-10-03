@@ -6,5 +6,6 @@ export type BooleanFlagKey =
   | 'cited'
   | 'dryRun'
   | 'grade'
+  | 'json'
   | 'manual'
   | 'promote'

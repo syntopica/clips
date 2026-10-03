@@ -30,7 +30,9 @@ it('inspects all named remotes and keeps their values out of diagnostics', () =>
     'git@github.com:syntopica/brain.git',
   ])
   expect(doctorArchive(archive)).toEqual({
+    name: 'archive',
     passed: false,
+    code: 'archive_public_remote',
     message: 'archive: public engine remote refused',
   })
 })

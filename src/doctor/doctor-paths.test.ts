@@ -33,7 +33,9 @@ it.each(['atrium', 'state/agent-memory'])(
     )
     const config = loadSyntopicaConfig(fixture.data, fixture.environ)
     expect(doctorPaths(config)).toEqual({
+      name: 'paths',
       passed: true,
+      code: 'paths_state_absent',
       message: `paths: required paths present; state not created yet (${memoryPath})`,
     })
     expect(existsSync(config.atriumPath)).toBe(false)
@@ -51,7 +53,9 @@ it.each([false, true])(
     if (missingState) rmSync(`${fixture.data}/atrium`, { recursive: true })
     const config = loadSyntopicaConfig(fixture.data, fixture.environ)
     expect(doctorPaths(config)).toEqual({
+      name: 'paths',
       passed: false,
+      code: 'paths_missing',
       message:
         'paths: 1 missing (brain/absent)' +
         (missingState ? '; state not created yet (atrium)' : ''),
@@ -70,7 +74,9 @@ it('does not exempt content sharing a location with state', () => {
   )
   const config = loadSyntopicaConfig(fixture.data, fixture.environ)
   expect(doctorPaths(config)).toEqual({
+    name: 'paths',
     passed: false,
+    code: 'paths_missing',
     message: 'paths: 1 missing (shared); state not created yet (shared)',
   })
 })
@@ -86,7 +92,9 @@ it('checks desktop roots as content and the inbox as state', () => {
   )
   const config = loadSyntopicaConfig(fixture.data, fixture.environ)
   expect(doctorPaths(config)).toEqual({
+    name: 'paths',
     passed: false,
+    code: 'paths_missing',
     message: 'paths: 1 missing (desktop); state not created yet (clips-inbox)',
   })
 })

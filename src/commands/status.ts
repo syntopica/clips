@@ -5,6 +5,7 @@ import { clippedArticleKeys } from '../harvest/promote/clipped-article-keys.ts'
 import { formatUnfetchedRuns } from '../harvest/promote/format-unfetched-runs.ts'
 import { unfetchedRuns } from '../harvest/promote/unfetched-runs.ts'
 import { deriveClipState } from '../state/derive-clip-state.ts'
+import { resolveRecordedCommits } from '../state/resolve-recorded-commits.ts'
 import { formatStatusLine } from './format-status-line.ts'
 
 /** Read-only. Nothing here writes, so it needs no lock, only the preflight
@@ -37,6 +38,7 @@ export const status = async (
       return EXIT_CODE.fatalLocal
     }
     const clips = await discoverClips(clipsRepository)
+    const resolvedCommits = await resolveRecordedCommits(brainRepository, clips)
     let inconsistent = 0
     let unreadable = 0
     for (const clip of clips) {
@@ -44,6 +46,7 @@ export const status = async (
         clip,
         brainRepository,
         clipsRepository,
+        resolvedCommits,
       })
       if (evidence.state === 'inconsistent') inconsistent += 1
       if (evidence.state === 'unreadable') unreadable += 1

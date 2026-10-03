@@ -12,7 +12,12 @@ export function doctorArchive(archive: string): DoctorCheck {
   ])
   const remotes = runSyntopicaGit(archive, ['remote'])
   if ((raw.status !== 0 && raw.status !== 1) || remotes.status !== 0)
-    return { passed: false, message: 'archive: cannot inspect remotes' }
+    return {
+      name: 'archive',
+      passed: false,
+      code: 'archive_remotes_uninspectable',
+      message: 'archive: cannot inspect remotes',
+    }
   const urls = raw.stdout
     .split('\0')
     .filter((entry) => entry.includes('\n'))
@@ -27,13 +32,20 @@ export function doctorArchive(archive: string): DoctorCheck {
         remote,
       ])
       if (effective.status !== 0)
-        return { passed: false, message: 'archive: cannot resolve remotes' }
+        return {
+          name: 'archive',
+          passed: false,
+          code: 'archive_remotes_unresolvable',
+          message: 'archive: cannot resolve remotes',
+        }
       urls.push(...effective.stdout.split('\n').filter(Boolean))
     }
   }
   const forbidden = urls.some(doctorPublicRemote)
   return {
+    name: 'archive',
     passed: !forbidden,
+    code: forbidden ? 'archive_public_remote' : 'ok',
     message: forbidden
       ? 'archive: public engine remote refused'
       : 'archive: no public engine remote',

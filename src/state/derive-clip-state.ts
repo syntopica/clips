@@ -19,8 +19,13 @@ export const deriveClipState = async (
       reason: 'the clip is under clips/needs-claude/',
     }
   }
-  if (clip.bucket === 'processed')
-    return resolveProcessedBucket(brainRepository, clip.state)
+  if (clip.bucket === 'processed') {
+    return resolveProcessedBucket(
+      brainRepository,
+      clip.state,
+      input.resolvedCommits,
+    )
+  }
   if (clip.state.status === 'needs-claude') {
     return {
       state: 'inconsistent',

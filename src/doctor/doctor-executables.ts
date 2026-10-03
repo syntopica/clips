@@ -27,7 +27,9 @@ export function doctorExecutables(
     .sort()
     .filter((command) => !doctorExecutableExists(command, environ))
   return {
+    name: 'executables',
     passed: missing.length === 0,
+    code: missing.length === 0 ? 'ok' : 'executables_missing',
     message:
       missing.length === 0
         ? 'executables: all present'

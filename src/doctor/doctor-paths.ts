@@ -22,5 +22,15 @@ export function doctorPaths(config: SyntopicaConfig): DoctorCheck {
       .join(', ')
     message += `; state not created yet (${names})`
   }
-  return { passed: missing.length === 0, message }
+  return {
+    name: 'paths',
+    passed: missing.length === 0,
+    code:
+      missing.length > 0
+        ? 'paths_missing'
+        : absentState.length > 0
+          ? 'paths_state_absent'
+          : 'ok',
+    message,
+  }
 }

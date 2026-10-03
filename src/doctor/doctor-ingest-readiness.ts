@@ -23,7 +23,9 @@ export function doctorIngestReadiness(config: SyntopicaConfig): DoctorCheck {
       : [`${name} has no origin/main`]),
   ])
   return {
+    name: 'ingest',
     passed: true,
+    code: missing.length === 0 ? 'ok' : 'ingest_publication_unconfigured',
     message:
       missing.length === 0
         ? 'ingest: ready to publish'

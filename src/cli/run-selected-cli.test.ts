@@ -93,8 +93,26 @@ describe('runSelectedCli', () => {
     await expect(
       runSelectedCli(['--data', '/selected', 'doctor']),
     ).resolves.toBe(0)
-    expect(doctorReport).toHaveBeenCalledWith(repositories.brain, process.env)
+    expect(doctorReport).toHaveBeenCalledWith(
+      repositories.brain,
+      process.env,
+      false,
+    )
     expect(loadSyntopicaConfig).not.toHaveBeenCalled()
+  })
+  it('routes doctor --json as the JSON report', async () => {
+    await expect(runSelectedCli(['doctor', '--json'])).resolves.toBe(0)
+    expect(doctorReport).toHaveBeenCalledWith(
+      repositories.brain,
+      process.env,
+      true,
+    )
+  })
+  it('rejects doctor --json followed by anything else', async () => {
+    await expect(
+      runSelectedCli(['doctor', '--json', '--write']),
+    ).rejects.toThrow('doctor does not accept')
+    expect(doctorReport).not.toHaveBeenCalled()
   })
   it('rejects doctor options', async () => {
     await expect(runSelectedCli(['doctor', '--write'])).rejects.toThrow(

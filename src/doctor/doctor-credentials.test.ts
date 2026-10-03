@@ -30,7 +30,9 @@ it('treats empty tokens as absent and returns no token content', () => {
     CAPTURE_TOKEN: 'distinctive-doctor-token-never-print-82713',
   })
   expect(result).toEqual({
+    name: 'credentials',
     passed: true,
+    code: 'ok',
     message: 'credentials: CAPTURE_TOKEN present',
   })
 })

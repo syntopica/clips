@@ -1,5 +1,14 @@
 # TODO
 
+- [~] Hold `clips status --json` inside the dashboard polling budget (p95 2 s,
+  300 MB). Lazy command imports and one `cat-file --batch-check` for every
+  processed clip's commit took it from a 14 s full status to 0.6-0.9 s wall and
+  about 130 MB on a 2043-clip store, with at most 1.3 s of CPU. Under machine
+  load averages of 50-80, 1-2 runs in 10 still took 2.7-8.6 s wall, so p95 is
+  over budget on a loaded host. Smallest next step: re-measure on an idle host
+  before the dashboard adapter ships; if the tail remains, write the document at
+  the end of a job instead of polling.
+
 - [x] Resolve the ChatGPT converter output from instance configuration.
       `convert.py` now reads `SYNTOPICA_DATA` and `brain.sources` at call time;
       `run.sh` and `purge.sh` use the same configuration contract as

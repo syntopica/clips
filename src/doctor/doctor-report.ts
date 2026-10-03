@@ -1,39 +1,26 @@
-import { InvalidSyntopicaConfigError } from '../config/invalid-syntopica-config-error.ts'
 import { loadSyntopicaConfig } from '../config/load-syntopica-config.ts'
-import { doctorApi } from './doctor-api.ts'
-import { doctorArchive } from './doctor-archive.ts'
-import { doctorCredentials } from './doctor-credentials.ts'
-import { doctorExecutables } from './doctor-executables.ts'
-import { doctorIngestReadiness } from './doctor-ingest-readiness.ts'
-import { doctorPaths } from './doctor-paths.ts'
-import { doctorRepositories } from './doctor-repositories.ts'
+import type { DoctorCheck } from './doctor-check.ts'
+import { doctorConfigurationFailure } from './doctor-configuration-failure.ts'
+import { doctorDocumentOf } from './doctor-document-of.ts'
+import { runDoctorChecks } from './run-doctor-checks.ts'
 
-export function doctorReport(root: string, environ: NodeJS.ProcessEnv): number {
+export function doctorReport(
+  root: string,
+  environ: NodeJS.ProcessEnv,
+  json = false,
+): number {
+  let checks: DoctorCheck[]
   try {
-    const config = loadSyntopicaConfig(root, environ)
-    const checks = [
-      { passed: true, message: 'configuration: valid' },
-      doctorPaths(config),
-      doctorRepositories(config),
-      doctorArchive(config.archive),
-      doctorIngestReadiness(config),
-      doctorApi(config),
-      doctorExecutables(config, environ),
-      doctorCredentials(config, environ),
-    ]
+    checks = runDoctorChecks(loadSyntopicaConfig(root, environ), environ)
+  } catch (error) {
+    checks = [doctorConfigurationFailure(error)]
+  }
+  if (json)
+    process.stdout.write(`${JSON.stringify(doctorDocumentOf(checks))}\n`)
+  else
     for (const check of checks)
       process.stdout.write(
         `${check.passed ? 'PASS' : 'FAIL'} ${check.message}\n`,
       )
-    return checks.every((check) => check.passed) ? 0 : 1
-  } catch (error) {
-    if (error instanceof InvalidSyntopicaConfigError) {
-      process.stdout.write(`FAIL configuration: ${error.message}\n`)
-      return 1
-    }
-    process.stdout.write(
-      'FAIL configuration: invalid paths, repository identities, remotes or settings\n',
-    )
-    return 1
-  }
+  return checks.every((check) => check.passed) ? 0 : 1
 }
