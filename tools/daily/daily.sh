@@ -41,7 +41,7 @@ new=$(git ls-files --others --exclude-standard -- "$ARCHIVE/clips/pending")
 if [ -n "$new" ]; then
   printf '%s\n' "$new" | git add --pathspec-from-file=-
   git commit -q -m "chore(clips): capture the $(date +%F) newsletter harvest" &&
-    git pull -q --rebase && git push -q
+    git pull -q --rebase --autostash && git push -q
   echo "$(stamp) committed $(printf '%s\n' "$new" | grep -c metadata.json) new clips"
 fi
 
