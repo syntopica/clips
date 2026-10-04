@@ -19,7 +19,12 @@ export const runReadOnlyCommand = async (
   // which a dashboard polls under a 2 s budget, read a single file.
   if (args.command === 'status' && args.json) {
     const { statusJson } = await import('../status-json/status-json.ts')
-    return statusJson(repositories.brain, repositories.clips, new Date())
+    return statusJson(
+      repositories.brain,
+      repositories.clips,
+      new Date(),
+      args.items,
+    )
   }
   if (args.command === 'status') {
     const { status } = await import('../commands/status.ts')

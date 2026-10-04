@@ -36,6 +36,7 @@ describe('codexSynthesizer', () => {
         promptSha256: sha256Hex(codexPrompt('/clips/one/index.md', '')),
         boundary: 'codex-danger-full-access',
       },
+      usage: null,
     })
   })
 

@@ -28,6 +28,7 @@ export const codexSynthesizer = (runner: CodexRunner): Synthesizer => ({
         skipped: false,
         reason: `codex exec exited ${String(result.exitCode)}: ${result.stderrTail.slice(-500)}`,
         identity,
+        usage: result.usage ?? null,
       }
     }
     const parsed = parseCodexOutput(result.lastMessage)
@@ -38,8 +39,9 @@ export const codexSynthesizer = (runner: CodexRunner): Synthesizer => ({
         skipped: false,
         reason: 'codex produced no parseable output (PROMPT_OUTPUT_INVALID)',
         identity,
+        usage: result.usage ?? null,
       }
     }
-    return { ...parsed, identity }
+    return { ...parsed, identity, usage: result.usage ?? null }
   },
 })

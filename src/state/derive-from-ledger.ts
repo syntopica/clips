@@ -22,6 +22,7 @@ export const deriveFromLedger = async (
     const message = error instanceof Error ? error.message : String(error)
     return {
       state: 'inconsistent',
+      code: 'clip_unhashable',
       reason: `the clip cannot be hashed: ${message}`,
     }
   }
@@ -33,6 +34,7 @@ export const deriveFromLedger = async (
     )
     return {
       state: 'inconsistent',
+      code: 'content_mismatch',
       reason: `${mismatch.code}: ${mismatch.message}`,
     }
   }

@@ -3,6 +3,8 @@ import { mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { promisify } from 'node:util'
+import { parseCodexUsage } from '../runs/parse-codex-usage.ts'
+import { codexExecArguments } from './codex-exec-arguments.ts'
 import { CODEX_OUTPUT_SCHEMA } from './codex-output-schema.ts'
 import type { CodexRunner } from './codex-runner.ts'
 
@@ -17,7 +19,10 @@ import type { CodexRunner } from './codex-runner.ts'
  * needed; stdin is closed up front (codex blocks reading it otherwise).
  * Timeout is 20 minutes - doubled from the spec's table for search-enabled
  * xhigh runs - delivered as SIGKILL so a hung run cannot outlive the
- * pipeline. */
+ * pipeline.
+ *
+ * `--json` puts the event stream on stdout, which is read for nothing but the
+ * token usage of each completed turn; the verdict still comes from `-o`. */
 export const runCodexExec: CodexRunner = {
   run: async (worktree, prompt) => {
     const scratch = await mkdtemp(join(tmpdir(), 'codex-ingest-'))
@@ -28,27 +33,10 @@ export const runCodexExec: CodexRunner = {
     try {
       const pending = execFileAsync(
         'codex',
-        [
-          // --search is a top-level flag, not an exec option; it must come
-          // before the subcommand (verified: `exec --search` exits 2).
-          '--search',
-          'exec',
-          prompt,
-          '-C',
-          worktree,
-          '-s',
-          'danger-full-access',
-          '-c',
-          'model_reasoning_effort=xhigh',
-          '--skip-git-repo-check',
-          '--output-schema',
-          schemaPath,
-          '-o',
-          lastMessagePath,
-        ],
+        codexExecArguments({ prompt, worktree, schemaPath, lastMessagePath }),
         {
           encoding: 'utf8',
-          maxBuffer: 8 * 1024 * 1024,
+          maxBuffer: 64 * 1024 * 1024,
           timeout: 20 * 60 * 1000,
           killSignal: 'SIGKILL',
         },
@@ -56,13 +44,22 @@ export const runCodexExec: CodexRunner = {
       // codex exec blocks reading stdin unless it is closed up front - the
       // documented `< /dev/null` behavior, done here by ending the pipe.
       pending.child.stdin?.end()
-      await pending
+      const { stdout } = await pending
       const lastMessage = await readFile(lastMessagePath, 'utf8').catch(
         () => null,
       )
-      return { exitCode: 0, lastMessage, stderrTail: '' }
+      return {
+        exitCode: 0,
+        lastMessage,
+        stderrTail: '',
+        usage: parseCodexUsage(stdout),
+      }
     } catch (error) {
-      const failure = error as { code?: number; stderr?: string }
+      const failure = error as {
+        code?: number
+        stderr?: string
+        stdout?: string
+      }
       const lastMessage = await readFile(lastMessagePath, 'utf8').catch(
         () => null,
       )
@@ -70,6 +67,7 @@ export const runCodexExec: CodexRunner = {
         exitCode: failure.code ?? 1,
         lastMessage,
         stderrTail: (failure.stderr ?? '').slice(-2000),
+        usage: parseCodexUsage(failure.stdout ?? ''),
       }
     }
   },

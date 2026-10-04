@@ -15,12 +15,14 @@ export const resolveProcessedBucket = async (
   if (clipState.status !== 'processed') {
     return {
       state: 'inconsistent',
+      code: 'state_bucket_mismatch',
       reason: `under processed/ but state.json says ${clipState.status}`,
     }
   }
   if (clipState.brainCommit === null)
     return {
       state: 'inconsistent',
+      code: 'processed_without_commit',
       reason: 'under processed/ with no brainCommit',
     }
 
@@ -30,9 +32,14 @@ export const resolveProcessedBucket = async (
       ? await resolveBrainCommit(brainRepository, clipState.brainCommit)
       : { ok: true as const, sha: batched }
   return resolved.ok
-    ? { state: 'reconciled', reason: `under processed/ at ${resolved.sha}` }
+    ? {
+        state: 'reconciled',
+        code: 'reconciled',
+        reason: `under processed/ at ${resolved.sha}`,
+      }
     : {
         state: 'inconsistent',
+        code: 'commit_unresolved',
         reason: `under processed/ but ${resolved.reason}`,
       }
 }

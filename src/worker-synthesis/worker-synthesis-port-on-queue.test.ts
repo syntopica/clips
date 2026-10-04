@@ -84,6 +84,7 @@ describe('workerSynthesisPortOnQueue', () => {
     expect(answer).toEqual({
       text: JSON.stringify({ pages: [], needs_claude: false, reason: 'r' }),
       executor: { node: 'mini', provider: 'ollama', model: 'm' },
+      jobId: 's-1',
     })
     const submit = calls[0]?.body as Record<string, unknown>
     expect(submit).toMatchObject({
@@ -119,6 +120,7 @@ describe('workerSynthesisPortOnQueue', () => {
       failure: expect.stringMatching(
         /s-1 on q.synthesis ended without an answer/,
       ) as unknown,
+      jobId: 's-1',
     })
   })
 })

@@ -18,21 +18,25 @@ export const ledgerPublicationState = async (
   if (!(await refExists(brainRepository, 'origin/main'))) {
     return {
       state: 'locally-stale',
+      code: 'origin_not_fetched',
       reason: `${path} exists but origin/main is not fetched, so publication cannot be checked`,
     }
   }
   if (await pathExistsInRef(brainRepository, 'origin/main', path))
     return {
       state: 'reconciliation-pending',
+      code: 'ledger_on_origin',
       reason: `${path} is present in origin/main`,
     }
   if (await pathExistsInRef(brainRepository, 'HEAD', path))
     return {
       state: 'locally-stale',
+      code: 'ledger_committed_locally',
       reason: `${path} is committed locally but absent from origin/main`,
     }
   return {
     state: 'synthesized',
+    code: 'ledger_uncommitted',
     reason: `${path} exists in the working tree but no commit contains it`,
   }
 }

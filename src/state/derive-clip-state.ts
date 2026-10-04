@@ -12,10 +12,12 @@ export const deriveClipState = async (
   input: DeriveClipStateInput,
 ): Promise<StateEvidence> => {
   const { clip, brainRepository } = input
-  if (clip.kind === 'thin') return { state: 'unreadable', reason: clip.reason }
+  if (clip.kind === 'thin')
+    return { state: 'unreadable', code: 'thin_clip', reason: clip.reason }
   if (clip.bucket === 'needs-claude') {
     return {
       state: 'needs-claude',
+      code: 'routed_needs_claude',
       reason: 'the clip is under clips/needs-claude/',
     }
   }
@@ -29,6 +31,7 @@ export const deriveClipState = async (
   if (clip.state.status === 'needs-claude') {
     return {
       state: 'inconsistent',
+      code: 'state_bucket_mismatch',
       reason:
         'state.json says needs-claude but the clip sits under pending/, not clips/needs-claude/',
     }
@@ -36,19 +39,25 @@ export const deriveClipState = async (
 
   const read = await readLedgerSafely(brainRepository, clip.metadata.clip_id)
   if (read.kind === 'unreadable')
-    return { state: 'inconsistent', reason: read.reason }
+    return {
+      state: 'inconsistent',
+      code: 'ledger_unreadable',
+      reason: read.reason,
+    }
 
   if (clip.state.status === 'processed') {
     return read.kind === 'absent'
       ? resolveHandProcessed(brainRepository, clip.state.brainCommit)
       : {
           state: 'reconciliation-pending',
+          code: 'ledger_under_pending',
           reason: `a ledger exists for ${clip.metadata.clip_id} but the clip is under pending/`,
         }
   }
 
   // No ledger and no branch is ever inspected, so the reason says only what was
   // actually checked.
-  if (read.kind === 'absent') return { state: 'pending', reason: 'no ledger' }
+  if (read.kind === 'absent')
+    return { state: 'pending', code: 'no_ledger', reason: 'no ledger' }
   return deriveFromLedger(brainRepository, clip, read.ledger)
 }

@@ -16,6 +16,7 @@ export const parseOptions = (rest: string[]): CliOptions => {
     date: null,
     dryRun: false,
     grade: false,
+    items: false,
     json: false,
     limit: null,
     manual: false,

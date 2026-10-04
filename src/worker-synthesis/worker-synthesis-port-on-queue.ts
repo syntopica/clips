@@ -58,7 +58,8 @@ export const workerSynthesisPortOnQueue = (
     if (result === null || text === null)
       return {
         failure: `worker job ${jobId} on ${queue} ended without an answer; a rerun collects it by its key if it is still queued`,
+        jobId,
       }
-    return { text, executor: result.executor ?? null }
+    return { text, executor: result.executor ?? null, jobId }
   },
 })

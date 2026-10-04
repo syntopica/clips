@@ -16,6 +16,9 @@ export type CliArguments = {
   grade: boolean
   /** `--json`: `clips status` prints one counts-only JSON document. */
   json: boolean
+  /** `--items`: with `--json`, the document also lists waiting clips one by
+   * one, by code, time and count only. */
+  items: boolean
   manual: boolean
   promote: boolean
   captureAll: boolean

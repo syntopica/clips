@@ -56,6 +56,16 @@ a known check name) reports that check `ok` with code `skipped`, for a poller
 that runs without credentials. Neither carries a clip id, title, url, path or
 any other text, and both keep the exit code of the human report.
 
+`clips status --json --items` adds `items` from the same pass: every clip still
+waiting on something and the 50 most recently reconciled, each with a 16-hex
+digest for an id (not the clip id), its state, a fixed `reason` code, the stage
+and code of a routing failure (never its message), the pipeline `stage`, capture
+and last-transition times, `attempts`, the `lastRun` and, once a ledger exists,
+the brain `pages` it touched. Each ingest records its synthesis runs - start,
+duration, outcome, transport, worker job ids and the token counts codex
+(`--json`) or agy report - in `clips-runs/` under the brain repository's git
+directory, never in the working tree; the 20 newest per clip are kept.
+
 `clips` above is shorthand. Installing the dependencies puts no `clips`
 executable on PATH, and neither does the hub: from an instance created by it,
 every command in this README is

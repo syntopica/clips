@@ -2,6 +2,8 @@ import { beginReadObservation } from '../reads/begin-read-observation.ts'
 import { finishReadObservation } from '../reads/finish-read-observation.ts'
 import type { PagesRead } from '../reads/pages-read.ts'
 import { routeToNeedsClaude } from '../reconcile/route-to-needs-claude.ts'
+import { clipRunOf } from '../runs/clip-run-of.ts'
+import { recordClipRun } from '../runs/record-clip-run.ts'
 import type { SynthesizerIdentity } from '../synthesis/synthesizer-identity.ts'
 import { validateWorktree } from '../validation/validate-worktree.ts'
 import type { ClipOutcome } from './clip-outcome.ts'
@@ -26,12 +28,19 @@ export const synthesizeAndValidate = async (
 > => {
   const { repositories, clip, worktree, synthesizer, guidance } = input
   const observation = await beginReadObservation(worktree)
+  const startedAt = new Date()
   const synthesis = await synthesizer.synthesize({
     clipDirectory: clip.directory,
     worktree,
     guidance,
   })
+  const finishedAt = new Date()
   const pagesRead = await finishReadObservation(worktree, observation)
+  await recordClipRun(
+    repositories.brain,
+    clip.metadata.clip_id,
+    clipRunOf(synthesis, startedAt, finishedAt),
+  )
   if (synthesis.skipped) return { outcome: 'skipped' }
   if (synthesis.needsClaude) {
     await routeToNeedsClaude(repositories.clips, clip, {

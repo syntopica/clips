@@ -5,9 +5,12 @@ export const USAGE_TEXT = `clips - ingest capture archive captures into the brai
 
   clips pull                     fast-forward the browser clipper's inbox and hand
                                  its pending clips to the archive
-  clips status [--json]          print each clip's derived state and evidence;
+  clips status [--json [--items]]
+                                 print each clip's derived state and evidence;
                                  --json prints counts per state, oldest capture
-                                 per waiting state and daily intake, no content
+                                 per waiting state and daily intake, no content;
+                                 --items adds each waiting clip by opaque id,
+                                 reason code, stage, attempts and last run
   clips ingest [options]         run the ingest pipeline
   clips harvest [options]        harvest newsletters and saved articles into clips
   clips grade --page <path>...   grade pages against the clips they cite

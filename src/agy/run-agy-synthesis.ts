@@ -7,6 +7,7 @@ import { agyFailureTail } from '../grade/agy-failure-tail.ts'
 import { isCommandOutput } from '../grade/is-command-output.ts'
 import { runCommand } from '../harvest/run-command.ts'
 import { unwrapAgyResponse } from '../harvest/triage/unwrap-agy-response.ts'
+import { parseAgyUsage } from '../runs/parse-agy-usage.ts'
 
 /** The Antigravity CLI as a synthesis transport, so a run needs no codex
  * credits at all. Added 2026-08-02 on the owner's instruction, after the second
@@ -84,6 +85,7 @@ export const agySynthesisRunner = (model: string): CodexRunner => ({
       exitCode: 0,
       lastMessage,
       stderrTail: lastMessage === null ? result.stdout.slice(-400) : '',
+      usage: parseAgyUsage(result.stdout),
     }
   },
 })

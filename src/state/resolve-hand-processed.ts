@@ -9,6 +9,7 @@ export const resolveHandProcessed = async (
   if (brainCommit === null) {
     return {
       state: 'inconsistent',
+      code: 'processed_without_commit',
       reason: 'state.json says processed but records no brainCommit',
     }
   }
@@ -16,7 +17,12 @@ export const resolveHandProcessed = async (
   return resolved.ok
     ? {
         state: 'reconciliation-pending',
+        code: 'processed_under_pending',
         reason: `state.json says processed at ${resolved.sha} but the clip is still under pending/`,
       }
-    : { state: 'inconsistent', reason: resolved.reason }
+    : {
+        state: 'inconsistent',
+        code: 'commit_unresolved',
+        reason: resolved.reason,
+      }
 }

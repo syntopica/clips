@@ -27,6 +27,7 @@ describe('formatStatusLine', () => {
   it('names the clip, the state and the evidence', () => {
     const line = formatStatusLine(clip, {
       state: PENDING,
+      code: 'no_ledger',
       reason: 'no ledger',
     })
     expect(line).toContain('01KYFXAB')
@@ -44,6 +45,7 @@ describe('formatStatusLine', () => {
     }
     const line = formatStatusLine(thin, {
       state: 'unreadable',
+      code: 'thin_clip',
       reason: NO_METADATA_JSON,
     })
     expect(line).toContain('2026-07-28-042951-mobile')
@@ -62,7 +64,11 @@ describe('formatStatusLine, on text that came from an untrusted page', () => {
       ...clip,
       metadata: { ...clip.metadata, title: `a${ESC}[2Jb` },
     } as Clip
-    const line = formatStatusLine(hostile, { state: PENDING, reason: 'x' })
+    const line = formatStatusLine(hostile, {
+      state: PENDING,
+      code: 'no_ledger',
+      reason: 'x',
+    })
     expect(line).not.toContain(ESC)
     expect(line).toContain('ab')
   })
@@ -72,7 +78,11 @@ describe('formatStatusLine, on text that came from an untrusted page', () => {
       ...clip,
       metadata: { ...clip.metadata, site: `evil${ESC}[2J.example` },
     } as Clip
-    const line = formatStatusLine(hostile, { state: PENDING, reason: 'x' })
+    const line = formatStatusLine(hostile, {
+      state: PENDING,
+      code: 'no_ledger',
+      reason: 'x',
+    })
     expect(line).not.toContain(ESC)
   })
 
@@ -85,6 +95,7 @@ describe('formatStatusLine, on text that came from an untrusted page', () => {
     }
     const line = formatStatusLine(thin, {
       state: 'unreadable',
+      code: 'thin_clip',
       reason: NO_METADATA_JSON,
     })
     expect(line).not.toContain(ESC)
@@ -96,13 +107,18 @@ describe('formatStatusLine, on text that came from an untrusted page', () => {
       ...clip,
       metadata: { ...clip.metadata, title: 'a\nreconciled   forged' },
     } as Clip
-    const line = formatStatusLine(hostile, { state: PENDING, reason: 'x' })
+    const line = formatStatusLine(hostile, {
+      state: PENDING,
+      code: 'no_ledger',
+      reason: 'x',
+    })
     expect(line.split('\n')).toHaveLength(2)
   })
 
   it('strips an escape out of the reason', () => {
     const line = formatStatusLine(clip, {
       state: 'inconsistent',
+      code: 'content_mismatch',
       reason: `a${ESC}[2Jb`,
     })
     expect(line).not.toContain(ESC)
