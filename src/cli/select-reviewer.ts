@@ -1,6 +1,8 @@
 import { AGY_BULK_MODEL } from '../models/agy-bulk-model.ts'
 import { AGY_FINE_MODEL } from '../models/agy-fine-model.ts'
+import { AGY_SECOND_REVIEW_MODEL } from '../models/agy-second-review-model.ts'
 import { agyReviewer } from '../review/agy-reviewer.ts'
+import { authorAwareReviewer } from '../review/author-aware-reviewer.ts'
 import type { Reviewer } from '../review/reviewer.ts'
 import { terminalReviewer } from '../review/terminal-reviewer.ts'
 
@@ -35,6 +37,12 @@ export const selectReviewer = (autoReview: boolean): Reviewer => {
         `AGY_FINE_MODEL are both "${verifier}". Point one of them elsewhere.`,
     )
   }
-  process.stdout.write(`reviewer: agy ${AGY_BULK_MODEL}\n`)
-  return agyReviewer(AGY_BULK_MODEL)
+  process.stdout.write(
+    `reviewer: agy ${AGY_BULK_MODEL}, ${AGY_SECOND_REVIEW_MODEL} for its own diffs\n`,
+  )
+  return authorAwareReviewer(
+    AGY_BULK_MODEL,
+    agyReviewer(AGY_BULK_MODEL),
+    agyReviewer(AGY_SECOND_REVIEW_MODEL),
+  )
 }
