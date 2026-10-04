@@ -15,7 +15,7 @@ export const VEXA_BODY_HEADER_QUERY = `
   FROM messages m
   WHERE LOWER(TRIM(m.from_addr)) = ?
     AND m.date_utc >= ?
-    AND COALESCE(m.body_html, '') <> ''
+    AND m.has_html = 1
     AND NOT EXISTS (
       SELECT 1
       FROM message_placements mp

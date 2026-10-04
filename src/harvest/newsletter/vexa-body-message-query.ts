@@ -12,10 +12,9 @@
  *
  * Parameter: the lowercased sender address. */
 export const VEXA_BODY_MESSAGE_QUERY = `
-  SELECT m.date_utc AS date, COALESCE(m.subject, '') AS subject,
-         COALESCE(m.body_html, '') AS body
+  SELECT m.id AS id, m.date_utc AS date, COALESCE(m.subject, '') AS subject
   FROM messages m
   WHERE LOWER(TRIM(m.from_addr)) = ?
-    AND COALESCE(m.body_html, '') <> ''
+    AND m.has_html = 1
   ORDER BY m.date_utc DESC
 `

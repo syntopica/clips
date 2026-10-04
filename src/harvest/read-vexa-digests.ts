@@ -1,6 +1,7 @@
 import { DatabaseSync } from 'node:sqlite'
 import type { DigestBody } from './newsletter/digest-body.ts'
 import { digestHtmlToMarkdown } from './newsletter/digest-html-to-markdown.ts'
+import { readVexaMessageHtml } from './newsletter/read-vexa-message-html.ts'
 import { VEXA_DATABASE_PATH } from './newsletter/vexa-database-path.ts'
 import { VEXA_DIGEST_QUERY } from './newsletter/vexa-digest-query.ts'
 
@@ -36,15 +37,13 @@ export function* readVexaDigests(
       .prepare(VEXA_DIGEST_QUERY)
       .iterate(sender.toLowerCase(), since)
     for (const row of rows) {
-      if (
-        typeof row['date'] !== 'string' ||
-        typeof row['body'] !== 'string' ||
-        row['body'] === ''
-      )
+      if (typeof row['date'] !== 'string' || typeof row['id'] !== 'string')
         continue
+      const html = readVexaMessageHtml(row['id'])
+      if (html === '') continue
       yield {
         date: row['date'].slice(0, 10),
-        body: digestHtmlToMarkdown(row['body']),
+        body: digestHtmlToMarkdown(html),
       }
     }
   } finally {

@@ -1,4 +1,5 @@
 import { DatabaseSync } from 'node:sqlite'
+import { readVexaMessageHtml } from '../newsletter/read-vexa-message-html.ts'
 import { VEXA_BODY_MESSAGE_QUERY } from '../newsletter/vexa-body-message-query.ts'
 import { VEXA_DATABASE_PATH } from '../newsletter/vexa-database-path.ts'
 import type { BodyArticle } from './body-article.ts'
@@ -27,14 +28,14 @@ export const readVexaBodyArticle = (
       if (
         typeof row['date'] !== 'string' ||
         typeof row['subject'] !== 'string' ||
-        typeof row['body'] !== 'string'
+        typeof row['id'] !== 'string'
       )
         continue
       if (slugify(row['subject']) !== slug) continue
       return {
         subject: row['subject'],
         date: row['date'].slice(0, 10),
-        bodyHtml: row['body'],
+        bodyHtml: readVexaMessageHtml(row['id']),
       }
     }
   } finally {
