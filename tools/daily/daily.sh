@@ -45,6 +45,16 @@ if [ -n "$new" ]; then
   echo "$(stamp) committed $(printf '%s\n' "$new" | grep -c metadata.json) new clips"
 fi
 
+# The automatic review gate always runs on Gemini through agy. With that quota
+# spent every clip escalates into needs-claude and five of them end the run, so
+# a spent quota would park five clips a day for a person. Ask once first.
+probe=$(timeout --kill-after=30s 300 agy -p "Reply with the single word OK." \
+  --model gemini-3.1-pro-high --output-format json --print-timeout 4m 2>&1 < /dev/null)
+if printf '%s' "$probe" | grep -q "quota reached"; then
+  echo "$(stamp) stop: agy quota spent - $(printf '%s' "$probe" | grep -o 'Resets in [0-9hms]*' | head -1)"
+  exit 0
+fi
+
 # Oldest capture first. `clips status --items` names clips by an opaque id that
 # `--clip` does not accept, so the ULIDs come from the store itself.
 pending=$(python3 - "$ARCHIVE/clips/pending" <<'PY'
