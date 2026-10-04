@@ -9,6 +9,24 @@
   before the dashboard adapter ships; if the tail remains, write the document at
   the end of a job instead of polling.
 
+- [x] Unattended clips day restored (2026-10-05). Four silent breaks: agy no
+      longer listed `claude-opus-4-6-thinking` (now `claude-opus-5-5-high`,
+      `aef83b5`); with Claude spent, fallback synthesis ran on the auto-review
+      gate's own Gemini and every clip escalated (`authorAwareReviewer` routes
+      those diffs to `gemini-3.8-flash-high`, `aef83b5`); Vexa moved message
+      HTML out of `messages.body_html`, so the newsletter lane harvested nothing
+      from 2026-09-04 (bodies now via `vexa message --json`, `1053786`); and a
+      17 s Gemini run that wrote nothing parked a clip (one retry, `a49dea3`).
+      `tools/daily/daily.sh` + launchd template run harvest, promote, commit and
+      a 40-clip auto-review ingest at 06:30 (`3963018`). Verified by
+      `pnpm check` (1309 tests), `clips harvest --dry-run` (177 emails, 655
+      articles) and a launchd probe reaching agy, vexa and the remote.
+- [ ] `tools/daily/daily.sh` has not yet completed a scheduled run. Smallest
+      step: read `~/p/.clips-daily.launchd.log` after the first 06:30 run.
+- [ ] `read-vexa-message-html.ts` passes the id after `--` because Vexa ids can
+      begin with `-`; no test pins the argument order. Smallest step: extract
+      the argument list into its own unit and test a dash-leading id.
+
 - [x] Resolve the ChatGPT converter output from instance configuration.
       `convert.py` now reads `SYNTOPICA_DATA` and `brain.sources` at call time;
       `run.sh` and `purge.sh` use the same configuration contract as
