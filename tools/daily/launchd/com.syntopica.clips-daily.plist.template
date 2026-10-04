@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!-- Template, not an installed job: the paths are this checkout's, and every
+     instance has different ones. From the engine root, with SYNTOPICA_DATA
+     set to the directory containing syntopica.config.json, render it, then load
+     the rendered copy (which is gitignored beside this file):
+
+       template="$PWD/tools/daily/launchd/com.syntopica.clips-daily.plist"
+       sed -e "s|__ENGINE_ROOT__|$PWD|g" -e "s|__WORKSPACE_ROOT__|$(dirname "$PWD")|g" \
+         -e "s|__HOME__|$HOME|g" \
+         -e "s|__DATA_ROOT__|${SYNTOPICA_DATA:?Set SYNTOPICA_DATA to the instance directory}|g" \
+         "$template.template" > "$template"
+       cp "$template" ~/Library/LaunchAgents/com.syntopica.clips-daily.plist
+       launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.syntopica.clips-daily.plist
+-->
+<dict>
+  <key>Label</key>
+  <string>com.syntopica.clips-daily</string>
+
+  <!-- tools/daily/daily.sh: harvest, promote, commit the captures, then ingest
+       a bounded number of waiting clips behind the automatic review gate. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>__ENGINE_ROOT__/tools/daily/daily.sh</string>
+  </array>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>SYNTOPICA_DATA</key>
+    <string>__DATA_ROOT__</string>
+    <!-- agy and vexa install under ~/.local/bin, which launchd's PATH lacks. -->
+    <key>PATH</key>
+    <string>__HOME__/.local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+
+  <key>WorkingDirectory</key>
+  <string>__DATA_ROOT__</string>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>6</integer>
+    <key>Minute</key>
+    <integer>30</integer>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>__WORKSPACE_ROOT__/.clips-daily.launchd.log</string>
+  <key>StandardErrorPath</key>
+  <string>__WORKSPACE_ROOT__/.clips-daily.launchd.log</string>
+</dict>
+</plist>

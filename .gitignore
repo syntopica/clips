@@ -13,3 +13,4 @@ coverage/
 # The instance the engine is being run against, and any local overlay of it.
 syntopica.local.json
 tools/chatgpt/launchd/com.brain.chatgpt-keeper.plist
+tools/daily/launchd/com.syntopica.clips-daily.plist
