@@ -4,7 +4,9 @@ import { configuredRunner } from '../config/configured-runner.ts'
 import { configuredBoundaryDecisionPath } from '../sandbox/configured-boundary-decision-path.ts'
 import { readBoundaryDecision } from '../sandbox/read-boundary-decision.ts'
 import { interactiveSynthesizer } from '../synthesis/interactive-synthesizer.ts'
+import { retryEmptySynthesis } from '../synthesis/retry-empty-synthesis.ts'
 import type { Synthesizer } from '../synthesis/synthesizer.ts'
+import { worktreeIsUnchanged } from '../validation/worktree-is-unchanged.ts'
 import { selectSynthesisTransport } from './select-synthesis-transport.ts'
 import { SYNTHESIS_BINARIES } from './synthesis-binaries.ts'
 
@@ -41,7 +43,10 @@ export const selectSynthesizer = async (
     process.stdout.write(`synthesizer: interactive (${reason})\n`)
     return interactiveSynthesizer
   }
-  const transport = selectSynthesisTransport(name)
+  const transport = retryEmptySynthesis(
+    selectSynthesisTransport(name),
+    worktreeIsUnchanged,
+  )
   if (name === 'worker') {
     // No binary to probe: the worker is a service, and a coordinator that is
     // down fails the first job with its address in the message.
