@@ -2,6 +2,7 @@ import { dirname, join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { codexPrompt } from '../codex/codex-prompt.ts'
 import { withSyntopicaConfig } from '../config/with-syntopica-config.ts'
+import { triageRootPath } from '../harvest/triage/triage-root-path.ts'
 import { worktreeEngineOverlay } from '../index-map/worktree-engine-overlay.ts'
 import { ledgerRelativePath } from '../ledger/ledger-relative-path.ts'
 import { diffNeedsHuman } from '../review/diff-needs-human.ts'
@@ -24,6 +25,14 @@ describe('a wiki nested under brain/', () => {
       expect(indexRepositoryPath()).toBe('brain/index.md')
       expect(sensitiveDomainsPath(data)).toBe(
         `${data}/brain/.ingest/sensitive-domains.txt`,
+      )
+    })
+  })
+
+  it('keeps the triage drop zone beside the pages, not at the repository root', () => {
+    nested(() => {
+      expect(triageRootPath(data)).toBe(
+        join(data, 'brain', 'inbox', 'newsletter-triage'),
       )
     })
   })
