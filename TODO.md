@@ -1,5 +1,20 @@
 # TODO
 
+- [ ] `clips requeue` leaves the failed run's kept worktree and branch
+      (`ingest/<id>`), so the requeued clip stops at once with "kept by an
+      earlier run; clear it to synthesize again" (2026-10-05,
+      01KYSGC20YASFDJ8GT0JBFS2CG and 01KYSGC20YC7BRXR2PBVCHDK0Y, cleared by hand
+      after saving their diffs). Smallest next step: have requeue save the kept
+      diff into the clip's state and remove the worktree and branch, or print
+      the clear command it needs.
+
+- [ ] Worker-ladder synthesis on free OpenRouter models (trial 2026-10-05, 10
+      clips: 2 published, 1 reviewer skip, 7 needs-claude). Remaining refusals
+      not fixed in the engine: a rewrite that drops an existing section, and a
+      new page whose `link_from` names a page the model was not shown. Smallest
+      next step: measure the rates over the full 817-clip run before choosing a
+      repair.
+
 - [~] Hold `clips status --json` inside the dashboard polling budget (p95 2 s,
   300 MB). Lazy command imports and one `cat-file --batch-check` for every
   processed clip's commit took it from a 14 s full status to 0.6-0.9 s wall and
