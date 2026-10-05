@@ -15,6 +15,21 @@
       next step: measure the rates over the full 817-clip run before choosing a
       repair.
 
+- [ ] OpenRouter's free daily cap is shared by every worker queue: on 2026-10-05
+      atrium.synthesis took 818 of about 1000 attempts, the clips run stopped at
+      08:13Z after 64 clips (16 published, 3 skipped, 42 needs-claude), and once
+      the cap was spent every writing prompt fell to the local model, whose
+      40960-token window cannot hold 166-274 KB, so each clip burned about 25
+      minutes for nothing. Smallest next step: stop a run when the writing
+      step's answering executor turns local, instead of waiting for twelve
+      escalations.
+
+- [ ] The daily job's medium-list collector fails under launchd: "EPERM:
+      operation not permitted, copyfile .../Chrome/Default/Cookies" (2026-10-05
+      04:30Z), so its triage does not cover Medium lists. Smallest next step:
+      grant the launchd job's node Full Disk Access, or read the cookies through
+      a path launchd may open.
+
 - [~] Hold `clips status --json` inside the dashboard polling budget (p95 2 s,
   300 MB). Lazy command imports and one `cat-file --batch-check` for every
   processed clip's commit took it from a 14 s full status to 0.6-0.9 s wall and
