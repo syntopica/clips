@@ -5,6 +5,10 @@ import { agyReviewer } from '../review/agy-reviewer.ts'
 import { authorAwareReviewer } from '../review/author-aware-reviewer.ts'
 import type { Reviewer } from '../review/reviewer.ts'
 import { terminalReviewer } from '../review/terminal-reviewer.ts'
+import { WORKER_REVIEW_QUEUE } from '../review/worker-review-queue.ts'
+import { workerReviewer } from '../review/worker-reviewer.ts'
+import { workerSynthesisPortOnQueue } from '../worker-synthesis/worker-synthesis-port-on-queue.ts'
+import { WORKER_SYNTHESIS_TIMING } from '../worker-synthesis/worker-synthesis-timing.ts'
 
 /** Which gate reads the diff. A person by default; `--auto-review` hands it to
  * agy on a model the synthesizer could not have been.
@@ -24,8 +28,19 @@ import { terminalReviewer } from '../review/terminal-reviewer.ts'
  * automatic gate defensible is that it is bounded (`diffNeedsHuman` keeps new
  * pages and `index.md` for a person) and fail-closed (anything unreadable
  * escalates rather than applying), not that a model is good at reviewing. */
-export const selectReviewer = (autoReview: boolean): Reviewer => {
+export const selectReviewer = (
+  autoReview: boolean,
+  environ: NodeJS.ProcessEnv = process.env,
+): Reviewer => {
   if (!autoReview) return terminalReviewer
+  // `CLIPS_REVIEW_RUNNER=worker` moves the gate off agy onto the worker's
+  // ladder, where independence is checked per answer (see workerReviewer).
+  if (environ['CLIPS_REVIEW_RUNNER'] === 'worker') {
+    process.stdout.write(`reviewer: worker ${WORKER_REVIEW_QUEUE}\n`)
+    return workerReviewer(
+      workerSynthesisPortOnQueue(WORKER_REVIEW_QUEUE, WORKER_SYNTHESIS_TIMING),
+    )
+  }
   // Widened deliberately: the two constants differ today, so TypeScript calls
   // the comparison impossible and refuses it. The guard is here for the edit
   // that makes them equal, which is exactly when nobody would notice.

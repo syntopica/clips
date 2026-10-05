@@ -7,8 +7,9 @@
 # store whose main differs from origin/main, so the commit and push between the
 # two steps is what lets the same run ingest what it captured.
 #
-# Every step is bounded by `timeout`, each clip separately, so one stuck model
-# call costs one clip. Five escalations in a row end the ingest: that is a quota
+# Every step is bounded by `timeout`, each clip separately (two hours: a clip is
+# three worker jobs, each allowed 45 minutes), so one stuck model call costs
+# one clip. Five escalations in a row end the ingest: that is a quota
 # wall or a systemic failure, and carrying on would park the whole queue in
 # needs-claude for a person.
 #
@@ -23,6 +24,12 @@ if [ -z "$DATA" ] || [ ! -f "$DATA/syntopica.config.json" ]; then
   exit 78
 fi
 MAX="${CLIPS_DAILY_MAX:-40}"
+# Synthesis and review both go to the worker, whose queue ladder picks the
+# model (owner decision 2026-10-05): agy first, then OpenRouter, then the
+# local model. The ladder rests a model at its quota wall and falls through,
+# so a spent agy quota no longer stops the run.
+export CLIPS_SYNTHESIS_RUNNER="${CLIPS_SYNTHESIS_RUNNER:-worker}"
+export CLIPS_REVIEW_RUNNER="${CLIPS_REVIEW_RUNNER:-worker}"
 ENGINE="$(cd "$(dirname "$0")/../.." && pwd)"
 clips() { node "$ENGINE/bin/clips" "$@"; }
 stamp() { date -u +%FT%TZ; }
@@ -45,16 +52,6 @@ if [ -n "$new" ]; then
   echo "$(stamp) committed $(printf '%s\n' "$new" | grep -c metadata.json) new clips"
 fi
 
-# The automatic review gate always runs on Gemini through agy. With that quota
-# spent every clip escalates into needs-claude and five of them end the run, so
-# a spent quota would park five clips a day for a person. Ask once first.
-probe=$(timeout --kill-after=30s 300 agy -p "Reply with the single word OK." \
-  --model gemini-3.1-pro-high --output-format json --print-timeout 4m 2>&1 < /dev/null)
-if printf '%s' "$probe" | grep -q "quota reached"; then
-  echo "$(stamp) stop: agy quota spent - $(printf '%s' "$probe" | grep -o 'Resets in [0-9hms]*' | head -1)"
-  exit 0
-fi
-
 # Oldest capture first. `clips status --items` names clips by an opaque id that
 # `--clip` does not accept, so the ULIDs come from the store itself.
 pending=$(python3 - "$ARCHIVE/clips/pending" <<'PY'
@@ -72,7 +69,7 @@ count=0
 for id in $pending; do
   [ "$count" -ge "$MAX" ] && break
   count=$((count + 1))
-  out=$(timeout --kill-after=30s 2700 clips ingest --auto-review --clip "$id" 2>&1 < /dev/null)
+  out=$(timeout --kill-after=30s 7200 clips ingest --auto-review --clip "$id" 2>&1 < /dev/null)
   code=$?
   outcome=$(printf '%s\n' "$out" | sed -n "s/^$id: //p" | tail -1)
   echo "$(stamp) $id exit=$code outcome=${outcome:-none}"

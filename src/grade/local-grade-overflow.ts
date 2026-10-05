@@ -21,5 +21,5 @@ export const localGradeOverflow = (
   if (provider !== 'ollama' && provider !== 'local-cpu') return null
   if (context === null || promptBytes <= context * WORKER_BYTES_PER_TOKEN)
     return null
-  return `the local model answered a ${String(Math.round(promptBytes / 1024))} KB prompt its ${String(context)}-token window cannot hold, so the verdict was discarded`
+  return `the local model answered a ${String(Math.round(promptBytes / 1024))} KB prompt its ${String(context)}-token window cannot hold, so the answer was discarded`
 }

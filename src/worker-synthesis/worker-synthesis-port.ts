@@ -8,7 +8,7 @@ import type { WorkerInferenceAnswer } from './worker-inference-answer.ts'
  * pass sets to the size of the pages it asks to have rewritten. */
 export type WorkerSynthesisPort = {
   infer(
-    step: 'select' | 'write',
+    step: 'select' | 'write' | 'review',
     prompt: string,
     schema: Record<string, unknown>,
     reserveBytes: number,

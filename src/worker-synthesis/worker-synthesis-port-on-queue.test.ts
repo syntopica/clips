@@ -102,14 +102,28 @@ describe('workerSynthesisPortOnQueue', () => {
     )
   })
 
-  it('refuses a prompt the pinned window cannot hold, sending nothing', async () => {
+  it('discards an over-window answer the local model gave', async () => {
     // 1000 tokens at three bytes each is 3000 bytes, the prompt included.
+    // Ollama truncates such a prompt from the head without saying so.
     const answer = await infer('x'.repeat(2000), 1001)
 
     expect(answer).toEqual({
       failure: expect.stringMatching(/1000-token window/) as unknown,
+      jobId: 's-1',
     })
-    expect(calls).toEqual([])
+  })
+
+  it('keeps an over-window answer a remote rung gave', async () => {
+    // The ladder sends the job to remote models first; refusing up front
+    // would have taken the clip from the rungs that can read all of it.
+    result = { ...result, executor: { provider: 'openrouter', model: 'big' } }
+    const answer = await infer('x'.repeat(2000), 1001)
+
+    expect(answer).toMatchObject({
+      executor: { provider: 'openrouter', model: 'big' },
+      jobId: 's-1',
+    })
+    expect(calls.length).toBeGreaterThan(0)
   })
 
   it('reports a job that ended without output as a failure', async () => {
