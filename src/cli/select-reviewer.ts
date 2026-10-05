@@ -5,6 +5,8 @@ import { agyReviewer } from '../review/agy-reviewer.ts'
 import { authorAwareReviewer } from '../review/author-aware-reviewer.ts'
 import type { Reviewer } from '../review/reviewer.ts'
 import { terminalReviewer } from '../review/terminal-reviewer.ts'
+import { tierAwareReviewer } from '../review/tier-aware-reviewer.ts'
+import { WORKER_REMOTE_REVIEW_QUEUE } from '../review/worker-remote-review-queue.ts'
 import { WORKER_REVIEW_QUEUE } from '../review/worker-review-queue.ts'
 import { workerReviewer } from '../review/worker-reviewer.ts'
 import { workerSynthesisPortOnQueue } from '../worker-synthesis/worker-synthesis-port-on-queue.ts'
@@ -36,9 +38,22 @@ export const selectReviewer = (
   // `CLIPS_REVIEW_RUNNER=worker` moves the gate off agy onto the worker's
   // ladder, where independence is checked per answer (see workerReviewer).
   if (environ['CLIPS_REVIEW_RUNNER'] === 'worker') {
-    process.stdout.write(`reviewer: worker ${WORKER_REVIEW_QUEUE}\n`)
-    return workerReviewer(
-      workerSynthesisPortOnQueue(WORKER_REVIEW_QUEUE, WORKER_SYNTHESIS_TIMING),
+    process.stdout.write(
+      `reviewer: worker ${WORKER_REVIEW_QUEUE}, ${WORKER_REMOTE_REVIEW_QUEUE} for local diffs\n`,
+    )
+    return tierAwareReviewer(
+      workerReviewer(
+        workerSynthesisPortOnQueue(
+          WORKER_REMOTE_REVIEW_QUEUE,
+          WORKER_SYNTHESIS_TIMING,
+        ),
+      ),
+      workerReviewer(
+        workerSynthesisPortOnQueue(
+          WORKER_REVIEW_QUEUE,
+          WORKER_SYNTHESIS_TIMING,
+        ),
+      ),
     )
   }
   // Widened deliberately: the two constants differ today, so TypeScript calls
