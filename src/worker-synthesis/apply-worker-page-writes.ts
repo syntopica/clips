@@ -1,8 +1,9 @@
-import { access, mkdir, writeFile } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
+import { access } from 'node:fs/promises'
+import { join } from 'node:path'
 import { linkNewPages } from './link-new-pages.ts'
 import { workerPagePathRefusal } from './worker-page-path-refusal.ts'
 import type { WorkerPageWrite } from './worker-page-write.ts'
+import { writeWorkerPage } from './write-worker-page.ts'
 
 /** Write the model's pages into the worktree, returning the paths written, or
  * the reason none were.
@@ -41,10 +42,7 @@ export const applyWorkerPageWrites = async (
   }
   const linked = await linkNewPages(worktree, writes, created, offered)
   if (typeof linked === 'string') return linked
-  for (const { path, content } of linked) {
-    const target = join(worktree, path)
-    await mkdir(dirname(target), { recursive: true })
-    await writeFile(target, content.endsWith('\n') ? content : `${content}\n`)
-  }
+  for (const { path, content } of linked)
+    await writeWorkerPage(worktree, path, content, created.has(path))
   return linked.map(({ path }) => path)
 }
