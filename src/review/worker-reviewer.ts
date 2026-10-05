@@ -1,4 +1,6 @@
-import { workerAuthorModel } from '../worker-synthesis/worker-author-model.ts'
+import { EVERY_GRADE_TIER } from '../grade/every-grade-tier.ts'
+import { gradeTiersOfAuthor } from '../grade/grade-tiers-of-author.ts'
+import { graderAuthorRefusal } from '../grade/grader-author-refusal.ts'
 import type { WorkerSynthesisPort } from '../worker-synthesis/worker-synthesis-port.ts'
 import { agyReviewPrompt } from './agy-review-prompt.ts'
 import { AGY_REVIEW_SCHEMA } from './agy-review-schema.ts'
@@ -13,9 +15,9 @@ import { sensitiveDiffRefusal } from './sensitive-diff-refusal.ts'
  * families were spent for days; the worker's ladder picks whichever executor
  * is free. That freedom is what makes independence a check rather than a
  * setting: the job cannot name an executor, so the answer's reported executor
- * is compared with the diff's author after the fact, and a verdict from the
- * model that wrote the diff - or from an executor that did not report itself -
- * escalates instead of applying. The same fail-closed bounds as the agy gate
+ * is placed on a tier after the fact, and a verdict from the tier that wrote
+ * the diff - or from an executor no tier holds - escalates instead of
+ * applying. The same fail-closed bounds as the agy gate
  * run first: `diffNeedsHuman` and the sensitive-path refusal are checked on the
  * diff text before any model sees it. */
 export const workerReviewer = (port: WorkerSynthesisPort): Reviewer => ({
@@ -34,17 +36,14 @@ export const workerReviewer = (port: WorkerSynthesisPort): Reviewer => ({
     )
     if ('failure' in answer)
       return { verdict: 'claude', reason: `review: ${answer.failure}` }
-    if (answer.executor === null)
-      return {
-        verdict: 'claude',
-        reason: 'the worker did not report which executor reviewed the diff',
-      }
-    const reviewer = workerAuthorModel(answer.executor)
-    if (reviewer === input.authorModel)
-      return {
-        verdict: 'claude',
-        reason: `${reviewer} wrote the diff and was handed its review - no independent review`,
-      }
+    // The grade lane's tier policy, not a model-name match: OpenRouter
+    // reports whichever fallback answered, so two names on one tier prove
+    // nothing, and an author the lane cannot place refuses every tier.
+    const refusal = graderAuthorRefusal(
+      answer.executor,
+      gradeTiersOfAuthor(input.authorModel) ?? EVERY_GRADE_TIER,
+    )
+    if (refusal !== null) return { verdict: 'claude', reason: refusal }
     return readAgyVerdict(answer.text)
   },
 })

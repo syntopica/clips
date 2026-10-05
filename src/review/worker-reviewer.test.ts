@@ -32,10 +32,10 @@ const review = async (port: WorkerSynthesisPort, authorModel: string) =>
   })
 
 describe('workerReviewer', () => {
-  it('applies a diff another executor approved', async () => {
+  it('applies a diff an executor on another tier approved', async () => {
     const port = answering({
       text: '{"verdict":"apply","reason":"sound"}',
-      executor: { provider: 'openrouter', model: 'nvidia/nemotron' },
+      executor: { provider: 'ollama', model: 'qwen3.6:35b' },
     })
 
     const outcome = await review(port, 'worker:openrouter/qwen/qwen3.8-27b')
@@ -44,16 +44,32 @@ describe('workerReviewer', () => {
     expect(port.prompts[0]).toContain('+A new line.')
   })
 
-  it('escalates a verdict from the executor that wrote the diff', async () => {
+  it('escalates a verdict from the tier that wrote the diff', async () => {
+    // OpenRouter reports whichever fallback answered, so two names on one
+    // tier are not evidence of two independent models.
     const port = answering({
       text: '{"verdict":"apply","reason":"sound"}',
       executor: { provider: 'openrouter', model: 'qwen/qwen3.8-27b' },
     })
 
-    const outcome = await review(port, 'worker:openrouter/qwen/qwen3.8-27b')
+    const outcome = await review(
+      port,
+      'worker:openrouter/qwen/qwen3.8-27b:free',
+    )
 
     expect(outcome.verdict).toBe('claude')
-    expect(outcome.reason).toContain('wrote the diff')
+    expect(outcome.reason).toContain('openrouter tier')
+  })
+
+  it('escalates every verdict on a diff whose author is unreported', async () => {
+    const port = answering({
+      text: '{"verdict":"apply","reason":"sound"}',
+      executor: { provider: 'ollama', model: 'qwen3.6:35b' },
+    })
+
+    const outcome = await review(port, 'worker:unreported')
+
+    expect(outcome.verdict).toBe('claude')
   })
 
   it('escalates when the worker gave no answer', async () => {
