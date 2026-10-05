@@ -41,6 +41,17 @@ describe('workerSynthesizer', () => {
     expect(calls[1]?.prompt).toContain('--- BEGIN WIKI PAGE topics/a.md ---')
   })
 
+  it('escalates a writing pass that returned no pages, with its reason', async () => {
+    const { port } = fakePort(
+      chose,
+      answer({ pages: [], needs_claude: false, reason: 'nothing durable' }),
+    )
+    const { result } = await run(port)
+
+    expect(result.needsClaude).toBe(true)
+    expect(result.reason).toBe('the worker wrote no pages: nothing durable')
+  })
+
   it('refuses a page outside the page directories and writes nothing', async () => {
     const { port } = fakePort(
       chose,

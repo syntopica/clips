@@ -47,6 +47,14 @@ export const runWorkerWriting = async (
     )
   if (writing.needs_claude)
     return workerSynthesisEscalation(writing.reason, author)
+  // An automated transport may not skip a clip, so an empty answer escalates
+  // like the validation that would refuse it - but carrying the model's own
+  // reason, which an empty worktree otherwise loses.
+  if (writing.pages.length === 0)
+    return workerSynthesisEscalation(
+      `the worker wrote no pages: ${writing.reason}`,
+      author,
+    )
   const applied = await applyWorkerPageWrites(
     input.worktree,
     writing.pages,
