@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module'
 import { join } from 'node:path'
-import { format, resolveConfig } from 'prettier'
+import { format, getFileInfo, resolveConfig } from 'prettier'
 
 /** The repository's own prettier output for `text`, exactly as
  * `pnpm run check` demands it at the brain root.
@@ -20,6 +20,12 @@ export const prettierText = async (
   relativePath: string,
   text: string,
 ): Promise<string> => {
+  // The repository's own exclusions hold here as they do for `prettier
+  // --write`: the wiki keeps brain/ outside its formatter.
+  const { ignored } = await getFileInfo(join(brainRepository, relativePath), {
+    ignorePath: join(brainRepository, '.prettierignore'),
+  })
+  if (ignored) return text
   const options = await resolveConfig(join(brainRepository, relativePath))
   const resolveFrom = createRequire(join(brainRepository, 'package.json'))
   const plugins = (options?.plugins ?? []).map((plugin) =>

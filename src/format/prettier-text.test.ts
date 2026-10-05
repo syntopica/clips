@@ -1,5 +1,8 @@
+import { writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { checkoutRoot } from '../testing/checkout-root.ts'
+import { temporaryDir } from '../testing/temporary-dir.ts'
 import { prettierText } from './prettier-text.ts'
 
 /** The checkout that runs these tests. The point of them is that the CLI
@@ -26,5 +29,15 @@ describe('prettierText', () => {
   it('leaves text that is already formatted byte-identical', async () => {
     const page = '# Title\n\nShort enough.\n'
     expect(await prettierText(BRAIN, 'topics/example.md', page)).toBe(page)
+  })
+
+  it("leaves a path the repository's .prettierignore excludes as written", async () => {
+    // 2026-10-05: the wiki keeps brain/ outside its formatter, and an ingest
+    // reflowed its one-line index entries across 883 lines regardless.
+    const repository = temporaryDir('clips-prettier-')
+    writeFileSync(join(repository, '.prettierignore'), 'brain/\n')
+    const long = `- [[topics/a]] — ${'word '.repeat(30)}\n`
+
+    expect(await prettierText(repository, 'brain/index.md', long)).toBe(long)
   })
 })
