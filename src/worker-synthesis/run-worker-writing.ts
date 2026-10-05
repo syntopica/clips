@@ -1,6 +1,7 @@
 import { sha256Hex } from '../harvest/promote/sha256-hex.ts'
 import type { SynthesisResult } from '../synthesis/synthesis-result.ts'
 import { applyWorkerPageWrites } from './apply-worker-page-writes.ts'
+import { declinedWritingEscalation } from './declined-writing-escalation.ts'
 import { listWorktreePages } from './list-worktree-pages.ts'
 import { parseWorkerWriting } from './parse-worker-writing.ts'
 import { workerAuthorModel } from './worker-author-model.ts'
@@ -45,16 +46,8 @@ export const runWorkerWriting = async (
       `the worker's pages were not parseable (PROMPT_OUTPUT_INVALID): ${written.text.slice(-300)}`,
       author,
     )
-  if (writing.needs_claude)
-    return workerSynthesisEscalation(writing.reason, author)
-  // An automated transport may not skip a clip, so an empty answer escalates
-  // like the validation that would refuse it - but carrying the model's own
-  // reason, which an empty worktree otherwise loses.
-  if (writing.pages.length === 0)
-    return workerSynthesisEscalation(
-      `the worker wrote no pages: ${writing.reason}`,
-      author,
-    )
+  const declined = declinedWritingEscalation(writing, author)
+  if (declined !== null) return declined
   const applied = await applyWorkerPageWrites(
     input.worktree,
     writing.pages,
