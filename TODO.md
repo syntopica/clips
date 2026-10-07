@@ -173,6 +173,15 @@
 
 ## Shared package scope migration (2026-09-14)
 
+- [ ] Pay down the 81 `code-policy/no-inline-types-in-runtime-files` findings
+      frozen in `eslint-suppressions.json` on 2026-10-07, when
+      `eslint-plugin-code-policy@0.8.0` began reporting every object type
+      literal in runtime code (inline parameter, return and `as` types, type
+      arguments). Name each shape in its own type file, then
+      `pnpm exec eslint src --prune-suppressions`. Also drop the
+      `minimumReleaseAgeExclude` entries in `pnpm-workspace.yaml` after
+      2026-10-08 and verify `pnpm install --frozen-lockfile`.
+
 - [ ] After the owner publishes the renamed shared packages, regenerate the
       lockfile and run the existing repository quality gate. Source references
       now use the new scope; the lockfile is intentionally unchanged because the

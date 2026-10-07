@@ -1,0 +1,362 @@
+{
+  "src/capture/complete-dump.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/capture/dom-fallbacks.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/capture/mirror-clip-state.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/capture/push-capture-state.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 2
+    }
+  },
+  "src/citations/sources-block-range.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/classifications/is-verdict-row.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/clips/read-json-file.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 2
+    }
+  },
+  "src/clips/unsupported-schema-version-reason.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/codex/codex-exec-arguments.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/codex/run-codex-exec.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/commands/derive-worktree-pages.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 2
+    }
+  },
+  "src/commands/ingest-test-fixture.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/commands/ingest-test-repository-with-origin.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/commands/reconcile.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/commands/regenerate-index-map.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 2
+    }
+  },
+  "src/commands/rewrite-claim-markers.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 2
+    }
+  },
+  "src/commands/synthesize-and-validate.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 2
+    }
+  },
+  "src/config/read-syntopica-layers.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/config/run-syntopica-git.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/cursor/run-cursor-agent.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/git/run-git-with-input.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/git/run-git.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/grade/agy-failure-tail.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/grade/codex-grade-args.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/grade/grade-failure-tail.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/grade/is-command-output.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/grade/run-codex-grade.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/grade/run-worker-grade.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/grade/source-entry-values.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/grade/unwrap-cursor-response.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 2
+    }
+  },
+  "src/grade/worker-grade-answer.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/grade/worker-grade-job.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/harvest/article/markup-delimiters.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/harvest/medium/parse-reading-list-response.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/harvest/newsletter/deduplicate-digest-links.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/harvest/promote/parse-body-article-url.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/harvest/promote/promote-articles.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/harvest/triage/run-codex-triage-batch.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/harvest/triage/run-refine-worker.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/harvest/triage/run-triage-worker.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/harvest/triage/unwrap-agy-response.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 2
+    }
+  },
+  "src/inbox/partition-inbox-clips.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/index-map/generate-index-map.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/index-map/worktree-engine-overlay.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/ledger/unsupported-ledger-version-reason.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/lock/acquire-lock.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/lock/release-lock.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/reconcile/build-cited-ledgers.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/reconcile/partition-unledgered-candidates.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/reconcile/publish-cited-ledgers.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/runs/completed-turn-usage.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/runs/parse-agy-usage.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/status-json/status-item-of.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/testing/capture-stderr.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/testing/fake-worker-synthesis-port.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/testing/make-doctor-fixture.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/testing/nested-wiki-config.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/testing/run-worker-synthesis-fixture.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/testing/syntopica-config-test-state.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/validation/modified-page-texts.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/worker-synthesis/track-worker-job-ids.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/worker-synthesis/worker-synthesis-port-on-queue.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/worker-synthesis/worker-writing-prompt.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/worker/await-worker-output.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/worker/await-worker-result.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/worker/read-worker-instance.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/worker/read-worker-max-payload-bytes.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/worker/read-worker-model-context.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/worker/read-worker-profile-executor.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/worker/submit-worker-job.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 2
+    }
+  },
+  "src/worker/worker-endpoint.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  },
+  "src/worker/worker-error-code.ts": {
+    "code-policy/no-inline-types-in-runtime-files": {
+      "count": 1
+    }
+  }
+}
