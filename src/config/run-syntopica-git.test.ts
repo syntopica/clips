@@ -17,4 +17,15 @@ describe('runSyntopicaGit', () => {
     expect(Object.keys(failure)).toEqual(['status', 'stdout'])
     expect(JSON.stringify(failure)).not.toContain('missing-private-path')
   })
+
+  it('names the spawn error code without the repository path', () => {
+    const { data } = syntopicaConfigTestState()
+    expect(() =>
+      runSyntopicaGit(data, [
+        '-c',
+        'alias.flood=!yes | head -c 2000000',
+        'flood',
+      ]),
+    ).toThrow(/^Cannot inspect configured Git repository \(ENOBUFS\)$/u)
+  })
 })

@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process'
 
 import { InvalidSyntopicaConfigError } from './invalid-syntopica-config-error.ts'
+import { spawnErrorCode } from './spawn-error-code.ts'
 
 export function runSyntopicaGit(
   root: string,
@@ -20,9 +21,13 @@ export function runSyntopicaGit(
       },
     },
   )
+  // The spawn's own code (ETIMEDOUT, EAGAIN, ENOBUFS) says whether the host or
+  // the repository failed: four suites once threw this under a load average
+  // of 50-80 and passed on rerun, and the bare message could not tell which.
+  // Only the code is kept; the error's message names the repository path.
   if (result.error)
     throw new InvalidSyntopicaConfigError(
-      'Cannot inspect configured Git repository',
+      `Cannot inspect configured Git repository (${spawnErrorCode(result.error)})`,
     )
   return { status: result.status, stdout: result.stdout }
 }
