@@ -31,26 +31,56 @@ MAX="${CLIPS_DAILY_MAX:-40}"
 export CLIPS_SYNTHESIS_RUNNER="${CLIPS_SYNTHESIS_RUNNER:-worker}"
 export CLIPS_REVIEW_RUNNER="${CLIPS_REVIEW_RUNNER:-worker}"
 ENGINE="$(cd "$(dirname "$0")/../.." && pwd)"
-clips() { node "$ENGINE/bin/clips" "$@"; }
+# An array, not a function: `timeout` executes a program, so a `clips()`
+# function was never called and every step ran whichever `clips` came first on
+# PATH - this checkout only by coincidence, and `command not found` elsewhere.
+CLIPS=(node "$ENGINE/bin/clips")
 stamp() { date -u +%FT%TZ; }
 cd "$DATA" || exit 1
 
+# The 2026-10-09 run logged two clips and then nothing - no clip line, no
+# `done:`, no `stop:` - and the machine had rebooted by evening. So every way
+# out now leaves a line: a signal names itself, any other exit names its code
+# and the step it was in, and each clip logs before it starts, so even a
+# SIGKILL or a power loss leaves the clip it died on as the last line. Bash runs
+# a trap only once the foreground child returns, so a signal to the process
+# group (shutdown, `launchctl kill`) is logged as soon as the step dies.
+step="start"
+finished=0
+on_exit() {
+  code=$?
+  [ "$finished" = 1 ] || echo "$(stamp) stop: exited with code $code during $step"
+}
+on_signal() {
+  echo "$(stamp) stop: received SIG$1 during $step"
+  finished=1
+  exit $((128 + $2))
+}
+trap on_exit EXIT
+trap 'on_signal TERM 15' TERM
+trap 'on_signal HUP 1' HUP
+trap 'on_signal INT 2' INT
+echo "$(stamp) start: pid $$, booted $(sysctl -n kern.boottime 2>/dev/null | sed -n 's/.*} //p')"
+
 ARCHIVE=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["clips"]["archive"])' syntopica.config.json)
 
+step="harvest"
 echo "$(stamp) harvest"
 # The code is read before the next line runs: `$(stamp)` inside the echo
 # resets `$?`, which logged every harvest and promote as exit=0 until
 # 2026-10-11, including promote runs that captured nothing.
-timeout --kill-after=30s 7200 clips harvest < /dev/null
+timeout --kill-after=30s 7200 "${CLIPS[@]}" harvest < /dev/null
 code=$?
 echo "$(stamp) harvest exit=$code"
+step="promote"
 echo "$(stamp) promote"
-timeout --kill-after=30s 3600 clips harvest --promote < /dev/null
+timeout --kill-after=30s 3600 "${CLIPS[@]}" harvest --promote < /dev/null
 code=$?
 echo "$(stamp) promote exit=$code"
 
 new=$(git ls-files --others --exclude-standard -- "$ARCHIVE/clips/pending")
 if [ -n "$new" ]; then
+  step="commit"
   printf '%s\n' "$new" | git add --pathspec-from-file=-
   git commit -q -m "chore(clips): capture the $(date +%F) newsletter harvest" &&
     git pull -q --rebase --autostash && git push -q
@@ -59,6 +89,7 @@ fi
 
 # Oldest capture first. `clips status --items` names clips by an opaque id that
 # `--clip` does not accept, so the ULIDs come from the store itself.
+step="list pending"
 pending=$(python3 - "$ARCHIVE/clips/pending" <<'PY'
 import json, pathlib, sys
 rows = []
@@ -69,12 +100,15 @@ for _, clip_id in sorted(rows):
     print(clip_id)
 PY
 )
+echo "$(stamp) pending: $(printf '%s\n' "$pending" | grep -c .) clips, at most $MAX this run"
 streak=0
 count=0
 for id in $pending; do
   [ "$count" -ge "$MAX" ] && break
   count=$((count + 1))
-  out=$(timeout --kill-after=30s 7200 clips ingest --auto-review --clip "$id" 2>&1 < /dev/null)
+  step="ingest $id"
+  echo "$(stamp) $id start"
+  out=$(timeout --kill-after=30s 7200 "${CLIPS[@]}" ingest --auto-review --clip "$id" 2>&1 < /dev/null)
   code=$?
   outcome=$(printf '%s\n' "$out" | sed -n "s/^$id: //p" | tail -1)
   echo "$(stamp) $id exit=$code outcome=${outcome:-none}"
@@ -83,6 +117,7 @@ for id in $pending; do
   # still pending; tomorrow's run starts with it.
   if [ "$code" = 4 ]; then
     echo "$(stamp) stop: the synthesis transport is exhausted"
+    finished=1
     exit 4
   fi
   if [ "$outcome" = "needs-claude" ] || [ "$code" = 124 ]; then
@@ -92,7 +127,9 @@ for id in $pending; do
   fi
   if [ "$streak" -ge 5 ]; then
     echo "$(stamp) stop: five escalations in a row"
+    finished=1
     exit 3
   fi
 done
+finished=1
 echo "$(stamp) done: $count clips attempted"
