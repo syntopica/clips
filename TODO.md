@@ -13,12 +13,16 @@
   daily runs, recount the same codes from clips escalated after 2026-10-11 and
   compare.
 
-- [ ] The 2026-10-09 daily run logged two clips and then nothing: no clip line,
-      no `done:` and no `stop:`, although each clip is bounded by a 2 h timeout.
-      The machine booted again around 19:45Z that day, and `log show` no longer
-      holds that window. Smallest next step: if it recurs, read
-      `log show --predicate 'eventMessage CONTAINS "clips-daily"'` the same day,
-      and check whether the host slept (timeout counts monotonic time).
+- [~] The 2026-10-09 daily run logged two clips and then nothing: no clip line,
+  no `done:` and no `stop:`, although each clip is bounded by a 2 h timeout. The
+  machine booted again around 19:45Z that day, and `log show` no longer holds
+  that window. Guards landed 2026-10-11 (see `TODO_LOG.md`): the run now logs
+  its boot time, a `<id> start` line before each clip and a
+  `stop: ... during <step>` on any exit or signal. Smallest next step: on the
+  next run that ends without `done:`, read the last line of
+  `~/p/.clips-daily.launchd.log` (a `<id> start` with nothing after it is a
+  SIGKILL or power loss; compare the `booted` time of the next run) and close
+  this with the cause.
 
 - [~] Worker synthesis on qwen3.6:35b does not yet produce a publishable page.
   Three runs of the TaxHacker clip, 2026-09-30: once the selection named pages
@@ -36,13 +40,3 @@
   after 4-17 min and swap stood at 23.6 of 24.5 GB. Next step: rerun `smoke` on
   the same clip three times once the worker drains, and close this only if the
   validator accepts the results.
-
-- [ ] `tools/capture` service calls fail TLS under the python.org framework
-      Python (`/Library/Frameworks/Python.framework/.../3.12`): `urllib` raised
-      `CERTIFICATE_VERIFY_FAILED ... unable to get local issuer certificate`
-      against the capture service on 2026-10-11 while re-mirroring clip
-      01M3QXGJ, and the same push worked with `SSL_CERT_FILE=/etc/ssl/cert.pem`.
-      Filed from the capture repo's backlog run. Smallest step: run these tools
-      through `uv run` (or document `Install Certificates.command` /
-      `SSL_CERT_FILE`) and verify one `push_index_to_service.py --limit 1` from
-      a plain shell.

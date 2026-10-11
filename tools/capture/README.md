@@ -9,6 +9,15 @@ Python rather than TypeScript because these are transport-shaped jobs against
 untrusted remote hosts, the same reason `medium_transport.py` exists inside
 `tools/clips`. No dependencies beyond the standard library.
 
+Run the tools that make HTTPS requests (`push_index_to_service.py`,
+`backfill_assets.py`, `recover_gone.py`) through `uv run python`, not a bare
+`python3`. The python.org framework build that `/usr/local/bin/python3` points
+at ships no CA bundle until its `Install Certificates.command` is run, so every
+request fails with
+`CERTIFICATE_VERIFY_FAILED ... unable to get local issuer certificate` (measured
+2026-10-11 against the capture service); the project's `uv` interpreter has one.
+The bare-Python alternative is `SSL_CERT_FILE=/etc/ssl/cert.pem`.
+
 ## The URL index
 
 `url_index.py` maintains `url-index.sqlite3` at the root of the clips repository
@@ -38,9 +47,9 @@ at `capture.origin`, which is the only store a browser extension can read. The
 state comes from each row's `clip_dir`: `pending/` is `captured`, `processed/`
 is `ingested`, `needs-claude/` is itself.
 
-    CAPTURE_TOKEN=... python3 tools/capture/push_index_to_service.py --dry-run
-    CAPTURE_TOKEN=... python3 tools/capture/push_index_to_service.py --limit 20
-    CAPTURE_TOKEN=... python3 tools/capture/push_index_to_service.py
+    CAPTURE_TOKEN=... uv run python tools/capture/push_index_to_service.py --dry-run
+    CAPTURE_TOKEN=... uv run python tools/capture/push_index_to_service.py --limit 20
+    CAPTURE_TOKEN=... uv run python tools/capture/push_index_to_service.py
 
 Two requests per row: `POST /api/capture` to get the capture id for the URL,
 then `PATCH /api/captures/<id>` with the state and the directory. Both are
@@ -62,9 +71,9 @@ Design:
 `assets/<sha256>.<ext>`, rewrites `source.html` to point locally, and records
 every asset — successes and failures — in the index.
 
-    python3 tools/capture/backfill_assets.py --dry-run --all
-    python3 tools/capture/backfill_assets.py --all [--limit N]
-    python3 tools/capture/backfill_assets.py <clip-dir>...
+    uv run python tools/capture/backfill_assets.py --dry-run --all
+    uv run python tools/capture/backfill_assets.py --all [--limit N]
+    uv run python tools/capture/backfill_assets.py <clip-dir>...
 
 Choices worth knowing before changing it:
 

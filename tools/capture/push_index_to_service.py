@@ -16,10 +16,11 @@ The PATCH also marks each capture drained, and that is required rather than
 incidental: an undrained row is inbox work, and a thousand of them would send
 `clips drain` off to promote articles the store already has.
 
-Usage:
-    CAPTURE_TOKEN=... python3 push_index_to_service.py --dry-run
-    CAPTURE_TOKEN=... python3 push_index_to_service.py --limit 20
-    CAPTURE_TOKEN=... python3 push_index_to_service.py
+Usage (through `uv run`: the python.org framework `python3` has no CA bundle and
+fails every request with CERTIFICATE_VERIFY_FAILED):
+    CAPTURE_TOKEN=... uv run python push_index_to_service.py --dry-run
+    CAPTURE_TOKEN=... uv run python push_index_to_service.py --limit 20
+    CAPTURE_TOKEN=... uv run python push_index_to_service.py
 
 SPEC: ~/p/wiki/docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md
 """

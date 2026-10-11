@@ -6,6 +6,28 @@
 
 ### 2026-10-11 - Backlog run
 
+- [x] `tools/capture` HTTPS calls under the python.org framework `python3`
+      (`CERTIFICATE_VERIFY_FAILED`): the network tools are now documented to run
+      through `uv run python` (capture `README.md`, `push_index_to_service.py`
+      usage), with `SSL_CERT_FILE=/etc/ssl/cert.pem` as the bare-Python
+      alternative. Verified from a plain shell: an unauthenticated request to
+      the capture origin under `uv run python` completed the handshake
+      (`http 401`), the same request under `/usr/local/bin/python3` failed
+      `CERTIFICATE_VERIFY_FAILED`, and
+      `uv run python tools/capture/push_index_to_service.py --dry-run --limit 1`
+      printed `pushed 1, skipped 0, failed 0 of 1`. A live `--limit 1` push was
+      not run: it needs the capture token.
+- [x] `tools/daily/daily.sh` names where it stopped: a `start:` line with pid
+      and boot time, a `pending:` count, a `<id> start` line before each clip,
+      and EXIT/TERM/HUP/INT traps that log `stop: ... during <step>`. The same
+      change fixes a latent bug: `timeout clips ...` never called the script's
+      `clips()` function (timeout executes a program), so every step ran the
+      first `clips` on PATH; it now runs `node "$ENGINE/bin/clips"` from an
+      array. Verified with `shellcheck` (clean) and a stub engine in a scratch
+      instance: a normal run ends `done: 2 clips attempted`, a TERM to the
+      process group mid-clip logs `stop: received SIGTERM during ingest B2` (rc
+      143), and a failing preamble logs
+      `stop: exited with code 1 during     start`.
 - [x] The daily job can read Chrome's cookies under launchd again: `/bin/bash`
       (the plist's `ProgramArguments[0]`) has Full Disk Access, granted in
       System Settings on 2026-10-11 (TCC `kTCCServiceSystemPolicyAllFiles`,
