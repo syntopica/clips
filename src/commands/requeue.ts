@@ -31,6 +31,6 @@ export const requeue = async (
   return runLockedOnClipsRepository(
     brainRepository,
     clipsRepository,
-    async () => requeueMatchingClip(clipsRepository, filter),
+    async () => requeueMatchingClip(brainRepository, clipsRepository, filter),
   )
 }
