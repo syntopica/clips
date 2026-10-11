@@ -168,7 +168,16 @@ for the adapters under `tools/`, and Git.
 This engine is a checkout, not a package: clone it - the hub puts it under an
 instance's `engines/` directory - install, and run it from there.
 
+The test suite needs the [brain engine](https://github.com/syntopica/brain)
+checked out beside this one, at `../brain`, with its Python environment synced:
+the ingest integration suites copy its real index generator into their fixtures.
+Without it those suites skip, and the coverage thresholds then fail `pnpm test`
+(measured on a clips-only clone on 2026-10-11: 74.96% of lines against 76%). CI
+checks out the commit pinned in `.brain-engine-ref`.
+
 ```bash
+git clone https://github.com/syntopica/brain.git engines/brain
+(cd engines/brain && uv sync)
 git clone https://github.com/syntopica/clips.git engines/clips
 cd engines/clips
 pnpm install
