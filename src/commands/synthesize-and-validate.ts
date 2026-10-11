@@ -37,6 +37,7 @@ export const synthesizeAndValidate = async (
     clip.metadata.clip_id,
     clipRunOf(synthesis, startedAt, finishedAt),
   )
+  if (synthesis.exhausted === true) return { outcome: 'exhausted' }
   if (synthesis.skipped) return { outcome: 'skipped' }
   if (synthesis.needsClaude) {
     await routeToNeedsClaude(repositories.clips, clip, {

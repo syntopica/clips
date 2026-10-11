@@ -110,6 +110,7 @@ describe('workerSynthesisPortOnQueue', () => {
     expect(answer).toEqual({
       failure: expect.stringMatching(/1000-token window/) as unknown,
       jobId: 's-1',
+      exhausted: true,
     })
   })
 

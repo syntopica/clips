@@ -41,6 +41,33 @@ describe('workerSynthesizer', () => {
     expect(calls[1]?.prompt).toContain('--- BEGIN WIKI PAGE topics/a.md ---')
   })
 
+  it('leaves the clip pending and marks the run exhausted when the local model overflowed', async () => {
+    const { port } = fakePort(chose, {
+      failure: 'the local model answered a 200 KB prompt',
+      exhausted: true,
+    })
+    const { result } = await run(port)
+
+    expect(result.needsClaude).toBe(false)
+    expect(result.skipped).toBe(true)
+    expect(result.exhausted).toBe(true)
+    expect(result.reason).toBe(
+      'writing: the local model answered a 200 KB prompt',
+    )
+  })
+
+  it('marks the run exhausted when the selection pass overflowed', async () => {
+    const { port, calls } = fakePort(
+      { failure: 'overflow', exhausted: true },
+      chose,
+    )
+    const { result } = await run(port)
+
+    expect(calls.map((call) => call.step)).toEqual(['select'])
+    expect(result.exhausted).toBe(true)
+    expect(result.needsClaude).toBe(false)
+  })
+
   it('escalates a writing pass that returned no pages, with its reason', async () => {
     const { port } = fakePort(
       chose,

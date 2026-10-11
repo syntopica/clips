@@ -9,9 +9,9 @@
 #
 # Every step is bounded by `timeout`, each clip separately (two hours: a clip is
 # three worker jobs, each allowed 45 minutes), so one stuck model call costs
-# one clip. Five escalations in a row end the ingest: that is a quota
-# wall or a systemic failure, and carrying on would park the whole queue in
-# needs-claude for a person.
+# one clip. An exhausted transport (exit 4) ends the ingest at once, and five
+# escalations in a row end it: that is a quota wall or a systemic failure, and
+# carrying on would park the whole queue in needs-claude for a person.
 #
 # Usage:  tools/daily/daily.sh
 # Env:    SYNTOPICA_DATA instance directory (required)
@@ -78,6 +78,13 @@ for id in $pending; do
   code=$?
   outcome=$(printf '%s\n' "$out" | sed -n "s/^$id: //p" | tail -1)
   echo "$(stamp) $id exit=$code outcome=${outcome:-none}"
+  # Exit 4: the worker ladder fell to a local model too small for the prompt,
+  # so every later clip would burn its time and fail the same way. The clip is
+  # still pending; tomorrow's run starts with it.
+  if [ "$code" = 4 ]; then
+    echo "$(stamp) stop: the synthesis transport is exhausted"
+    exit 4
+  fi
   if [ "$outcome" = "needs-claude" ] || [ "$code" = 124 ]; then
     streak=$((streak + 1))
   else

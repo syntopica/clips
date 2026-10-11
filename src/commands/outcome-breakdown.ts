@@ -12,6 +12,7 @@ export const outcomeBreakdown = (outcomes: readonly ClipOutcome[]): string =>
       'skipped',
       'stopped',
       'quit',
+      'exhausted',
     ] as const
   )
     .map((outcome) => ({

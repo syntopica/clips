@@ -5,5 +5,8 @@ export const EXIT_CODE = {
   fatalLocal: 1,
   clipsStopped: 2,
   lockHeld: 3,
+  /** The synthesis transport ran out of capacity; the run stopped with the
+   * clip still pending. */
+  exhausted: 4,
   interrupted: 130,
 } as const

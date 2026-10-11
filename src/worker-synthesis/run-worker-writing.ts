@@ -12,6 +12,7 @@ import type { WorkerWritingInput } from './worker-writing-input.ts'
 import { workerWritingPrompt } from './worker-writing-prompt.ts'
 import { workerWritingReserveBytes } from './worker-writing-reserve-bytes.ts'
 import { WORKER_WRITING_SCHEMA } from './worker-writing-schema.ts'
+import { writingFailureResult } from './writing-failure-result.ts'
 
 /** The second worker pass: whole pages back, written into the worktree.
  *
@@ -37,8 +38,7 @@ export const runWorkerWriting = async (
     WORKER_WRITING_SCHEMA,
     workerWritingReserveBytes(input.shown),
   )
-  if ('failure' in written)
-    return workerSynthesisEscalation(`writing: ${written.failure}`, identity)
+  if ('failure' in written) return writingFailureResult(written, identity)
   const author = { ...identity, model: workerAuthorModel(written.executor) }
   const writing = parseWorkerWriting(written.text)
   if (writing === null)

@@ -66,7 +66,7 @@ export const workerSynthesisPortOnQueue = (
       Buffer.byteLength(prompt, 'utf8') + reserveBytes,
       context,
     )
-    if (overflow !== null) return { failure: overflow, jobId }
+    if (overflow !== null) return { failure: overflow, jobId, exhausted: true }
     return { text, executor, jobId }
   },
 })

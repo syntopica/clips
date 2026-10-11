@@ -1,5 +1,4 @@
 import { readLatestVerdicts } from '../classifications/read-latest-verdicts.ts'
-import { EXIT_CODE } from '../cli/exit-code.ts'
 import type { Clip } from '../clips/clip.ts'
 import type { ThinClip } from '../clips/thin-clip.ts'
 import { deriveClipState } from '../state/derive-clip-state.ts'
@@ -7,6 +6,7 @@ import type { ClipOutcome } from './clip-outcome.ts'
 import { derivedStateAction } from './derived-state-action.ts'
 import { formatIngestSummary } from './format-ingest-summary.ts'
 import type { IngestDependencies } from './ingest-dependencies.ts'
+import { ingestExitCode } from './ingest-exit-code.ts'
 import { ingestOneClip } from './ingest-one-clip.ts'
 import { isSynthesizableClip } from './is-synthesizable-clip.ts'
 import { matchesClipFilter } from './matches-clip-filter.ts'
@@ -57,11 +57,11 @@ export const ingestClips = async (
     )
     process.stdout.write(`${clip.metadata.clip_id}: ${outcome}\n`)
     outcomes.push(outcome)
-    if (outcome === 'quit') break
+    if (outcome === 'quit' || outcome === 'exhausted') break
     if (outcome === 'stopped') stopped += 1
   }
   process.stdout.write(
     formatIngestSummary(matching.length, outcomes, clipFilter),
   )
-  return stopped === 0 ? EXIT_CODE.success : EXIT_CODE.clipsStopped
+  return ingestExitCode(outcomes, stopped)
 }

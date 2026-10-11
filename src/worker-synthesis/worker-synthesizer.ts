@@ -8,6 +8,7 @@ import { trackWorkerJobIds } from './track-worker-job-ids.ts'
 import { workerAuthorModel } from './worker-author-model.ts'
 import { WORKER_SYNTHESIS_BOUNDARY } from './worker-synthesis-boundary.ts'
 import { workerSynthesisEscalation } from './worker-synthesis-escalation.ts'
+import { workerSynthesisExhausted } from './worker-synthesis-exhausted.ts'
 import type { WorkerSynthesisPort } from './worker-synthesis-port.ts'
 
 /** Synthesis through the worker queue, in two tool-less passes.
@@ -55,14 +56,18 @@ export const workerSynthesizer = (
       worktree,
       directories,
     )
-    if ('refusal' in selection)
+    if ('refusal' in selection) {
+      const identity = {
+        ...unsent,
+        model: workerAuthorModel(selection.executor),
+      }
       return {
-        ...workerSynthesisEscalation(selection.refusal, {
-          ...unsent,
-          model: workerAuthorModel(selection.executor),
-        }),
+        ...(selection.exhausted === true
+          ? workerSynthesisExhausted(selection.refusal, identity)
+          : workerSynthesisEscalation(selection.refusal, identity)),
         workerJobIds: tracked.jobIds,
       }
+    }
     const written = await runWorkerWriting(tracked.port, {
       clipText,
       shown: selection.shown,

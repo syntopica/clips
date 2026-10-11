@@ -29,7 +29,11 @@ export const runWorkerSelection = async (
     4096,
   )
   if ('failure' in selected)
-    return { refusal: `selection: ${selected.failure}`, executor: null }
+    return {
+      refusal: `selection: ${selected.failure}`,
+      executor: null,
+      ...(selected.exhausted === true ? { exhausted: true } : {}),
+    }
   const selection = parseWorkerSelection(selected.text)
   if (selection === null)
     return {

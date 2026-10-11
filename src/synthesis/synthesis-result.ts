@@ -15,8 +15,13 @@ import type { SynthesizerIdentity } from './synthesizer-identity.ts'
  *
  * `usage` and `workerJobIds` are what the transport could report about the
  * run's cost and where it ran; absent when it reports neither. They feed the
- * clip's run history, never the ledger. */
+ * clip's run history, never the ledger.
+ *
+ * `exhausted` is a transport out of capacity for the rest of the run - the
+ * worker ladder fell to a local model too small for the prompt - and always
+ * comes with `skipped`, so the clip stays pending and nothing retries it. */
 export type SynthesisResult = SynthesizedVerdict & {
+  exhausted?: boolean
   identity: SynthesizerIdentity
   usage?: RunUsage | null
   workerJobIds?: string[]
