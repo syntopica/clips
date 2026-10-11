@@ -13,17 +13,6 @@
   daily runs, recount the same codes from clips escalated after 2026-10-11 and
   compare.
 
-- [!] The daily job cannot read Chrome's Medium cookies under launchd: "EPERM:
-  operation not permitted, copyfile .../Chrome/Default/Cookies" every day since
-  2026-10-05. Two effects: the medium-list collector is skipped, and
-  `clips harvest --promote` reads the cookie jar before any article, so every
-  promote since 2026-10-05 captured nothing (its exit 1 was logged as `exit=0`
-  until `705547f`). Blocked on a human GUI grant: System Settings > Privacy &
-  Security > Full Disk Access > + > `/bin/bash` (the plist's
-  `ProgramArguments[0]`, which launchd most likely holds responsible), or move
-  the job to a signed helper and grant that. Then check the next `promote exit=`
-  line in `~/p/.clips-daily.launchd.log`.
-
 - [ ] The 2026-10-09 daily run logged two clips and then nothing: no clip line,
       no `done:` and no `stop:`, although each clip is bounded by a 2 h timeout.
       The machine booted again around 19:45Z that day, and `log show` no longer

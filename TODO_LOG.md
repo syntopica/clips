@@ -6,6 +6,13 @@
 
 ### 2026-10-11 - Backlog run
 
+- [x] The daily job can read Chrome's cookies under launchd again: `/bin/bash`
+      (the plist's `ProgramArguments[0]`) has Full Disk Access, granted in
+      System Settings on 2026-10-11 (TCC `kTCCServiceSystemPolicyAllFiles`,
+      `auth_value=2`). Verified with a throwaway launchd job running
+      `/bin/bash -c 'cp .../Chrome/Default/Cookies ...'`, which printed `ok`
+      where the daily job had failed with `EPERM` since 2026-10-05. The next
+      `promote exit=` line in `~/p/.clips-daily.launchd.log` is the live check.
 - [x] Instance repairs in `~/p/wiki`: the seven kept `ingest/<id>` branches and
       their worktrees are cleared (E4BM's locked worktree no longer existed on
       disk; unlocked and pruned), after a verified bundle of all seven branches
