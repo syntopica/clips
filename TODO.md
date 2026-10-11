@@ -1,5 +1,13 @@
 # TODO
 
+> Consolidated from the accessible agent conversation history of this project.
+> Last reviewed: 2026-10-12. History coverage: Partial. Not re-audited during the
+> 2026-10-12 format migration.
+>
+> States: `[ ]` pending · `[~]` partial or unverified · `[!]` blocked · `[x]`
+> verified complete · `[-]` obsolete or superseded. Closed work moves to
+> `TODO_LOG.md`.
+
 - [~] Worker-ladder synthesis refusal rates. Measured 2026-10-11 over the
   instance's needs-claude bucket (198 clips from the daily runs of
   2026-10-05..11; 1444 processed, 588 pending): MODEL_ESCALATED 111 (34 of them
