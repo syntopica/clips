@@ -38,11 +38,16 @@ cd "$DATA" || exit 1
 ARCHIVE=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["clips"]["archive"])' syntopica.config.json)
 
 echo "$(stamp) harvest"
+# The code is read before the next line runs: `$(stamp)` inside the echo
+# resets `$?`, which logged every harvest and promote as exit=0 until
+# 2026-10-11, including promote runs that captured nothing.
 timeout --kill-after=30s 7200 clips harvest < /dev/null
-echo "$(stamp) harvest exit=$?"
+code=$?
+echo "$(stamp) harvest exit=$code"
 echo "$(stamp) promote"
 timeout --kill-after=30s 3600 clips harvest --promote < /dev/null
-echo "$(stamp) promote exit=$?"
+code=$?
+echo "$(stamp) promote exit=$code"
 
 new=$(git ls-files --others --exclude-standard -- "$ARCHIVE/clips/pending")
 if [ -n "$new" ]; then
