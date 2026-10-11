@@ -15,9 +15,15 @@
  * and that policy is code. When it changes the old verdicts are stale, not
  * sacred - on 2026-08-08 the new-page bound was lifted and four clips parked
  * under it had no supported way back, which is the same dead end this command
- * was written to remove. */
+ * was written to remove.
+ *
+ * `INDEX_MAP_FAILED` is the trusted index step failing in the engine's own
+ * environment, never a verdict on the clip: from 2026-10-09 three clips parked
+ * on it because the builder ran under the system Python 3.9, and once that was
+ * fixed a re-run was the whole remedy. */
 export const RETRYABLE_FAILURE_CODES: readonly string[] = [
   'MODEL_ESCALATED',
   'CONTENT_VALIDATION_FAILED',
   'AUTO_REVIEWER_ESCALATED',
+  'INDEX_MAP_FAILED',
 ]

@@ -136,6 +136,46 @@ describe('requeue', () => {
     expect(JSON.parse(state)).toMatchObject({ status: NEEDS_CLAUDE })
   })
 
+  it('refuses while an earlier run still keeps the ingest branch, and names the clear command', async () => {
+    const store = newStore(modelEscalated)
+    const brain = newBrain()
+    git(
+      brain,
+      '-c',
+      'user.email=test@example.com',
+      '-c',
+      'user.name=Test',
+      'commit',
+      '-q',
+      '--allow-empty',
+      '-m',
+      'init',
+    )
+    git(brain, 'branch', `ingest/${CLIP_ID}`)
+    const before = git(store, 'rev-parse', 'HEAD')
+    const result = await run(brain, store, CLIP_ID)
+
+    expect(result.exitCode).toBe(EXIT_CODE.fatalLocal)
+    expect(result.output).toContain(`ingest/${CLIP_ID} is still kept`)
+    expect(result.output).toContain(
+      `git -C ${brain} branch -D ingest/${CLIP_ID}`,
+    )
+    expect(git(store, 'rev-parse', 'HEAD')).toBe(before)
+  })
+
+  it('requeues a clip parked by the index step failing', async () => {
+    const store = newStore(
+      structuredFailure(
+        'validation',
+        'INDEX_MAP_FAILED',
+        'build.py failed',
+        false,
+      ),
+    )
+    const result = await run(newBrain(), store, CLIP_ID)
+    expect(result.exitCode).toBe(EXIT_CODE.success)
+  })
+
   it('needs a --clip, since there is no batch form of this', async () => {
     const result = await run(newBrain(), newStore(modelEscalated), null)
     expect(result.exitCode).toBe(EXIT_CODE.fatalLocal)
