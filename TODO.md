@@ -63,3 +63,12 @@
   after 4-17 min and swap stood at 23.6 of 24.5 GB. Next step: rerun `smoke` on
   the same clip three times once the worker drains, and close this only if the
   validator accepts the results.
+
+- [ ] `tools/capture` service calls fail TLS under the python.org framework
+  Python (`/Library/Frameworks/Python.framework/.../3.12`): `urllib` raised
+  `CERTIFICATE_VERIFY_FAILED ... unable to get local issuer certificate` against
+  the capture service on 2026-10-11 while re-mirroring clip 01M3QXGJ, and the
+  same push worked with `SSL_CERT_FILE=/etc/ssl/cert.pem`. Filed from the
+  capture repo's backlog run. Smallest step: run these tools through `uv run`
+  (or document `Install Certificates.command` / `SSL_CERT_FILE`) and verify one
+  `push_index_to_service.py --limit 1` from a plain shell.
