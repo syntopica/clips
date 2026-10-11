@@ -206,8 +206,8 @@ re-processing.
 
    Rationale: a raw `outerHTML` dump routinely contains CSRF tokens, hydration
    JSON, internal ids and personal data, which contradicts the premise that this
-   repo holds web clippings. `snapshot_mode: full-page` remains available per
-   clip for the rare page worth archiving verbatim. A domain denylist (banking,
+   repo holds web clippings. `full-page` is reserved in the schema but no UI or
+   code path produces it (checked 2026-10-11 in the clipper). A domain denylist (banking,
    mail, admin panels, `localhost`) blocks capture entirely unless overridden.
 
 6. **Queue** - the job is persisted before any network call.
@@ -289,7 +289,10 @@ fetch(url, { credentials: 'omit', redirect: 'manual' })
 ```
 
 Each `Location` is re-validated against the same policy before the next hop, up
-to 3 hops. Credentials start at `omit`; `include` is retried only when the asset
+to 3 hops. In an extension service worker Chrome returns a manual redirect as
+`opaqueredirect` (status 0, no `Location`), so such a hop cannot be vetted and is
+refused: the asset keeps its remote URL and the reason goes to `asset_failures`
+(measured 2026-10-11; see the clipper's `fetch-vetted-asset.ts`). Credentials start at `omit`; `include` is retried only when the asset
 is same-origin with the clipped page and the first attempt failed with an auth
 status.
 
