@@ -1,4 +1,4 @@
-import type { ClipMirrorState } from './clip-mirror-state.ts'
+import type { MirrorClipStateInput } from './mirror-clip-state-input.ts'
 import { mirroringIsEnabled } from './mirroring-is-enabled.ts'
 import { pushCaptureState } from './push-capture-state.ts'
 import { urlIsMirrorable } from './url-is-mirrorable.ts'
@@ -14,11 +14,9 @@ import { urlIsMirrorable } from './url-is-mirrorable.ts'
  *
  * A missing `CAPTURE_TOKEN` lands here too, and deliberately: a machine that has
  * never been given one still ingests. */
-export const mirrorClipState = async (input: {
-  url: string
-  state: ClipMirrorState
-  clipDir: string
-}): Promise<void> => {
+export const mirrorClipState = async (
+  input: MirrorClipStateInput,
+): Promise<void> => {
   if (!mirroringIsEnabled()) return
   if (!urlIsMirrorable(input.url)) return
   try {

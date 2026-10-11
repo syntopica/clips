@@ -3,12 +3,13 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { git } from '../testing/git.ts'
 import { temporaryDir } from '../testing/temporary-dir.ts'
+import type { IngestTestRepository } from './ingest-test-repository.ts'
 
 /** A working clone with one pushed commit and a real bare origin. */
 export const repositoryWithOrigin = (
   prefix: string,
   seed: Record<string, string>,
-): { clone: string; origin: string } => {
+): IngestTestRepository => {
   const origin = temporaryDir(`${prefix}-origin-`)
   execFileSync('git', ['init', '-q', '--bare', '-b', 'main', origin])
   const clone = temporaryDir(`${prefix}-clone-`)

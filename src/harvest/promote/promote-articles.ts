@@ -1,5 +1,6 @@
 import { promoteArticle } from './promote-article.ts'
 import type { PromoteArticlesInput } from './promote-articles-input.ts'
+import type { PromoteArticlesResult } from './promote-articles-result.ts'
 import type { PromoteFailureAttempt } from './promote-failure-attempt.ts'
 
 /** Fetch every article in the batch, counting what landed and returning what
@@ -13,7 +14,7 @@ import type { PromoteFailureAttempt } from './promote-failure-attempt.ts'
  * SPEC: docs/superpowers/specs/2026-07-29-newsletter-harvest-design.md */
 export const promoteArticles = async (
   input: PromoteArticlesInput,
-): Promise<{ written: number; failures: PromoteFailureAttempt[] }> => {
+): Promise<PromoteArticlesResult> => {
   let written = 0
   const failures: PromoteFailureAttempt[] = []
   for (const article of input.articles) {

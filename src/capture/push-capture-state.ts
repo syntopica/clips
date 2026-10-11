@@ -1,5 +1,6 @@
+import type { CaptureRecordResponse } from './capture-record-response.ts'
 import { captureServiceOrigin } from './capture-service-origin.ts'
-import type { ClipMirrorState } from './clip-mirror-state.ts'
+import type { MirrorClipStateInput } from './mirror-clip-state-input.ts'
 import { readCaptureToken } from './read-capture-token.ts'
 
 /** Tell the capture service how far a clip got.
@@ -15,11 +16,9 @@ import { readCaptureToken } from './read-capture-token.ts'
  * drain to fetch. Without it every clip pushed from here would look like inbox
  * work and be promoted a second time.
  * SPEC: ~/p/wiki/docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md */
-export const pushCaptureState = async (input: {
-  url: string
-  state: ClipMirrorState
-  clipDir: string
-}): Promise<void> => {
+export const pushCaptureState = async (
+  input: MirrorClipStateInput,
+): Promise<void> => {
   const token = readCaptureToken()
   const recorded = await fetch(`${captureServiceOrigin()}/api/capture`, {
     method: 'POST',
@@ -33,7 +32,7 @@ export const pushCaptureState = async (input: {
     throw new Error(
       `recording ${input.url} returned ${String(recorded.status)}`,
     )
-  const body = (await recorded.json()) as { data?: { capture_id?: string } }
+  const body = (await recorded.json()) as CaptureRecordResponse
   const captureId = body.data?.capture_id
   if (captureId === undefined)
     throw new Error(`recording ${input.url} returned no capture id`)

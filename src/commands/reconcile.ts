@@ -1,5 +1,6 @@
 import { EXIT_CODE } from '../cli/exit-code.ts'
 import { reconcileCited } from './reconcile-cited.ts'
+import type { ReconcileOptions } from './reconcile-options.ts'
 import { runLockedOnClipsRepository } from './run-locked-on-clips-repository.ts'
 
 /** Bookkeeping passes over the clip store. `--cited` is the only mode today:
@@ -12,7 +13,7 @@ import { runLockedOnClipsRepository } from './run-locked-on-clips-repository.ts'
 export const reconcile = async (
   brainRepository: string,
   clipsRepository: string,
-  options: { cited: boolean; dryRun: boolean },
+  options: ReconcileOptions,
 ): Promise<number> => {
   if (!options.cited) {
     process.stderr.write('reconcile needs --cited\n')

@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { promisify } from 'node:util'
 import { codexGradeArgs } from './codex-grade-args.ts'
+import type { CodexGradeFailure } from './codex-grade-failure.ts'
 import { EVIDENCE_BYTE_BUDGET } from './evidence-byte-budget.ts'
 import { evidenceBytes } from './evidence-bytes.ts'
 import { gradeFailureTail } from './grade-failure-tail.ts'
@@ -49,12 +50,7 @@ export const runCodexGrade: GradeRunner = {
         stderrTail: '',
       }
     } catch (error) {
-      const failure = error as {
-        code?: number
-        stderr?: string
-        killed?: boolean
-        signal?: string
-      }
+      const failure = error as CodexGradeFailure
       return {
         exitCode: failure.code ?? 1,
         lastMessage: await readFile(lastMessagePath, 'utf8').catch(() => null),

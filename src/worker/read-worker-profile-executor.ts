@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { WorkerExecutor } from './worker-executor.ts'
+import type { WorkerProfileConfig } from './worker-profile-config.ts'
 
 /** The executor a task profile in `<instance>/worker/config.json` reports when
  * it answers - its CLI as the provider and its pinned model, empty when it
@@ -15,7 +16,7 @@ export const readWorkerProfileExecutor = (
 ): WorkerExecutor | null => {
   const raw = JSON.parse(
     readFileSync(join(dataRoot, 'worker', 'config.json'), 'utf8'),
-  ) as { profiles?: Record<string, { runner?: unknown; model?: unknown }> }
+  ) as WorkerProfileConfig
   const entry = raw.profiles?.[profile]
   if (typeof entry?.runner !== 'string') return null
   const model = typeof entry.model === 'string' ? entry.model : ''

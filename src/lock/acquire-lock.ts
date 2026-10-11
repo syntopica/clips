@@ -3,6 +3,7 @@ import { hostname } from 'node:os'
 import { join } from 'node:path'
 import { JSON_PARSE_FAILED } from '../clips/json-parse-failed.ts'
 import { parseJson } from '../clips/parse-json.ts'
+import type { LockAcquisitionError } from './lock-acquisition-error.ts'
 import { LockHeldError } from './lock-held-error.ts'
 import type { LockOwner } from './lock-owner.ts'
 import { lockPath } from './lock-path.ts'
@@ -30,7 +31,7 @@ export const acquireLock = async (brainRepository: string): Promise<void> => {
       await writeFile(join(directory, 'owner.json'), JSON.stringify(owner))
       return
     } catch (error) {
-      if ((error as { code?: string }).code !== 'EEXIST') throw error
+      if ((error as LockAcquisitionError).code !== 'EEXIST') throw error
       const raw = await readFile(join(directory, 'owner.json')).catch(
         () => null,
       )

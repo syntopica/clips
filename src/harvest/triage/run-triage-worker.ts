@@ -3,6 +3,7 @@ import { currentSyntopicaConfig } from '../../config/current-syntopica-config.ts
 import { awaitWorkerOutput } from '../../worker/await-worker-output.ts'
 import { submitWorkerJob } from '../../worker/submit-worker-job.ts'
 import { workerModel } from '../../worker/worker-model.ts'
+import type { WorkerTiming } from '../../worker/worker-timing.ts'
 import { configuredTriageTopics } from './configured-triage-topics.ts'
 import { triageOutputSchema } from './triage-output-schema.ts'
 import { triagePrompt } from './triage-prompt.ts'
@@ -27,7 +28,7 @@ import type { TriageRunner } from './triage-runner.ts'
  * user and to memory pressure. When it runs out the batch degrades to
  * `review`, and a rerun collects the same job by its key. */
 export const workerTriageRunner = (
-  timing: { pollMs: number; waitMs: number },
+  timing: WorkerTiming,
   environ: NodeJS.ProcessEnv = process.env,
 ): TriageRunner => ({
   run: async (batch) => {

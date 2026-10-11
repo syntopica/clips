@@ -1,5 +1,6 @@
 import { awaitWorkerResult } from './await-worker-result.ts'
 import { workerOutputText } from './worker-output-text.ts'
+import type { WorkerTiming } from './worker-timing.ts'
 
 /** Wait for a job's output, acknowledge it, and return its text.
  *
@@ -9,7 +10,7 @@ import { workerOutputText } from './worker-output-text.ts'
  * ungraded. */
 export const awaitWorkerOutput = async (
   jobId: string,
-  timing: { pollMs: number; waitMs: number },
+  timing: WorkerTiming,
 ): Promise<string | null> => {
   const result = await awaitWorkerResult(jobId, timing)
   return result === null ? null : workerOutputText(result.output)

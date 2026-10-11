@@ -1,14 +1,13 @@
 import { beginReadObservation } from '../reads/begin-read-observation.ts'
 import { finishReadObservation } from '../reads/finish-read-observation.ts'
-import type { PagesRead } from '../reads/pages-read.ts'
 import { routeToNeedsClaude } from '../reconcile/route-to-needs-claude.ts'
 import { clipRunOf } from '../runs/clip-run-of.ts'
 import { recordClipRun } from '../runs/record-clip-run.ts'
-import type { SynthesizerIdentity } from '../synthesis/synthesizer-identity.ts'
 import { validateWorktree } from '../validation/validate-worktree.ts'
-import type { ClipOutcome } from './clip-outcome.ts'
+import type { ClipOutcomeResult } from './clip-outcome-result.ts'
 import { deriveWorktreePages } from './derive-worktree-pages.ts'
 import type { SynthesizeAndValidateInput } from './synthesize-and-validate-input.ts'
+import type { SynthesizedPagesResult } from './synthesized-pages-result.ts'
 
 /** Steps 6-7: run the synthesizer in the worktree, validate what it left there,
  * and derive from it. Returns the path set the reviewer sees and the committer
@@ -22,10 +21,7 @@ import type { SynthesizeAndValidateInput } from './synthesize-and-validate-input
  * snapshot taken any later would report the CLI's own reads as the model's. */
 export const synthesizeAndValidate = async (
   input: SynthesizeAndValidateInput,
-): Promise<
-  | { paths: string[]; pagesRead: PagesRead; identity: SynthesizerIdentity }
-  | { outcome: ClipOutcome }
-> => {
+): Promise<SynthesizedPagesResult | ClipOutcomeResult> => {
   const { repositories, clip, worktree, synthesizer, guidance } = input
   const observation = await beginReadObservation(worktree)
   const startedAt = new Date()

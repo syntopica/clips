@@ -1,5 +1,6 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
+import type { GitExecutionFailure } from './git-execution-failure.ts'
 import type { GitResult } from './git-result.ts'
 
 /** Never throws on a non-zero exit: several callers read the exit code as the
@@ -24,7 +25,7 @@ export const runGit = async (
     )
     return { stdout, stderr, exitCode: 0 }
   } catch (error) {
-    const failure = error as { stdout?: string; stderr?: string; code?: number }
+    const failure = error as GitExecutionFailure
     return {
       stdout: failure.stdout ?? '',
       stderr: failure.stderr ?? '',

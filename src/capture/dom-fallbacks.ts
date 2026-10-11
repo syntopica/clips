@@ -1,13 +1,10 @@
-import type { PageExtractor } from './page-extractor.ts'
+import type { DomFallback } from './dom-fallback.ts'
 
 /** The DOM-shape fallbacks, in the order the clipper tries them: the most
  * specific container first, the whole document last. Tried only when Defuddle
  * returned nothing substantial, which is the honest reading of an extractor
  * that found no article. */
-export const DOM_FALLBACKS: readonly {
-  extractor: PageExtractor
-  selector: string
-}[] = [
+export const DOM_FALLBACKS: readonly DomFallback[] = [
   { extractor: 'article', selector: 'article' },
   { extractor: 'main', selector: 'main' },
   { extractor: 'body', selector: 'body' },

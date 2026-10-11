@@ -1,3 +1,4 @@
+import type { LedgerVersionCandidate } from './ledger-version-candidate.ts'
 import { SUPPORTED_LEDGER_VERSIONS } from './supported-ledger-versions.ts'
 
 /** Null when the document declares a schemaVersion this CLI reads; otherwise
@@ -10,7 +11,7 @@ export const unsupportedLedgerVersionReason = (
   if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed))
     return 'the ledger is not a JSON object'
 
-  const version = (parsed as { schemaVersion?: unknown }).schemaVersion
+  const version = (parsed as LedgerVersionCandidate).schemaVersion
   if (
     typeof version === 'number' &&
     SUPPORTED_LEDGER_VERSIONS.includes(version)

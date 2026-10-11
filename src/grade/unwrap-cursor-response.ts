@@ -1,3 +1,5 @@
+import type { CursorErrorEnvelope } from './cursor-error-envelope.ts'
+import type { CursorResultEnvelope } from './cursor-result-envelope.ts'
 /** Pull the model's answer out of a `cursor-agent --output-format json`
  * envelope.
  *
@@ -22,7 +24,7 @@ export const unwrapCursorResponse = (stdout: string): string | null => {
     return null
   }
   if (typeof envelope !== 'object' || envelope === null) return null
-  if ((envelope as { is_error?: unknown }).is_error === true) return null
-  const result = (envelope as { result?: unknown }).result
+  if ((envelope as CursorErrorEnvelope).is_error === true) return null
+  const result = (envelope as CursorResultEnvelope).result
   return typeof result === 'string' ? result : null
 }

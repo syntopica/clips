@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { currentSyntopicaConfig } from '../config/current-syntopica-config.ts'
+import type { IndexMapGenerationFailure } from './index-map-generation-failure.ts'
 import { indexMapScript } from './index-map-script.ts'
 import { withWorktreeEngineOverlay } from './with-worktree-engine-overlay.ts'
 
@@ -59,7 +60,7 @@ export const generateIndexMap = async (
     )
     return null
   } catch (error) {
-    const failure = error as { stderr?: string; message?: string }
+    const failure = error as IndexMapGenerationFailure
     const detail = failure.stderr?.trim() || failure.message || 'unknown error'
     return `${script} failed: ${detail}`
   }

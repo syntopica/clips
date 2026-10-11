@@ -5,6 +5,7 @@ import { awaitWorkerResult } from '../worker/await-worker-result.ts'
 import { readWorkerMaxPayloadBytes } from '../worker/read-worker-max-payload-bytes.ts'
 import { submitWorkerJob } from '../worker/submit-worker-job.ts'
 import { workerModel } from '../worker/worker-model.ts'
+import type { WorkerTiming } from '../worker/worker-timing.ts'
 import { AGY_EVIDENCE_CEILING_BYTES } from './agy-evidence-ceiling-bytes.ts'
 import type { GradeRunner } from './grade-runner.ts'
 import { readInlineSources } from './read-inline-sources.ts'
@@ -33,7 +34,7 @@ import { workerGradePrompt } from './worker-grade-prompt.ts'
  * no message, which the grade lane reports as an ungraded page. */
 export const workerGradeRunner = (
   forbidden: readonly string[] | null,
-  timing: { pollMs: number; waitMs: number },
+  timing: WorkerTiming,
   environ: NodeJS.ProcessEnv = process.env,
 ): GradeRunner => ({
   evidenceCeilingBytes: AGY_EVIDENCE_CEILING_BYTES,

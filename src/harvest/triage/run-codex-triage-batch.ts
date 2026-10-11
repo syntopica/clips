@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { currentSyntopicaConfig } from '../../config/current-syntopica-config.ts'
 import { runCommand } from '../run-command.ts'
+import type { CodexTriageFailure } from './codex-triage-failure.ts'
 import type { CodexTriageResult } from './codex-triage-result.ts'
 import { configuredTriageTopics } from './configured-triage-topics.ts'
 import { isCodexOutOfCredits } from './is-codex-out-of-credits.ts'
@@ -71,7 +72,7 @@ export const runCodexTriageBatch = async (
   } catch (error) {
     // codex does not always exit non-zero on the credit wall, so both paths
     // have to be read for it rather than only the failure one.
-    const failure = error as { stdout?: string; stderr?: string }
+    const failure = error as CodexTriageFailure
     stdout = failure.stdout ?? ''
     stderr = failure.stderr ?? ''
   }

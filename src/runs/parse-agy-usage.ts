@@ -1,3 +1,4 @@
+import type { AgyUsageEnvelope } from './agy-usage-envelope.ts'
 import { finiteCountOrNull } from './finite-count-or-null.ts'
 import type { ReportedAgyUsage } from './reported-agy-usage.ts'
 import type { RunUsage } from './run-usage.ts'
@@ -14,7 +15,7 @@ export const parseAgyUsage = (stdout: string): RunUsage | null => {
     return null
   }
   if (typeof envelope !== 'object' || envelope === null) return null
-  const usage = (envelope as { usage?: unknown }).usage
+  const usage = (envelope as AgyUsageEnvelope).usage
   if (typeof usage !== 'object' || usage === null) return null
   const reported = usage as ReportedAgyUsage
   const inputTokens = finiteCountOrNull(reported.input_tokens)

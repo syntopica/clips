@@ -1,5 +1,6 @@
 import type { Clip } from '../clips/clip.ts'
-import type { ClipOutcome } from './clip-outcome.ts'
+import type { ClipOutcomeResult } from './clip-outcome-result.ts'
+import type { PathsResult } from './paths-result.ts'
 import { regenerateIndexMap } from './regenerate-index-map.ts'
 import type { Repositories } from './repositories.ts'
 import { rewriteClaimMarkers } from './rewrite-claim-markers.ts'
@@ -16,7 +17,7 @@ export const deriveWorktreePages = async (
   clip: Clip,
   worktree: string,
   paths: string[],
-): Promise<{ paths: string[] } | { outcome: ClipOutcome }> => {
+): Promise<PathsResult | ClipOutcomeResult> => {
   const rewritten = await rewriteClaimMarkers(
     repositories,
     clip,

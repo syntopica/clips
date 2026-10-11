@@ -1,9 +1,10 @@
+import type { SourcesBlockBounds } from './sources-block-bounds.ts'
 /** Where a page's frontmatter `sources:` entries sit, as the line range after
  * the key up to the next top-level key, or null when the frontmatter has no
  * such key. The same bounds `frontmatterListLines` reads. */
 export const sourcesBlockRange = (
   lines: readonly string[],
-): { start: number; end: number } | null => {
+): SourcesBlockBounds | null => {
   if (lines[0] !== '---') return null
   const close = lines.indexOf('---', 1)
   if (close === -1) return null

@@ -1,3 +1,5 @@
+import type { AgyResponseEnvelope } from './agy-response-envelope.ts'
+import type { AgyStructuredEnvelope } from './agy-structured-envelope.ts'
 /** Pull the model's answer out of an `agy --output-format json` envelope.
  *
  * agy wraps the run in `{conversation_id, status, response, structured_output,
@@ -22,13 +24,12 @@ export const unwrapAgyResponse = (stdout: string): string | null => {
     return null
   }
   if (typeof envelope !== 'object' || envelope === null) return null
-  const structured = (envelope as { structured_output?: unknown })
-    .structured_output
+  const structured = (envelope as AgyStructuredEnvelope).structured_output
   if (typeof structured === 'object' && structured !== null)
     return JSON.stringify(structured)
   // No schema was enforced, or an older agy: fall back to the prose field,
   // which is a bare JSON string only when the model was asked in the prompt.
-  const response = (envelope as { response?: unknown }).response
+  const response = (envelope as AgyResponseEnvelope).response
   if (typeof response === 'string') return response
   if (typeof response === 'object' && response !== null)
     return JSON.stringify(response)

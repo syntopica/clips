@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { currentSyntopicaConfig } from '../../config/current-syntopica-config.ts'
 import { awaitWorkerOutput } from '../../worker/await-worker-output.ts'
 import { submitWorkerJob } from '../../worker/submit-worker-job.ts'
+import type { WorkerTiming } from '../../worker/worker-timing.ts'
 import { configuredTriageTopics } from './configured-triage-topics.ts'
 import { triageOutputSchema } from './triage-output-schema.ts'
 import { triagePrompt } from './triage-prompt.ts'
@@ -24,10 +25,7 @@ import type { TriageRunner } from './triage-runner.ts'
  * `waitMs` covers a queue parked behind a quota wall. When it runs out the
  * batch keeps its first-pass verdict, and a rerun collects the same job by its
  * key. */
-export const workerRefineRunner = (timing: {
-  pollMs: number
-  waitMs: number
-}): TriageRunner => ({
+export const workerRefineRunner = (timing: WorkerTiming): TriageRunner => ({
   run: async (batch) => {
     const topics = configuredTriageTopics()
     const prompt = triagePrompt(

@@ -1,3 +1,4 @@
+import type { BodyArticleLocation } from './body-article-location.ts'
 /** The sender and subject slug back out of a
  * `vexa://<domain>/<local>/<slug>` identity, or null when the URL is not one -
  * a malformed identity fails one article with a readable reason, not the
@@ -8,7 +9,7 @@
  * `@` in the authority would read as userinfo), and the slug is the second. */
 export const parseBodyArticleUrl = (
   url: string,
-): { sender: string; slug: string } | null => {
+): BodyArticleLocation | null => {
   const parsed = URL.parse(url)
   if (parsed === null || parsed.protocol !== 'vexa:' || parsed.hostname === '')
     return null

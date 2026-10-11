@@ -1,5 +1,5 @@
-import type { WorkerShownPage } from './worker-shown-page.ts'
 import { workerUntrustedClip } from './worker-untrusted-clip.ts'
+import type { WorkerWritingPromptInput } from './worker-writing-prompt-input.ts'
 import { workerWritingRules } from './worker-writing-rules.ts'
 
 /** The second worker pass: the clip, the pages the first pass chose, and every
@@ -8,14 +8,9 @@ import { workerWritingRules } from './worker-writing-rules.ts'
  * The shown pages are the wiki's own text and are marked as such, apart from
  * the untrusted clip. `guidance` is why earlier drafts of this clip were
  * rejected, and the empty string adds nothing. */
-export const workerWritingPrompt = (input: {
-  clipText: string
-  shown: readonly WorkerShownPage[]
-  pagePaths: readonly string[]
-  directories: readonly string[]
-  today: string
-  guidance: string
-}): string => {
+export const workerWritingPrompt = (
+  input: WorkerWritingPromptInput,
+): string => {
   const shown = input.shown
     .map(
       ({ path, content }) =>

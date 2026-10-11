@@ -1,14 +1,11 @@
 import { chmodSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import type { DoctorFixture } from './doctor-fixture.ts'
 
 import { makeSyntopicaConfigFixture } from './make-syntopica-config-fixture.ts'
 import { temporaryDir } from './temporary-dir.ts'
 
-export function makeDoctorFixture(): {
-  parent: string
-  data: string
-  environ: NodeJS.ProcessEnv
-} {
+export function makeDoctorFixture(): DoctorFixture {
   const parent = temporaryDir('syntopica-doctor-')
   const data = makeSyntopicaConfigFixture(parent)
   for (const directory of [

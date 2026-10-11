@@ -1,3 +1,4 @@
+import type { CompletedTurnEvent } from './completed-turn-event.ts'
 import type { ReportedTurnUsage } from './reported-turn-usage.ts'
 
 /** The usage of one `codex exec --json` line when it is a `turn.completed`
@@ -12,7 +13,7 @@ export const completedTurnUsage = (line: string): ReportedTurnUsage | null => {
     return null
   }
   if (typeof event !== 'object' || event === null) return null
-  const { type, usage } = event as { type?: unknown; usage?: unknown }
+  const { type, usage } = event as CompletedTurnEvent
   if (type !== 'turn.completed' || typeof usage !== 'object' || usage === null)
     return null
   return usage

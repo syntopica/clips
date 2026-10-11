@@ -1,9 +1,10 @@
 import { vi } from 'vitest'
+import type { CapturedStderr } from './captured-stderr.ts'
 
 /** Captures a command's stderr and restores the stream even when it throws. */
 export const captureStderr = async (
   run: () => Promise<number>,
-): Promise<{ exitCode: number; stderr: string }> => {
+): Promise<CapturedStderr> => {
   const written: string[] = []
   const spy = vi.spyOn(process.stderr, 'write').mockImplementation(((
     chunk: string,

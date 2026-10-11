@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { currentSyntopicaConfig } from '../config/current-syntopica-config.ts'
 import { readWorkerInstance } from './read-worker-instance.ts'
+import type { WorkerEndpointResult } from './worker-endpoint-result.ts'
 
 /** Where the worker coordinator listens and the producer token it expects.
  *
@@ -15,7 +16,7 @@ import { readWorkerInstance } from './read-worker-instance.ts'
 export const workerEndpoint = (
   environ: NodeJS.ProcessEnv = process.env,
   dataRoot: () => string = () => currentSyntopicaConfig().dataRoot,
-): { url: string; token: string } => {
+): WorkerEndpointResult => {
   const envUrl = environ['CLIPS_WORKER_URL']
   const envToken = environ['CLIPS_WORKER_TOKEN_FILE']
   const url =

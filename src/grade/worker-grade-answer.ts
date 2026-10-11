@@ -4,6 +4,7 @@ import { workerOutputText } from '../worker/worker-output-text.ts'
 import type { WorkerResult } from '../worker/worker-result.ts'
 import { graderAuthorRefusal } from './grader-author-refusal.ts'
 import { localGradeOverflow } from './local-grade-overflow.ts'
+import type { WorkerGradeCheck } from './worker-grade-check.ts'
 
 /** A worker grade job's result as the grade lane's run result: the answer when
  * one came back and the executor that gave it may stand, a failed run naming
@@ -12,12 +13,7 @@ import { localGradeOverflow } from './local-grade-overflow.ts'
 export const workerGradeAnswer = (
   jobId: string,
   result: WorkerResult | null,
-  check: {
-    forbidden: readonly string[] | null
-    promptBytes: number
-    dataRoot: string
-    model: string
-  },
+  check: WorkerGradeCheck,
 ): CodexRunResult => {
   const answer = result === null ? null : workerOutputText(result.output)
   if (result === null || answer === null)

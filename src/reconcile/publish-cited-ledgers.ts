@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path'
 import { commitStagedChanges } from '../git/commit-staged-changes.ts'
 import { GitFailedError } from '../git/git-failed-error.ts'
 import { runGit } from '../git/run-git.ts'
+import type { CitedLedger } from './cited-ledger.ts'
 
 /** One commit on the brain's own `main` carrying nothing but ledger files, then
  * a push. Unlike the ingest pipeline this does not go through a worktree: no
@@ -14,7 +15,7 @@ import { runGit } from '../git/run-git.ts'
  * way), at most twice. Returns the sha origin/main carries. */
 export const publishCitedLedgers = async (
   brainRepository: string,
-  ledgers: readonly { path: string; text: string }[],
+  ledgers: readonly CitedLedger[],
   subject: string,
 ): Promise<string> => {
   for (const ledger of ledgers) {

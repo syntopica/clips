@@ -1,4 +1,5 @@
 import { committedPageText } from './committed-page-text.ts'
+import type { ModifiedPageTextPair } from './modified-page-text-pair.ts'
 import { readPageText } from './read-page-text.ts'
 import type { WorktreeChange } from './worktree-change.ts'
 
@@ -9,7 +10,7 @@ import type { WorktreeChange } from './worktree-change.ts'
 export const modifiedPageTexts = async (
   worktree: string,
   change: WorktreeChange,
-): Promise<{ committed: string; current: string } | null> => {
+): Promise<ModifiedPageTextPair | null> => {
   if (change.kind !== 'modified') return null
   const committed = await committedPageText(worktree, change.path)
   if (committed === null) return null

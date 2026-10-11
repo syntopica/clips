@@ -2,6 +2,8 @@ import { join } from 'node:path'
 import { JSON_PARSE_FAILED } from './json-parse-failed.ts'
 import { parseJson } from './parse-json.ts'
 import { readFileIfPresent } from './read-file-if-present.ts'
+import type { ReadJsonFileFailure } from './read-json-file-failure.ts'
+import type { ReadJsonFileSuccess } from './read-json-file-success.ts'
 
 /** Reads and parses one JSON file inside a clip directory. Never throws: a
  * missing file or malformed JSON comes back as `{ ok: false, reason }` so the
@@ -9,7 +11,7 @@ import { readFileIfPresent } from './read-file-if-present.ts'
 export const readJsonFile = async (
   directory: string,
   fileName: string,
-): Promise<{ ok: true; value: unknown } | { ok: false; reason: string }> => {
+): Promise<ReadJsonFileSuccess | ReadJsonFileFailure> => {
   const raw = await readFileIfPresent(join(directory, fileName))
   if (raw === null) return { ok: false, reason: `no ${fileName}` }
   const parsed = parseJson(raw)

@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process'
+import type { SyntopicaGitResult } from './syntopica-git-result.ts'
 
 import { InvalidSyntopicaConfigError } from './invalid-syntopica-config-error.ts'
 import { spawnErrorCode } from './spawn-error-code.ts'
@@ -6,7 +7,7 @@ import { spawnErrorCode } from './spawn-error-code.ts'
 export function runSyntopicaGit(
   root: string,
   arguments_: readonly string[],
-): { status: number | null; stdout: string } {
+): SyntopicaGitResult {
   const result = spawnSync(
     'git',
     ['-c', 'core.fsmonitor=false', '-C', root, ...arguments_],

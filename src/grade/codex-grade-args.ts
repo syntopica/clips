@@ -1,3 +1,4 @@
+import type { CodexGradeScratch } from './codex-grade-scratch.ts'
 import { gradePrompt } from './grade-prompt.ts'
 
 /** The argv for one codex grading run, deliberately weaker than the
@@ -10,7 +11,7 @@ export const codexGradeArgs = (
   root: string,
   pagePath: string,
   evidencePaths: readonly string[],
-  scratch: { schemaPath: string; lastMessagePath: string },
+  scratch: CodexGradeScratch,
 ): string[] => [
   'exec',
   gradePrompt(pagePath, evidencePaths),

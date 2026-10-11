@@ -4,7 +4,8 @@ import { indexMapChanged } from '../index-map/index-map-changed.ts'
 import { indexRepositoryPath } from '../layout/index-repository-path.ts'
 import { routeToNeedsClaude } from '../reconcile/route-to-needs-claude.ts'
 import { formatWorktreePages } from '../validation/format-worktree-pages.ts'
-import type { ClipOutcome } from './clip-outcome.ts'
+import type { ClipOutcomeResult } from './clip-outcome-result.ts'
+import type { PathsResult } from './paths-result.ts'
 import type { Repositories } from './repositories.ts'
 
 /** Step 7b: derive the root map from the pages the synthesis just validated,
@@ -19,7 +20,7 @@ export const regenerateIndexMap = async (
   clip: Clip,
   worktree: string,
   paths: string[],
-): Promise<{ paths: string[] } | { outcome: ClipOutcome }> => {
+): Promise<PathsResult | ClipOutcomeResult> => {
   const failure = await generateIndexMap(worktree)
   if (failure !== null) {
     await routeToNeedsClaude(repositories.clips, clip, {

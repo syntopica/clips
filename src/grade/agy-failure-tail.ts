@@ -1,4 +1,5 @@
 import { AGY_QUOTA_WALL_PATTERN } from '../agy/agy-quota-wall-pattern.ts'
+import type { AgyFailure } from './agy-failure.ts'
 
 /** What to report when an agy run failed.
  *
@@ -16,11 +17,7 @@ import { AGY_QUOTA_WALL_PATTERN } from '../agy/agy-quota-wall-pattern.ts'
  * sentence rather than a memorable phrase.
  */
 export const agyFailureTail = (failure: unknown): string => {
-  const shape = failure as {
-    stdout?: string
-    stderr?: string
-    killed?: boolean
-  }
+  const shape = failure as AgyFailure
   const streams = [shape.stdout ?? '', shape.stderr ?? '']
     .map((stream) => stream.trim())
     .filter((stream) => stream !== '')

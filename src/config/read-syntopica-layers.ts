@@ -1,16 +1,13 @@
 import { lstatSync } from 'node:fs'
 import { dirname, join } from 'node:path'
+import type { SyntopicaLayers } from './syntopica-layers.ts'
 
 import { mergeSyntopicaDocuments } from './merge-syntopica-documents.ts'
 import { readSyntopicaDocument } from './read-syntopica-document.ts'
 import { resolveSyntopicaPath } from './resolve-syntopica-path.ts'
 import { syntopicaValueOrigins } from './syntopica-value-origins.ts'
 
-export function readSyntopicaLayers(root: string): {
-  document: Record<string, unknown>
-  origins: Map<string, string>
-  trackedDirectory: string
-} {
+export function readSyntopicaLayers(root: string): SyntopicaLayers {
   const tracked = resolveSyntopicaPath(join(root, 'syntopica.config.json'))
   const local = join(root, 'syntopica.local.json')
   let document = readSyntopicaDocument(tracked)

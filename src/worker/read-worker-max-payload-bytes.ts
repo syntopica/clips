@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { WORKER_DEFAULT_MAX_PAYLOAD_BYTES } from './worker-default-max-payload-bytes.ts'
+import type { WorkerPayloadConfig } from './worker-payload-config.ts'
 
 /** The largest job body, in bytes, the instance's coordinator accepts.
  *
@@ -9,7 +10,7 @@ import { WORKER_DEFAULT_MAX_PAYLOAD_BYTES } from './worker-default-max-payload-b
 export const readWorkerMaxPayloadBytes = (dataRoot: string): number => {
   const raw = JSON.parse(
     readFileSync(join(dataRoot, 'worker', 'config.json'), 'utf8'),
-  ) as { max_payload_bytes?: unknown }
+  ) as WorkerPayloadConfig
   const limit = raw.max_payload_bytes
   return typeof limit === 'number' && limit > 0
     ? limit

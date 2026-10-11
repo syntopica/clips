@@ -1,10 +1,11 @@
+import type { TrackedWorkerJobIds } from './tracked-worker-job-ids.ts'
 import type { WorkerSynthesisPort } from './worker-synthesis-port.ts'
 
 /** A port that passes every call through and keeps the id of each job it
  * submitted, in order, for one synthesis run. */
 export const trackWorkerJobIds = (
   port: WorkerSynthesisPort,
-): { port: WorkerSynthesisPort; jobIds: string[] } => {
+): TrackedWorkerJobIds => {
   const jobIds: string[] = []
   return {
     jobIds,

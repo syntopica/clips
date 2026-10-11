@@ -1,16 +1,16 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import type { SynthesisResult } from '../synthesis/synthesis-result.ts'
 import type { WorkerSynthesisPort } from '../worker-synthesis/worker-synthesis-port.ts'
 import { workerSynthesizer } from '../worker-synthesis/worker-synthesizer.ts'
 import { temporaryDir } from './temporary-dir.ts'
+import type { WorkerSynthesisFixture } from './worker-synthesis-fixture.ts'
 
 /** Synthesize one clip against a flat fixture worktree holding an index and
  * two pages, `topics/a.md` ("old a") and `topics/c.md` ("old c"). */
 export const runWorkerSynthesisFixture = async (
   port: WorkerSynthesisPort,
   guidance = '',
-): Promise<{ result: SynthesisResult; worktree: string }> => {
+): Promise<WorkerSynthesisFixture> => {
   const clip = temporaryDir('worker-clip-')
   writeFileSync(join(clip, 'index.md'), '---\nurl: https://x\n---\nBody.\n')
   const worktree = temporaryDir('worker-wt-')

@@ -1,3 +1,5 @@
+import type { SubmittedWorkerJob } from './submitted-worker-job.ts'
+import type { WorkerJobInput } from './worker-job-input.ts'
 import type { WorkerJobState } from './worker-job-state.ts'
 import { workerRequest } from './worker-request.ts'
 import { WORKER_RETRY_SUFFIXES } from './worker-retry-suffixes.ts'
@@ -11,13 +13,13 @@ import { WORKER_TERMINAL_STATES } from './worker-terminal-states.ts'
  * expired - is walked past with a retry suffix, the same walk atrium's worker
  * lane settled on after a consumed key blocked it on 2026-09-29. */
 export const submitWorkerJob = async (
-  job: Record<string, unknown> & { idempotency_key: string },
+  job: Record<string, unknown> & WorkerJobInput,
 ): Promise<string> => {
   for (const suffix of WORKER_RETRY_SUFFIXES) {
     const posted = (await workerRequest('POST', '/v1/jobs', {
       ...job,
       idempotency_key: job.idempotency_key + suffix,
-    })) as { id: string }
+    })) as SubmittedWorkerJob
     const state = (await workerRequest(
       'GET',
       `/v1/jobs/${encodeURIComponent(posted.id)}`,

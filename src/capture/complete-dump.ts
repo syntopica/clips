@@ -1,3 +1,4 @@
+import type { CompleteDumpError } from './complete-dump-error.ts'
 /** The document a failed browser run had already printed, or `null` when it
  * printed no whole one.
  *
@@ -13,7 +14,7 @@
  * SPEC: docs/superpowers/specs/2026-08-04-general-extraction-design.md */
 export const completeDump = (error: unknown): string | null => {
   if (typeof error !== 'object' || error === null) return null
-  const { stdout } = error as { stdout?: unknown }
+  const { stdout } = error as CompleteDumpError
   if (typeof stdout !== 'string') return null
   return stdout.trimEnd().endsWith('</html>') ? stdout : null
 }

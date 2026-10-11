@@ -1,5 +1,6 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
+import type { GitExecutionFailure } from './git-execution-failure.ts'
 import type { GitResult } from './git-result.ts'
 
 /** `runGit` with a body on stdin, for the batch commands (`cat-file
@@ -20,7 +21,7 @@ export const runGitWithInput = async (
     const { stdout, stderr } = await running
     return { stdout, stderr, exitCode: 0 }
   } catch (error) {
-    const failure = error as { stdout?: string; stderr?: string; code?: number }
+    const failure = error as GitExecutionFailure
     return {
       stdout: failure.stdout ?? '',
       stderr: failure.stderr ?? '',

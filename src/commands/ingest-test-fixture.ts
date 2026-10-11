@@ -1,4 +1,5 @@
 import { brainEngineDirectory } from './brain-engine-directory.ts'
+import type { IngestFixturePaths } from './ingest-fixture-paths.ts'
 import { clipMetadata } from './ingest-test-clip-metadata.ts'
 import { CLIP_RELATIVE } from './ingest-test-clip-relative.ts'
 import { ingestTestDataConfig } from './ingest-test-data-config.ts'
@@ -11,9 +12,7 @@ import { repositoryWithOrigin } from './ingest-test-repository-with-origin.ts'
  * index generator and the configuration schema live there, as they do for a
  * real instance, and the pipeline runs the actual generator rather than a stub
  * because publication depends on it. */
-export const fixture = (
-  sensitivity = 'public',
-): { brain: string; clips: string; brainOrigin: string } => {
+export const fixture = (sensitivity = 'public'): IngestFixturePaths => {
   const brain = repositoryWithOrigin('ing-brain', {
     'index.md': '# brain\n',
     ...ingestTestDataConfig(

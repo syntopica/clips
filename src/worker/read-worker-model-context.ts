@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import type { WorkerModelContextConfig } from './worker-model-context-config.ts'
 
 /** The context window, in tokens, the instance's worker pins for `model`, or
  * null when its configuration names no `num_ctx` for it.
@@ -15,7 +16,7 @@ export const readWorkerModelContext = (
 ): number | null => {
   const raw = JSON.parse(
     readFileSync(join(dataRoot, 'worker', 'config.json'), 'utf8'),
-  ) as { models?: Record<string, { num_ctx?: unknown }> }
+  ) as WorkerModelContextConfig
   const context = raw.models?.[model]?.num_ctx
   return typeof context === 'number' && context > 0 ? context : null
 }

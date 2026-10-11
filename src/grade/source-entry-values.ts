@@ -1,3 +1,4 @@
+import type { OpenSourceEntry } from './open-source-entry.ts'
 /** The values of a `sources:` list, given its raw frontmatter lines.
  *
  * Every reader of the field needs this and each used to spell it itself, which
@@ -21,7 +22,7 @@
  * yields nothing rather than swallowing the rest of the frontmatter. */
 export const sourceEntryValues = (lines: readonly string[]): string[] => {
   const values: string[] = []
-  let open: { quote: string; parts: string[] } | null = null
+  let open: OpenSourceEntry | null = null
   for (const line of lines) {
     if (open !== null) {
       const closed = line.indexOf(open.quote)

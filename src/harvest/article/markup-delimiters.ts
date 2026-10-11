@@ -1,3 +1,4 @@
+import type { MarkupDelimiterPair } from './markup-delimiter-pair.ts'
 import type { Markup } from './markup.ts'
 
 /** The markdown that wraps one markup span. Only types seen in Medium's Apollo
@@ -9,7 +10,7 @@ import type { Markup } from './markup.ts'
  * docs/superpowers/specs/2026-07-29-newsletter-harvest-design.md */
 export const markupDelimiters = (
   markup: Markup,
-): { open: string; close: string } | null => {
+): MarkupDelimiterPair | null => {
   if (markup.type === 'STRONG') return { open: '**', close: '**' }
   if (markup.type === 'EM') return { open: '_', close: '_' }
   if (markup.type === 'CODE') return { open: '`', close: '`' }

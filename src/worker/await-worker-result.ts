@@ -2,6 +2,7 @@ import { setTimeout as sleep } from 'node:timers/promises'
 import type { WorkerJobState } from './worker-job-state.ts'
 import { workerRequest } from './worker-request.ts'
 import type { WorkerResult } from './worker-result.ts'
+import type { WorkerTiming } from './worker-timing.ts'
 
 /** Wait for a job's output row, acknowledge it, and return it whole.
  *
@@ -23,7 +24,7 @@ import type { WorkerResult } from './worker-result.ts'
  * answered - `executor` - to record the page's author. */
 export const awaitWorkerResult = async (
   jobId: string,
-  { pollMs, waitMs }: { pollMs: number; waitMs: number },
+  { pollMs, waitMs }: WorkerTiming,
 ): Promise<WorkerResult | null> => {
   const path = `/v1/jobs/${encodeURIComponent(jobId)}`
   const deadline = Date.now() + waitMs

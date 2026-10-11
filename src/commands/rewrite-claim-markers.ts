@@ -4,8 +4,9 @@ import { rewriteClaimRefs } from '../citations/rewrite-claim-refs.ts'
 import type { Clip } from '../clips/clip.ts'
 import { routeToNeedsClaude } from '../reconcile/route-to-needs-claude.ts'
 import { formatWorktreePages } from '../validation/format-worktree-pages.ts'
-import type { ClipOutcome } from './clip-outcome.ts'
+import type { ClipOutcomeResult } from './clip-outcome-result.ts'
 import type { Repositories } from './repositories.ts'
+import type { RewrittenPathsResult } from './rewritten-paths-result.ts'
 
 /** Step 7a: turn the bare claim markers the synthesizer wrote into links into
  * each page's own `## Sources` section.
@@ -29,7 +30,7 @@ export const rewriteClaimMarkers = async (
   clip: Clip,
   worktree: string,
   paths: readonly string[],
-): Promise<{ rewritten: string[] } | { outcome: ClipOutcome }> => {
+): Promise<RewrittenPathsResult | ClipOutcomeResult> => {
   const rewritten: string[] = []
   for (const path of paths) {
     const absolute = join(worktree, path)

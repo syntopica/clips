@@ -1,5 +1,5 @@
 import type { WorkerInferenceAnswer } from '../worker-synthesis/worker-inference-answer.ts'
-import type { WorkerSynthesisPort } from '../worker-synthesis/worker-synthesis-port.ts'
+import type { FakeWorkerSynthesisPortResult } from './fake-worker-synthesis-port-result.ts'
 import type { WorkerPortCall } from './worker-port-call.ts'
 
 /** A worker synthesis port answering each pass with a fixed answer and
@@ -7,7 +7,7 @@ import type { WorkerPortCall } from './worker-port-call.ts'
 export const fakeWorkerSynthesisPort = (
   select: WorkerInferenceAnswer,
   write: WorkerInferenceAnswer,
-): { port: WorkerSynthesisPort; calls: WorkerPortCall[] } => {
+): FakeWorkerSynthesisPortResult => {
   const calls: WorkerPortCall[] = []
   return {
     calls,

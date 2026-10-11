@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import type { WorkerInstanceConfig } from './worker-instance-config.ts'
 import type { WorkerInstance } from './worker-instance.ts'
 
 /** The coordinator address and pinned models from `<instance>/worker/config.json`.
@@ -11,7 +12,7 @@ import type { WorkerInstance } from './worker-instance.ts'
 export const readWorkerInstance = (dataRoot: string): WorkerInstance => {
   const raw = JSON.parse(
     readFileSync(join(dataRoot, 'worker', 'config.json'), 'utf8'),
-  ) as { listen?: unknown; models?: unknown }
+  ) as WorkerInstanceConfig
   return {
     listen: typeof raw.listen === 'string' ? raw.listen : '127.0.0.1:8765',
     models:

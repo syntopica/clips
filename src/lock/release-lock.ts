@@ -1,6 +1,7 @@
 import { readFile, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import { lockPath } from './lock-path.ts'
+import type { StoredLockOwnerCandidate } from './stored-lock-owner-candidate.ts'
 
 /** Removes the lock only when this process owns it, so a crashed-and-restarted
  * run cannot delete a lock another live run reclaimed in between. Never
@@ -10,7 +11,7 @@ export const releaseLock = async (brainRepository: string): Promise<void> => {
   const directory = lockPath(brainRepository)
   try {
     const raw = await readFile(join(directory, 'owner.json'), 'utf8')
-    const owner = JSON.parse(raw) as { pid?: number }
+    const owner = JSON.parse(raw) as StoredLockOwnerCandidate
     if (owner.pid !== process.pid) return
     await rm(directory, { recursive: true, force: true })
   } catch {

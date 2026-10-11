@@ -3,6 +3,7 @@ import { isSyntopicaObject } from '../config/is-syntopica-object.ts'
 import { readSyntopicaLayers } from '../config/read-syntopica-layers.ts'
 import { resolveSyntopicaFieldPath } from '../config/resolve-syntopica-field-path.ts'
 import { syntopicaValueAt } from '../config/syntopica-value-at.ts'
+import type { WorktreeEngineEntry } from './worktree-engine-entry.ts'
 
 /** A `syntopica.local.json` body pinning every declared engine to the absolute
  * path the instance resolves it to.
@@ -16,7 +17,7 @@ export const worktreeEngineOverlay = (): Record<string, unknown> => {
   const root = currentSyntopicaConfig().dataRoot
   const { document, origins } = readSyntopicaLayers(root)
   const declared = syntopicaValueAt(document, 'engines')
-  const engines: Record<string, { path: string }> = {}
+  const engines: Record<string, WorktreeEngineEntry> = {}
   if (isSyntopicaObject(declared))
     for (const name of Object.keys(declared))
       engines[name] = {

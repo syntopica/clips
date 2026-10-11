@@ -1,4 +1,5 @@
 import { isCodexOutOfCredits } from '../harvest/triage/is-codex-out-of-credits.ts'
+import type { GradeFailure } from './grade-failure.ts'
 
 /** What to report when the grader process failed.
  *
@@ -21,11 +22,7 @@ import { isCodexOutOfCredits } from '../harvest/triage/is-codex-out-of-credits.t
  * scales with the evidence since 2026-08-03: reporting a flat ten minutes to
  * someone whose run was given forty sends them looking for the wrong cause. */
 export const gradeFailureTail = (
-  failure: {
-    stderr?: string
-    killed?: boolean
-    signal?: string
-  },
+  failure: GradeFailure,
   timeoutMs: number,
 ): string => {
   const stderr = failure.stderr ?? ''

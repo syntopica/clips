@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { promisify } from 'node:util'
 import { parseCodexUsage } from '../runs/parse-codex-usage.ts'
 import { codexExecArguments } from './codex-exec-arguments.ts'
+import type { CodexExecFailure } from './codex-exec-failure.ts'
 import { CODEX_OUTPUT_SCHEMA } from './codex-output-schema.ts'
 import type { CodexRunner } from './codex-runner.ts'
 
@@ -55,11 +56,7 @@ export const runCodexExec: CodexRunner = {
         usage: parseCodexUsage(stdout),
       }
     } catch (error) {
-      const failure = error as {
-        code?: number
-        stderr?: string
-        stdout?: string
-      }
+      const failure = error as CodexExecFailure
       const lastMessage = await readFile(lastMessagePath, 'utf8').catch(
         () => null,
       )

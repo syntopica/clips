@@ -3,6 +3,7 @@ import { ledgerRelativePath } from '../ledger/ledger-relative-path.ts'
 import { buildLedger } from '../publish/build-ledger.ts'
 import { ledgerFileText } from '../publish/ledger-file-text.ts'
 import type { CitedCandidate } from './cited-candidate.ts'
+import type { CitedLedger } from './cited-ledger.ts'
 import type { CitedLedgers } from './cited-ledgers.ts'
 import { clipRelativePath } from './clip-relative-path.ts'
 import { RECONCILE_CITED_IDENTITY } from './reconcile-cited-identity.ts'
@@ -17,7 +18,7 @@ export const buildCitedLedgers = async (
   clipRepoCommit: string,
   brainBaseCommit: string,
 ): Promise<CitedLedgers> => {
-  const ledgers: { path: string; text: string }[] = []
+  const ledgers: CitedLedger[] = []
   const buildable: CitedCandidate[] = []
   for (const candidate of candidates) {
     try {

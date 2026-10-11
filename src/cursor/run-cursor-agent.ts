@@ -1,5 +1,6 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
+import type { CursorAgentFailure } from './cursor-agent-failure.ts'
 import type { CursorRun } from './cursor-run.ts'
 
 /** Run `cursor-agent` in print mode with the prompt on **stdin**.
@@ -50,7 +51,7 @@ export const runCursorAgent = async (
     const { stdout, stderr } = await pending
     return { stdout, stderr, failed: false }
   } catch (error) {
-    const failure = error as { stdout?: unknown; stderr?: unknown }
+    const failure = error as CursorAgentFailure
     return {
       stdout: typeof failure.stdout === 'string' ? failure.stdout : '',
       stderr:

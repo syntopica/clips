@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import type { WorkerJobInput } from '../worker/worker-job-input.ts'
 import { GRADE_OUTPUT_SCHEMA } from './grade-output-schema.ts'
 
 /** The `inference` job one page is graded by on the worker's `clips.grade`
@@ -14,7 +15,7 @@ import { GRADE_OUTPUT_SCHEMA } from './grade-output-schema.ts'
 export const workerGradeJob = (
   model: string,
   prompt: string,
-): Record<string, unknown> & { idempotency_key: string } => ({
+): Record<string, unknown> & WorkerJobInput => ({
   contract: 1,
   kind: 'inference',
   queue: 'clips.grade',

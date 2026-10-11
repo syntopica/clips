@@ -1,10 +1,10 @@
 import { parseStructuredFailure } from '../reconcile/parse-structured-failure.ts'
-import type { ClipRun } from '../runs/clip-run.ts'
 import { clipCapturedAt } from './clip-captured-at.ts'
 import { clipUpdatedAt } from './clip-updated-at.ts'
 import type { EvaluatedClip } from './evaluated-clip.ts'
 import { opaqueClipId } from './opaque-clip-id.ts'
 import { stageOfState } from './stage-of-state.ts'
+import type { StatusItemRead } from './status-item-read.ts'
 import type { StatusItem } from './status-item.ts'
 
 /** One item, from the derivation and what was read beside it. The structured
@@ -12,7 +12,7 @@ import type { StatusItem } from './status-item.ts'
  * model and through it the clip. */
 export const statusItemOf = (
   { clip, evidence }: EvaluatedClip,
-  read: { runs: readonly ClipRun[]; rejections: number; pages: string[] },
+  read: StatusItemRead,
 ): StatusItem => {
   const failure =
     clip.kind === 'clip' ? parseStructuredFailure(clip.state.failure) : null

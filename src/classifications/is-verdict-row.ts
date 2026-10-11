@@ -1,3 +1,4 @@
+import type { VerdictRowCandidate } from './verdict-row-candidate.ts'
 import type { VerdictRow } from './verdict-row.ts'
 
 /** A row is usable when it carries a string `bucket`. Anything else - a blank
@@ -6,4 +7,4 @@ import type { VerdictRow } from './verdict-row.ts'
 export const isVerdictRow = (row: unknown): row is VerdictRow =>
   typeof row === 'object' &&
   row !== null &&
-  typeof (row as { bucket?: unknown }).bucket === 'string'
+  typeof (row as VerdictRowCandidate).bucket === 'string'

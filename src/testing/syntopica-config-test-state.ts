@@ -1,5 +1,6 @@
 import { realpathSync } from 'node:fs'
 import { join } from 'node:path'
+import type { SyntopicaConfigFixtureState } from './syntopica-config-fixture-state.ts'
 
 import { mergeSyntopicaDocuments } from '../config/merge-syntopica-documents.ts'
 import { readSyntopicaJson } from '../config/read-syntopica-json.ts'
@@ -8,13 +9,7 @@ import { syntopicaValueOrigins } from '../config/syntopica-value-origins.ts'
 import { makeSyntopicaConfigFixture } from './make-syntopica-config-fixture.ts'
 import { temporaryDir } from './temporary-dir.ts'
 
-export function syntopicaConfigTestState(): {
-  root: string
-  data: string
-  document: Record<string, unknown>
-  schema: Record<string, unknown>
-  origins: Map<string, string>
-} {
+export function syntopicaConfigTestState(): SyntopicaConfigFixtureState {
   const root = realpathSync(temporaryDir('syntopica-unit-'))
   const data = makeSyntopicaConfigFixture(root)
   const schema = readSyntopicaJson(

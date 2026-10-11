@@ -1,3 +1,4 @@
+import type { SchemaVersionCandidate } from './schema-version-candidate.ts'
 import { SUPPORTED_SCHEMA_VERSIONS } from './supported-schema-versions.ts'
 
 /** Null when `parsed.schema_version` is one this CLI knows how to read;
@@ -10,7 +11,7 @@ export const unsupportedSchemaVersionReason = (
   if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed))
     return 'metadata.json is not a JSON object'
 
-  const version = (parsed as { schema_version?: unknown }).schema_version
+  const version = (parsed as SchemaVersionCandidate).schema_version
   if (
     typeof version === 'number' &&
     SUPPORTED_SCHEMA_VERSIONS.includes(version)

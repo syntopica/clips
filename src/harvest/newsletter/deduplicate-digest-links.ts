@@ -1,5 +1,6 @@
 import { articleDedupKey } from './article-dedup-key.ts'
 import type { DatedDigestLink } from './dated-digest-link.ts'
+import type { DigestLinkWithHeading } from './digest-link-with-heading.ts'
 import type { HarvestedArticle } from './harvested-article.ts'
 import { prefersTitle } from './prefers-title.ts'
 
@@ -16,10 +17,7 @@ import { prefersTitle } from './prefers-title.ts'
 export const deduplicateDigestLinks = (
   links: DatedDigestLink[],
 ): HarvestedArticle[] => {
-  const byKey = new Map<
-    string,
-    HarvestedArticle & { headingLevel: number | null }
-  >()
+  const byKey = new Map<string, HarvestedArticle & DigestLinkWithHeading>()
   for (const link of links) {
     const key = articleDedupKey(link.url)
     const seen = byKey.get(key)

@@ -6,6 +6,7 @@ import { readWorkerModelContext } from '../worker/read-worker-model-context.ts'
 import { submitWorkerJob } from '../worker/submit-worker-job.ts'
 import { workerModel } from '../worker/worker-model.ts'
 import { workerOutputText } from '../worker/worker-output-text.ts'
+import type { WorkerTiming } from '../worker/worker-timing.ts'
 import type { WorkerSynthesisPort } from './worker-synthesis-port.ts'
 
 /** Synthesis inference as jobs on a worker queue.
@@ -29,7 +30,7 @@ import type { WorkerSynthesisPort } from './worker-synthesis-port.ts'
  * previous run left queued instead of paying for it twice. */
 export const workerSynthesisPortOnQueue = (
   queue: string,
-  timing: { pollMs: number; waitMs: number },
+  timing: WorkerTiming,
   environ: NodeJS.ProcessEnv = process.env,
 ): WorkerSynthesisPort => ({
   infer: async (step, prompt, schema, reserveBytes) => {
