@@ -3,9 +3,12 @@ import { promisify } from 'node:util'
 import { configuredRunner } from '../config/configured-runner.ts'
 import { configuredBoundaryDecisionPath } from '../sandbox/configured-boundary-decision-path.ts'
 import { readBoundaryDecision } from '../sandbox/read-boundary-decision.ts'
+import { discardWorktreeChanges } from '../synthesis/discard-worktree-changes.ts'
 import { interactiveSynthesizer } from '../synthesis/interactive-synthesizer.ts'
 import { retryEmptySynthesis } from '../synthesis/retry-empty-synthesis.ts'
+import { retryRemovedSections } from '../synthesis/retry-removed-sections.ts'
 import type { Synthesizer } from '../synthesis/synthesizer.ts'
+import { removedSectionsRefusal } from '../validation/removed-sections-refusal.ts'
 import { worktreeIsUnchanged } from '../validation/worktree-is-unchanged.ts'
 import { selectSynthesisTransport } from './select-synthesis-transport.ts'
 import { SYNTHESIS_BINARIES } from './synthesis-binaries.ts'
@@ -43,9 +46,10 @@ export const selectSynthesizer = async (
     process.stdout.write(`synthesizer: interactive (${reason})\n`)
     return interactiveSynthesizer
   }
-  const transport = retryEmptySynthesis(
-    selectSynthesisTransport(name),
-    worktreeIsUnchanged,
+  const transport = retryRemovedSections(
+    retryEmptySynthesis(selectSynthesisTransport(name), worktreeIsUnchanged),
+    removedSectionsRefusal,
+    discardWorktreeChanges,
   )
   if (name === 'worker') {
     // No binary to probe: the worker is a service, and a coordinator that is
