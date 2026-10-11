@@ -1,5 +1,6 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
+import { currentSyntopicaConfig } from '../config/current-syntopica-config.ts'
 import { indexMapScript } from './index-map-script.ts'
 import { withWorktreeEngineOverlay } from './with-worktree-engine-overlay.ts'
 
@@ -12,11 +13,18 @@ import { withWorktreeEngineOverlay } from './with-worktree-engine-overlay.ts'
  * missing from the map until 2026-08-02.
  *
  * It runs before the review gate, not after. That ordering is the whole reason
- * a `python3` dependency in the publish path is acceptable: a missing
+ * a Python dependency in the publish path is acceptable: a missing
  * interpreter or a script error fails the clip while the brain is still
  * untouched, instead of after a human approved a diff. It also means the
  * reviewer sees the index line being added, which they would not if the map
  * were generated during publication.
+ *
+ * The interpreter is the brain engine's own environment, through `uv run`,
+ * never a bare `python3`: under launchd's PATH that resolved to the system
+ * Python 3.9, the builder (which needs 3.12) died at import on `typing.Never`,
+ * and from 2026-10-09 every unattended clip escalated as INDEX_MAP_FAILED.
+ * `--no-sync` because the builder has no dependencies and a publish step must
+ * not touch the network.
  *
  * `-B` keeps the interpreter from writing `__pycache__` beside the engine's
  * modules on every run.
@@ -33,11 +41,21 @@ export const generateIndexMap = async (
   const script = indexMapScript()
   try {
     await withWorktreeEngineOverlay(worktree, async () =>
-      execFileAsync('python3', ['-B', script, '--data', '.'], {
-        cwd: worktree,
-        encoding: 'utf8',
-        maxBuffer: 16 * 1024 * 1024,
-      }),
+      execFileAsync(
+        'uv',
+        [
+          'run',
+          '--no-sync',
+          '--project',
+          currentSyntopicaConfig().brainPath,
+          'python',
+          '-B',
+          script,
+          '--data',
+          '.',
+        ],
+        { cwd: worktree, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
+      ),
     )
     return null
   } catch (error) {
