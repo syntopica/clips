@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process'
+import { vexaMessageArguments } from './vexa-message-arguments.ts'
 import { vexaMessageHtml } from './vexa-message-html.ts'
 
 /** One message's HTML body through the Vexa CLI.
@@ -10,12 +11,8 @@ import { vexaMessageHtml } from './vexa-message-html.ts'
  * its documented CLI rather than off the disk. Measured at about 60 ms a call. */
 export const readVexaMessageHtml = (id: string): string =>
   vexaMessageHtml(
-    execFileSync(
-      'vexa',
-      ['message', '--json', '--fields', 'body_html', '--', id],
-      {
-        encoding: 'utf8',
-        maxBuffer: 64 * 1024 * 1024,
-      },
-    ),
+    execFileSync('vexa', vexaMessageArguments(id), {
+      encoding: 'utf8',
+      maxBuffer: 64 * 1024 * 1024,
+    }),
   )
