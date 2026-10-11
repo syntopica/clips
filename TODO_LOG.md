@@ -6,6 +6,16 @@
 
 ### 2026-10-11 - Backlog run
 
+- [x] Instance repairs in `~/p/wiki`: the seven kept `ingest/<id>` branches and
+      their worktrees are cleared (E4BM's locked worktree no longer existed on
+      disk; unlocked and pruned), after a verified bundle of all seven branches
+      plus each worktree's diff, status and untracked files were saved to
+      `~/Backups/wiki-ingest-branches-20261011/`. The three `INDEX_MAP_FAILED`
+      clips are requeued (wiki `81a464628`, `eb507c3aa`, `d8a1bd9df`), and
+      01KYSGC20YGHQTSEX81YT61J3C's uncommitted `state.json` is restored with
+      `git checkout`. Verified: `git branch --list 'ingest/*'` and the
+      `brain-ingest` worktree list are empty; each requeue printed
+      `requeued to     pending`.
 - [x] `clips requeue` refuses while the failed run's `ingest/<id>` branch is
       still kept, names the clear command and writes nothing (`ed8fa6a`). Codex
       decision D1, option (b), high: clearing a branch that may hold a refused

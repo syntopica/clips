@@ -24,22 +24,6 @@
   the job to a signed helper and grant that. Then check the next `promote exit=`
   line in `~/p/.clips-daily.launchd.log`.
 
-- [!] Instance repairs in `~/p/wiki` that this engine repository may not make
-  (2026-10-11, all read-only observations): 1. Seven kept `ingest/<id>` branches
-  and worktrees (01KYSGC20YE4BMTR04CGWYQH4F, 01KYSGC20YET3NNJ300ZYM07WC,
-  01KYSGC20YGPHY79P4AHFP3255, 01KYSGC20YGWRSTKVWX1V2JZVZ,
-  01KYSGC20YH4P9Z1NQDAX39MZ6, 01KYSGC20YH7B36RNBTBK9BBG5,
-  01KYSGC20YHBWGVX6EYA2YVWRZ); E4BM's worktree is `locked`, so the daily run
-  reports it `stopped` every morning. Save each diff if it matters, then run the
-  clear command `clips ingest` prints for it. 2. 01KYSGC20YH4P9Z1NQDAX39MZ6,
-  01KYSGC20YH7B36RNBTBK9BBG5 and 01KYSGC20YHBWGVX6EYA2YVWRZ parked as
-  INDEX_MAP_FAILED (fixed in `bf4166c`); after step 1,
-  `clips requeue --clip <id>` for each. 3. 01KYSGC20YGHQTSEX81YT61J3C:
-  `clips/clips/pending/.../state.json` is an uncommitted rewrite claiming
-  needs-claude since 2026-10-07 (the move-before-state fix is `632147f`).
-  Restore it with
-  `git -C ~/p/wiki checkout -- clips/clips/pending/2026/07/2026-07-30-medium-com-10-js-tricks-senior-devs-don-t-tell-you-01kysgc2/state.json`.
-
 - [ ] The 2026-10-09 daily run logged two clips and then nothing: no clip line,
       no `done:` and no `stop:`, although each clip is bounded by a 2 h timeout.
       The machine booted again around 19:45Z that day, and `log show` no longer
@@ -65,10 +49,11 @@
   validator accepts the results.
 
 - [ ] `tools/capture` service calls fail TLS under the python.org framework
-  Python (`/Library/Frameworks/Python.framework/.../3.12`): `urllib` raised
-  `CERTIFICATE_VERIFY_FAILED ... unable to get local issuer certificate` against
-  the capture service on 2026-10-11 while re-mirroring clip 01M3QXGJ, and the
-  same push worked with `SSL_CERT_FILE=/etc/ssl/cert.pem`. Filed from the
-  capture repo's backlog run. Smallest step: run these tools through `uv run`
-  (or document `Install Certificates.command` / `SSL_CERT_FILE`) and verify one
-  `push_index_to_service.py --limit 1` from a plain shell.
+      Python (`/Library/Frameworks/Python.framework/.../3.12`): `urllib` raised
+      `CERTIFICATE_VERIFY_FAILED ... unable to get local issuer certificate`
+      against the capture service on 2026-10-11 while re-mirroring clip
+      01M3QXGJ, and the same push worked with `SSL_CERT_FILE=/etc/ssl/cert.pem`.
+      Filed from the capture repo's backlog run. Smallest step: run these tools
+      through `uv run` (or document `Install Certificates.command` /
+      `SSL_CERT_FILE`) and verify one `push_index_to_service.py --limit 1` from
+      a plain shell.
