@@ -1,13 +1,5 @@
 # TODO
 
-- [ ] CI `python gate (3.12/3.13)` has been red since 2026-10-07 (`fad51ab`,
-      `ad5cfe2`, `b3c1c2d`): ruff I001 on `tools/capture/classifications.py:50`,
-      wanting `from runs import runs` in its own block after the others. Locally
-      `uv run ruff check` on that file passes, so CI classifies the bare `runs`
-      module differently (ruff version or a `runs` path on the runner). Smallest
-      next step: diff the runner's ruff version and `known-first-party` against
-      local, then pin whichever disagrees.
-
 - [ ] `clips requeue` leaves the failed run's kept worktree and branch
       (`ingest/<id>`), so the requeued clip stops at once with "kept by an
       earlier run; clear it to synthesize again" (2026-10-05,

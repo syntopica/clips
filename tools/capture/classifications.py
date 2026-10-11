@@ -54,9 +54,10 @@ else:
     from latest import latest
     from lookup_capture import lookup_capture
     from prompt_hash import prompt_hash
-    from runs import runs
     from runs_dir import runs_dir
     from url_index import connect, normalize
+
+    from runs import runs
 
 __all__ = [
     "Any",
