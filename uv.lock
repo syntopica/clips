@@ -340,11 +340,11 @@ wheels = [
 
 [[package]]
 name = "filelock"
-version = "4.1.0"
+version = "4.1.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/4c/58/6fd434bec86eff7c38a3168454cb132b762b2bea9b3ac094101a2f7bc32a/filelock-4.1.0.tar.gz", hash = "sha256:ad7f724afef953e731b1cc39bcd3a09166d72ed7fcdf29e6e88b1c3235c6715d", size = 561277, upload-time = "2026-10-09T19:57:20.34Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/35/c8/1d457d9150ff948f2ce6ada7715e0eeebbe5d3b58a45271a1e222474bcd3/filelock-4.1.1.tar.gz", hash = "sha256:7ba0927482c5a814b0a7f391d029ccdb8010f576f0a74c0dcde1811e8bc4c1b6", size = 563430, upload-time = "2026-10-11T16:11:54.373Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ee/86/032133892a5de43b5a98200b01aadcad68cc255e274a762f08b8a76d2912/filelock-4.1.0-py3-none-any.whl", hash = "sha256:2ce9818e3e2d8f284c1a964414447ef148d42a5fd5e2a477a7118e574b293ec1", size = 133003, upload-time = "2026-10-09T19:57:18.716Z" },
+    { url = "https://files.pythonhosted.org/packages/d7/8b/f837f52905395ba4510fe61f753c24833fb0a9c76e21267bb9f828b664a9/filelock-4.1.1-py3-none-any.whl", hash = "sha256:3f4a557945a7b0f95efeb1f432267affe5d45ac8ddde2aed1b97ebb62382c089", size = 132460, upload-time = "2026-10-11T16:11:52.753Z" },
 ]
 
 [[package]]
@@ -894,15 +894,15 @@ quality = [
 
 [[package]]
 name = "syntopica-codeality-py"
-version = "0.2.5"
+version = "0.2.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "tomlkit" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c9/06/1ab4bbd60278641ca502439658ba629a403292535c4c08cb9529d70d8b02/syntopica_codeality_py-0.2.5.tar.gz", hash = "sha256:a56fea49fafc32ff4107b5640504ff87953b4f252b5db10c334b740d27872260", size = 140802, upload-time = "2026-10-07T18:04:21.628Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ee/e6/0b028e2cfde470ffae202626ada42246add974393b575156d48533773352/syntopica_codeality_py-0.2.6.tar.gz", hash = "sha256:57f1e97b7c88e070ee57b77114458ef383053148686a1e44d548758c42a05d49", size = 142591, upload-time = "2026-10-11T15:01:51.555Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a5/a8/e4b3ee0bbe60adcdba2c92b14c7dc7e0cddcaefefef0b114ffebb515a7f8/syntopica_codeality_py-0.2.5-py3-none-any.whl", hash = "sha256:634d14dbffcd4c81d5c17548b138c3d778a3ac571d3ef0df26bb1b587b471515", size = 100041, upload-time = "2026-10-07T18:04:20.088Z" },
+    { url = "https://files.pythonhosted.org/packages/19/0d/9cea8e40a1f6a43c5f77773014871a141413ede529604416cf948a6fed51/syntopica_codeality_py-0.2.6-py3-none-any.whl", hash = "sha256:4d0d5a63d1b1b24589b6959dc81797ae08ba4596f6c998bf057399ac4ef284ec", size = 100044, upload-time = "2026-10-11T15:01:49.909Z" },
 ]
 
 [[package]]
