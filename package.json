@@ -19,7 +19,7 @@
     "deps:graph": "depcruise src"
   },
   "dependencies": {
-    "defuddle": "^0.19.4",
+    "defuddle": "^0.19.5",
     "htmlparser2": "^12.0.0",
     "jsdom": "^30.1.2",
     "prettier": "^3.9.10",
