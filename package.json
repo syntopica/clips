@@ -1,5 +1,6 @@
 {
   "name": "brain-clips",
+  "packageManager": "pnpm@12.14.0",
   "version": "0.1.0",
   "private": true,
   "type": "module",
