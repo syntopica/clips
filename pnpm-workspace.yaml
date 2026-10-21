@@ -1,3 +1,5 @@
+minimumReleaseAge: 1440
+blockExoticSubdeps: true
 # The published engine is one package, not a workspace, so there is no
 # `packages:` key. pnpm still reads the supply-chain allowlist and the security
 # overrides from this file.
