@@ -209,3 +209,33 @@
       `clips status` now sees ledgers and reports two clips
       (01M097NSDEKSQJV2MX20DPCQRA, 01M097NSDET32KW1MAM73BNBED)
       reconciliation-pending.
+
+### 2026-10
+
+- [x] 2026-10-22 — **Reproducibility:** Pin the paired Brain engine reference to
+      the exact source used for integration verification.
+  - Result: Replace the floating main reference with the exact accepted Brain
+    commit 5329682bd31fbc414840400ede77359ae9f3a398, as required by the CI pin
+    contract.
+  - Evidence: Reference coverage found the two CI consumers and documentation;
+    no tests depend on the literal branch name. The pin is a valid existing
+    40-character commit ID. Final pnpm run check:ci --maxWorkers=1 passed 304
+    test files and 1344 tests, with all ten paired ingest integration suites
+    executing against that exact sibling engine. One existing todo remains.
+
+- [x] 2026-10-22 — **Security:** **Security: update the locked certifi trust
+      bundle.** The lockfile candidate updates only certifi from 2026.7.22 to
+      the patched 2026.10.19 release for GHSA-6q48-6c7w-9gw2. Next: verify the
+      exact locked candidate in an isolated environment and complete the
+      required source gates. Installed instances require separate verification;
+      source acceptance does not establish their runtime state.
+  - Result: Update only certifi from 2026.7.22 to 2026.10.19, preserving every
+    other locked package and metadata field. Installed consumer adoption remains
+    separate.
+  - Evidence: Isolated wheel-only locked setup and both engine lock checks
+    passed. pytest -q passed 678 tests with four existing skips; codeality-py
+    gate --json passed all seven required stages (90.08-percent coverage,
+    unchanged 65-percent requirement). pnpm run check:ci --maxWorkers=1 passed
+    with unchanged Node coverage thresholds. All 1956 source bytes/modes, 89
+    installed distribution records and 26983 dependency file hashes retained
+    parity; owned process groups were empty.

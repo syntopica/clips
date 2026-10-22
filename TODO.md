@@ -1,8 +1,8 @@
 # TODO
 
 > Consolidated from the accessible agent conversation history of this project.
-> Last reviewed: 2026-10-12. History coverage: Partial. Not re-audited during the
-> 2026-10-12 format migration.
+> Last reviewed: 2026-10-12. History coverage: Partial. Not re-audited during
+> the 2026-10-12 format migration.
 >
 > States: `[ ]` pending · `[~]` partial or unverified · `[!]` blocked · `[x]`
 > verified complete · `[-]` obsolete or superseded. Closed work moves to
@@ -48,3 +48,7 @@
   after 4-17 min and swap stood at 23.6 of 24.5 GB. Next step: rerun `smoke` on
   the same clip three times once the worker drains, and close this only if the
   validator accepts the results.
+
+## Security
+
+## Reproducibility
