@@ -8,11 +8,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from tools.sessions.antigravity_step_text import antigravity_step_text
     from tools.sessions.load_sql import load_sql as read_sql
-    from tools.sessions.proto_strings import proto_strings
 else:
+    from antigravity_step_text import antigravity_step_text
     from load_sql import load_sql as read_sql
-    from proto_strings import proto_strings
 
 load_sql = partial(read_sql, directory=Path(__file__).parent)
 
@@ -40,10 +40,9 @@ def convert_antigravity(
             if not spec or not payload:
                 continue
             role, wanted = spec
-            for field_path, text in proto_strings(payload):
-                if field_path == wanted and text.strip():
-                    turns.append((role, text))
-                    break
+            text = antigravity_step_text(payload, wanted)
+            if text is not None and text.strip():
+                turns.append((role, text))
         mtime = datetime.fromtimestamp(path.stat().st_mtime, tz=UTC)
         meta = {"created": mtime.isoformat()}
         first_user = next((t for r, t in turns if r == "user"), "")

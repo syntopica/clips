@@ -239,3 +239,22 @@
     with unchanged Node coverage thresholds. All 1956 source bytes/modes, 89
     installed distribution records and 26983 dependency file hashes retained
     parity; owned process groups were empty.
+
+- [x] 2026-10-22 — **Session rendering:** Preserve short Antigravity assistant
+      replies.
+  - Result: Decode the existing Antigravity text field paths directly,
+    preserving short, multilingual, multiline and repeated visible replies while
+    excluding reasoning and tool siblings. Keep the generic protobuf walker and
+    its established behavior unchanged.
+  - Evidence: The old converter fails eight of nine new end-to-end cases; the
+    corrected focused suite passes all 36 cases. Both uv lock --check commands
+    pass in an isolated pair at the exact .brain-engine-ref. codeality-py gate
+    --json passes all seven required stages with coverage threshold 65
+    unchanged. pnpm run check:ci --maxWorkers=1 passes 1344 tests across 304
+    files, retaining one baseline skipped file and one todo. All actual source
+    and installed dependency trees remain exact. An independent read-only
+    supplementary proof qualifies the exact 1185 native Vitest compiler-cache
+    additions after the initial wrapper classification rejected them; the
+    original failed wrapper result is retained and tests were not rerun. Two
+    complete synthetic rendering comparisons are deterministic. No real session
+    conversion, schedule or resident runtime was changed.
