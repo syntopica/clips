@@ -14,4 +14,5 @@ export const discardKeptWorktree = (brain: string): void => {
     rmSync(kept.slice('worktree '.length), { recursive: true, force: true })
   git(brain, 'worktree', 'prune')
   git(brain, 'branch', '-D', `ingest/${CLIP_ID}`)
+  git(brain, 'update-ref', '-d', `refs/ingest-drafts/${CLIP_ID}`)
 }

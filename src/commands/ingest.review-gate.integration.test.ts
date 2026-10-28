@@ -92,7 +92,20 @@ describe.skipIf(!BRAIN_ENGINE_PRESENT)(
       expect(written.join('')).toContain(
         `ingest/${CLIP_ID} kept by an earlier run`,
       )
-      expect(written.join('')).toContain('worktree remove --force')
+      // The refused synthesis is a draft commit now, not a kept checkout.
+      expect(written.join('')).toContain(
+        `update-ref -d refs/ingest-drafts/${CLIP_ID}`,
+      )
+      expect(git(brain, 'worktree', 'list')).not.toContain('brain-ingest-')
+      expect(
+        git(
+          brain,
+          'diff',
+          '--name-only',
+          `ingest/${CLIP_ID}`,
+          `refs/ingest-drafts/${CLIP_ID}`,
+        ),
+      ).not.toBe('')
       expect(git(brainOrigin, 'rev-parse', 'main')).toBe(before)
       expect(git(clips, 'ls-files', CLIPS_PENDING)).toContain('metadata.json')
 

@@ -2,9 +2,7 @@ import { isAncestor } from '../git/is-ancestor.ts'
 import { listBranches } from '../git/list-branches.ts'
 import { resolveCommit } from '../git/resolve-commit.ts'
 import { runGit } from '../git/run-git.ts'
-import { deleteBranch } from '../publish/delete-branch.ts'
-import { removeIngestWorktree } from '../publish/remove-ingest-worktree.ts'
-import { worktreeForBranch } from '../publish/worktree-for-branch.ts'
+import { recoverIntegratedBranch } from './recover-integrated-branch.ts'
 
 /** SPEC:296-303: an ingest/<clip_id> branch is a recovery journal, not
  * residue, and no model runs during recovery. Already-integrated branches are
@@ -19,15 +17,8 @@ export const recoverIngestBranches = async (
     const clipId = branch.slice('ingest/'.length)
     const tip = await resolveCommit(brainRepository, branch)
     if (await isAncestor(brainRepository, tip, 'origin/main')) {
-      const worktree = await worktreeForBranch(brainRepository, branch)
-      const kept =
-        worktree === null
-          ? await deleteBranch(brainRepository, branch)
-          : await removeIngestWorktree(brainRepository, clipId, worktree)
       report.push(
-        kept === null
-          ? `recovered ${branch}: already integrated, cleaned up`
-          : `recovered ${branch}: already integrated, kept ${kept}`,
+        await recoverIntegratedBranch(brainRepository, branch, clipId),
       )
       continue
     }
