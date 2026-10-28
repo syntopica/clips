@@ -141,6 +141,19 @@ describe('removeIngestWorktree with a draft', () => {
     )
   })
 
+  it('cleans up an integrated -orig backup branch without a draft', async () => {
+    const { brain } = repositoryWithWorktree()
+    git(brain, 'branch', `ingest/${CLIP}-orig`, 'main')
+
+    expect(
+      await recoverIntegratedBranch(
+        brain,
+        `ingest/${CLIP}-orig`,
+        `${CLIP}-orig`,
+      ),
+    ).toBe(`recovered ingest/${CLIP}-orig: already integrated, cleaned up`)
+  })
+
   it('keeps the branch marker when a saved checkout is clean again', async () => {
     const { brain, worktree } = repositoryWithWorktree()
     writeFileSync(join(worktree, 'page.md'), 'draft\n')

@@ -1,3 +1,4 @@
+import { ULID_PATTERN } from '../clips/ulid-pattern.ts'
 import { refExists } from '../git/ref-exists.ts'
 import { deleteBranch } from '../publish/delete-branch.ts'
 import { ingestDraftRef } from '../publish/ingest-draft-ref.ts'
@@ -13,15 +14,21 @@ export const recoverIntegratedBranch = async (
   branch: string,
   clipId: string,
 ): Promise<string> => {
-  const draft = ingestDraftRef(clipId)
   const worktree = await worktreeForBranch(brainRepository, branch)
+  // `ingest/<clip_id>-orig` backups from publishBranch carry no draft, and
+  // ingestDraftRef throws on a suffix that is not a ULID.
+  const draft = ULID_PATTERN.test(clipId) ? ingestDraftRef(clipId) : null
   // A run stopped between saving the draft and removing the checkout, or a
   // removal refused by a lock, leaves both behind: finish the removal.
-  if (worktree !== null && (await refExists(brainRepository, draft))) {
+  if (
+    worktree !== null &&
+    draft !== null &&
+    (await refExists(brainRepository, draft))
+  ) {
     const kept = await removeIngestWorktree(brainRepository, clipId, worktree)
     return `${branch}: kept ${kept ?? 'nothing'}`
   }
-  if (await refExists(brainRepository, draft))
+  if (draft !== null && (await refExists(brainRepository, draft)))
     return `${branch}: kept with ${draft} for an operator`
   const kept =
     worktree === null

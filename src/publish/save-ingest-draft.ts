@@ -40,19 +40,23 @@ export const saveIngestDraft = async (
     await runGit(worktree, ['reset', '-q'])
     return null
   }
-  const tree = await runGitOrThrow(worktree, ['write-tree'])
-  const commit = await runGitOrThrow(worktree, [
-    'commit-tree',
-    tree,
-    '-p',
-    'HEAD',
-    '-m',
-    `ingest draft kept for ${clipId}`,
-  ])
-  const ref = ingestDraftRef(clipId)
-  await runGitOrThrow(worktree, ['update-ref', ref, commit])
-  // Back to the index it had, so a run stopped before the checkout is removed
-  // leaves a worktree the next recovery can save and remove again.
-  await runGitOrThrow(worktree, ['reset', '-q'])
-  return ref
+  // Back to the index it had, whatever happens below: a staged index makes
+  // every later attempt refuse, and a run stopped before the checkout is
+  // removed must leave a worktree the next recovery can save again.
+  try {
+    const tree = await runGitOrThrow(worktree, ['write-tree'])
+    const commit = await runGitOrThrow(worktree, [
+      'commit-tree',
+      tree,
+      '-p',
+      'HEAD',
+      '-m',
+      `ingest draft kept for ${clipId}`,
+    ])
+    const ref = ingestDraftRef(clipId)
+    await runGitOrThrow(worktree, ['update-ref', ref, commit])
+    return ref
+  } finally {
+    await runGit(worktree, ['reset', '-q'])
+  }
 }
