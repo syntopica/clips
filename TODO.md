@@ -8,20 +8,6 @@
 > verified complete · `[-]` obsolete or superseded. Closed work moves to
 > `TODO_LOG.md`.
 
-- [ ] Kept ingest worktrees fill the disk. Every clip that ends rejected or
-      escalated keeps its `brain-ingest-*/<clip_id>` worktree, which is a full
-      checkout of the instance (2.4 GiB, half `clips/` and half `brain/`) to
-      keep a 1-3 file draft. The 2026-10-28 daily run (MacBook, started 06:33)
-      kept 14 of them by 11:27, about 34 GiB, while free space fell from 58 to
-      28 GiB; the 11 empty `brain-ingest-*` parents are clips that published
-      cleanly. Evidence: `git -C ~/p/wiki worktree list | grep -c brain-ingest`
-      gives 14, every branch is 0 commits ahead of `origin/main` with 1-3 dirty
-      files. Smallest next step: keep the draft, not the checkout - save the
-      worktree's diff and untracked files next to the clip (or in the rejection
-      record) and remove the worktree, or cut it as a sparse checkout of the
-      pages synthesis touches; until then, a disk-free guard in
-      `tools/daily/daily.sh` that stops before the next clip.
-
 - [~] Worker-ladder synthesis refusal rates. Measured 2026-10-11 over the
   instance's needs-claude bucket (198 clips from the daily runs of
   2026-10-05..11; 1444 processed, 588 pending): MODEL_ESCALATED 111 (34 of them

@@ -258,3 +258,28 @@
     original failed wrapper result is retained and tests were not rerun. Two
     complete synthetic rendering comparisons are deterministic. No real session
     conversion, schedule or resident runtime was changed.
+
+- [x] 2026-10-28 — **General:** Kept ingest worktrees fill the disk. Every clip
+      that ends rejected or escalated keeps its `brain-ingest-*/<clip_id>`
+      worktree, which is a full checkout of the instance (2.4 GiB, half `clips/`
+      and half `brain/`) to keep a 1-3 file draft. The 2026-10-28 daily run
+      (MacBook, started 06:33) kept 14 of them by 11:27, about 34 GiB, while
+      free space fell from 58 to 28 GiB; the 11 empty `brain-ingest-*` parents
+      are clips that published cleanly. Evidence:
+      `git -C ~/p/wiki worktree list | grep -c brain-ingest` gives 14, every
+      branch is 0 commits ahead of `origin/main` with 1-3 dirty files. Smallest
+      next step: keep the draft, not the checkout - save the worktree's diff and
+      untracked files next to the clip (or in the rejection record) and remove
+      the worktree, or cut it as a sparse checkout of the pages synthesis
+      touches; until then, a disk-free guard in `tools/daily/daily.sh` that
+      stops before the next clip.
+  - Result: A refused or escalated clip's synthesis is saved as a commit under
+    refs/ingest-drafts/<clip_id> (branch unmoved, so recovery never publishes
+    it) and its 2.4 GiB checkout is force-removed; the ingest branch stays as
+    the operator marker and the clear command deletes the draft ref too. Any
+    state one commit cannot hold (staged index, ignored files, hidden index
+    entries, gitlinks, unstageable tree) keeps the checkout as before. The 13
+    kept worktrees of 2026-10-28 were converted: 38 to 71 GiB free.
+  - Evidence: clips f6ee82c, fd2fdac, 2aefe5b, 0d1d977 and this commit; pnpm run
+    check 1354 passed; four codex review rounds, each finding fixed; git -C
+    ~/p/wiki for-each-ref refs/ingest-drafts lists 13 with non-empty diffs
