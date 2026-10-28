@@ -33,6 +33,7 @@ export const runWorkerSelection = async (
       refusal: `selection: ${selected.failure}`,
       executor: null,
       ...(selected.exhausted === true ? { exhausted: true } : {}),
+      ...(selected.interrupted === true ? { interrupted: true } : {}),
     }
   const selection = parseWorkerSelection(selected.text)
   if (selection === null)

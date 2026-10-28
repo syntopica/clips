@@ -68,6 +68,34 @@ describe('workerSynthesizer', () => {
     expect(result.needsClaude).toBe(false)
   })
 
+  it('leaves the clip pending without ending the run when the writing job lost its executor', async () => {
+    const { port } = fakePort(chose, {
+      failure: 'worker job w-1 lost its executor mid-job (lease_lost)',
+      interrupted: true,
+    })
+    const { result } = await run(port)
+
+    expect(result.needsClaude).toBe(false)
+    expect(result.skipped).toBe(true)
+    expect(result.exhausted).toBeUndefined()
+    expect(result.reason).toBe(
+      'writing: worker job w-1 lost its executor mid-job (lease_lost)',
+    )
+  })
+
+  it('leaves the clip pending when the selection job lost its executor', async () => {
+    const { port, calls } = fakePort(
+      { failure: 'lease_lost', interrupted: true },
+      chose,
+    )
+    const { result } = await run(port)
+
+    expect(calls.map((call) => call.step)).toEqual(['select'])
+    expect(result.needsClaude).toBe(false)
+    expect(result.skipped).toBe(true)
+    expect(result.exhausted).toBeUndefined()
+  })
+
   it('escalates a writing pass that returned no pages, with its reason', async () => {
     const { port } = fakePort(
       chose,

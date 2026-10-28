@@ -4,11 +4,11 @@ import { repositoryPageDirectories } from '../layout/repository-page-directories
 import type { Synthesizer } from '../synthesis/synthesizer.ts'
 import { runWorkerSelection } from './run-worker-selection.ts'
 import { runWorkerWriting } from './run-worker-writing.ts'
+import { selectionRefusalResult } from './selection-refusal-result.ts'
 import { trackWorkerJobIds } from './track-worker-job-ids.ts'
 import { workerAuthorModel } from './worker-author-model.ts'
 import { WORKER_SYNTHESIS_BOUNDARY } from './worker-synthesis-boundary.ts'
 import { workerSynthesisEscalation } from './worker-synthesis-escalation.ts'
-import { workerSynthesisExhausted } from './worker-synthesis-exhausted.ts'
 import type { WorkerSynthesisPort } from './worker-synthesis-port.ts'
 
 /** Synthesis through the worker queue, in two tool-less passes.
@@ -22,8 +22,10 @@ import type { WorkerSynthesisPort } from './worker-synthesis-port.ts'
  * guard sees the model that wrote the page and not the one that was asked for.
  * Every failure - an unreadable clip, a prompt too large for the window, a job
  * with no answer, an answer of the wrong shape, a path outside the page
- * directories - returns `needsClaude` with nothing written, and the validator
- * and the human review gate still stand after a success.
+ * directories - returns `needsClaude` with nothing written, except the two that
+ * say nothing about the clip: an exhausted ladder and a job whose executor was
+ * lost leave it pending. The validator and the human review gate still stand
+ * after a success.
  *
  * Every job the run submitted is named on the result, failures included, so
  * the clip's run history can link to them.
@@ -62,9 +64,7 @@ export const workerSynthesizer = (
         model: workerAuthorModel(selection.executor),
       }
       return {
-        ...(selection.exhausted === true
-          ? workerSynthesisExhausted(selection.refusal, identity)
-          : workerSynthesisEscalation(selection.refusal, identity)),
+        ...selectionRefusalResult(selection, identity),
         workerJobIds: tracked.jobIds,
       }
     }

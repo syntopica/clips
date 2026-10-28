@@ -4,6 +4,7 @@ import { localGradeOverflow } from '../grade/local-grade-overflow.ts'
 import { awaitWorkerResult } from '../worker/await-worker-result.ts'
 import { readWorkerModelContext } from '../worker/read-worker-model-context.ts'
 import { submitWorkerJob } from '../worker/submit-worker-job.ts'
+import { workerJobLeaseLost } from '../worker/worker-job-lease-lost.ts'
 import { workerModel } from '../worker/worker-model.ts'
 import { workerOutputText } from '../worker/worker-output-text.ts'
 import type { WorkerTiming } from '../worker/worker-timing.ts'
@@ -55,6 +56,12 @@ export const workerSynthesisPortOnQueue = (
     })
     const result = await awaitWorkerResult(jobId, timing)
     const text = result === null ? null : workerOutputText(result.output)
+    if (result === null && (await workerJobLeaseLost(jobId)))
+      return {
+        failure: `worker job ${jobId} on ${queue} lost its executor mid-job (lease_lost); the clip stays pending for the next run`,
+        jobId,
+        interrupted: true,
+      }
     if (result === null || text === null)
       return {
         failure: `worker job ${jobId} on ${queue} ended without an answer; a rerun collects it by its key if it is still queued`,

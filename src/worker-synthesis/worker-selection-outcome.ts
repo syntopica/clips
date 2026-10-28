@@ -5,4 +5,9 @@ import type { WorkerShownPage } from './worker-shown-page.ts'
  * why the clip stops here and who, if anyone, said so. */
 export type WorkerSelectionOutcome =
   | { shown: WorkerShownPage[] }
-  | { refusal: string; executor: WorkerExecutor | null; exhausted?: true }
+  | {
+      refusal: string
+      executor: WorkerExecutor | null
+      exhausted?: true
+      interrupted?: true
+    }

@@ -14,13 +14,20 @@ import { temporaryDir } from '../testing/temporary-dir.ts'
 import { withFixtureSyntopicaConfig } from '../testing/with-fixture-syntopica-config.ts'
 import { workerSynthesisPortOnQueue } from './worker-synthesis-port-on-queue.ts'
 
+const PROMPT = 'the prompt'
+
 describe('workerSynthesisPortOnQueue', () => {
   let server: Server
   let calls: { method: string; path: string; body: unknown }[]
   let result: Record<string, unknown>
+  // What GET answers once the result row is acknowledged; null keeps the row.
+  let afterAck: Record<string, unknown> | null
+  let acked: boolean
 
   beforeEach(async () => {
     calls = []
+    afterAck = null
+    acked = false
     result = {
       result_id: 'r-1',
       control: null,
@@ -35,11 +42,14 @@ describe('workerSynthesisPortOnQueue', () => {
       const method = request.method ?? ''
       const path = request.url ?? ''
       calls.push({ method, path, body })
+      if (method === 'POST' && path.endsWith('/ack')) acked = true
       const payload =
         method === 'POST' && path === '/v1/jobs'
           ? { id: 's-1', created: true }
           : method === 'GET'
-            ? { state: 'succeeded', result }
+            ? acked && afterAck !== null
+              ? afterAck
+              : { state: 'succeeded', result }
             : {}
       response.writeHead(200, { 'Content-Type': 'application/json' })
       response.end(JSON.stringify(payload))
@@ -79,7 +89,7 @@ describe('workerSynthesisPortOnQueue', () => {
     })
 
   it('submits a tool-less personal inference job pinned to the worker model', async () => {
-    const answer = await infer('the prompt')
+    const answer = await infer(PROMPT)
 
     expect(answer).toEqual({
       text: JSON.stringify({ pages: [], needs_claude: false, reason: 'r' }),
@@ -93,7 +103,7 @@ describe('workerSynthesisPortOnQueue', () => {
       privacy: 'personal',
       requirements: { capability: 'chat.json', models: ['m'] },
       input: {
-        messages: [{ role: 'user', content: 'the prompt' }],
+        messages: [{ role: 'user', content: PROMPT }],
         schema: { type: 'object' },
       },
     })
@@ -129,13 +139,27 @@ describe('workerSynthesisPortOnQueue', () => {
 
   it('reports a job that ended without output as a failure', async () => {
     result = { result_id: 'r-1', control: 'failed', output: null }
-    const answer = await infer('the prompt')
+    const answer = await infer(PROMPT)
 
     expect(answer).toEqual({
       failure: expect.stringMatching(
         /s-1 on q.synthesis ended without an answer/,
       ) as unknown,
       jobId: 's-1',
+    })
+  })
+
+  it('reports a job whose executor was lost as interrupted, not as a refusal', async () => {
+    result = { result_id: 'r-1', control: 'failed', output: null }
+    afterAck = { state: 'failed', error: 'lease_lost', result: null }
+    const answer = await infer(PROMPT)
+
+    expect(answer).toEqual({
+      failure: expect.stringMatching(
+        /s-1 on q.synthesis lost its executor mid-job \(lease_lost\)/,
+      ) as unknown,
+      jobId: 's-1',
+      interrupted: true,
     })
   })
 })
