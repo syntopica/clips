@@ -14,9 +14,15 @@ export const recoverIntegratedBranch = async (
   clipId: string,
 ): Promise<string> => {
   const draft = ingestDraftRef(clipId)
+  const worktree = await worktreeForBranch(brainRepository, branch)
+  // A run stopped between saving the draft and removing the checkout, or a
+  // removal refused by a lock, leaves both behind: finish the removal.
+  if (worktree !== null && (await refExists(brainRepository, draft))) {
+    const kept = await removeIngestWorktree(brainRepository, clipId, worktree)
+    return `${branch}: kept ${kept ?? 'nothing'}`
+  }
   if (await refExists(brainRepository, draft))
     return `${branch}: kept with ${draft} for an operator`
-  const worktree = await worktreeForBranch(brainRepository, branch)
   const kept =
     worktree === null
       ? await deleteBranch(brainRepository, branch)
