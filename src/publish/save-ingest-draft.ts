@@ -1,8 +1,8 @@
 import { hasStagedChanges } from '../git/has-staged-changes.ts'
+import { indexHasGitlink } from '../git/index-has-gitlink.ts'
 import { isWorkingTreeClean } from '../git/is-working-tree-clean.ts'
 import { runGitOrThrow } from '../git/run-git-or-throw.ts'
 import { runGit } from '../git/run-git.ts'
-import { stagesGitlink } from '../git/stages-gitlink.ts'
 import { ingestDraftRef } from './ingest-draft-ref.ts'
 
 /** Records a worktree's uncommitted synthesis as a commit under
@@ -20,9 +20,9 @@ import { ingestDraftRef } from './ingest-draft-ref.ts'
  * Two states cannot be captured by one commit, and both return null so the
  * caller keeps the worktree as before: an index that already differs from
  * HEAD (staging again would overwrite the staged version with the working
- * one), and an untracked embedded repository, which `add -A` records as a
- * bare gitlink. In the second case the index is reset back to HEAD, which is
- * where it was. */
+ * one), and any gitlink - an untracked embedded repository that `add -A`
+ * stages, or a tracked submodule - whose contents a commit does not hold. In
+ * the second case the index is reset back to HEAD, which is where it was. */
 export const saveIngestDraft = async (
   worktree: string,
   clipId: string,
@@ -30,7 +30,7 @@ export const saveIngestDraft = async (
   if (await isWorkingTreeClean(worktree)) return null
   if (await hasStagedChanges(worktree)) return null
   await runGitOrThrow(worktree, ['add', '-A'])
-  if (await stagesGitlink(worktree)) {
+  if (await indexHasGitlink(worktree)) {
     await runGit(worktree, ['reset', '-q'])
     return null
   }

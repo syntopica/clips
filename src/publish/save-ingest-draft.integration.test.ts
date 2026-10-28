@@ -67,6 +67,21 @@ describe('saveIngestDraft', () => {
     expect(await saveIngestDraft(worktree, CLIP)).toBeNull()
     expect(git(worktree, 'diff', '--cached', '--name-only')).toBe('')
   })
+
+  it('refuses a worktree whose index tracks a submodule', async () => {
+    const { worktree } = repositoryWithWorktree()
+    const nested = join(worktree, 'nested')
+    mkdirSync(nested)
+    initGitRepo(nested)
+    writeFileSync(join(nested, 'data.md'), 'nested\n')
+    git(nested, 'add', '.')
+    git(nested, 'commit', '-qm', 'nested')
+    git(worktree, 'add', 'nested')
+    git(worktree, 'commit', '-qm', 'track nested')
+    writeFileSync(join(nested, 'data.md'), 'unsaved\n')
+
+    expect(await saveIngestDraft(worktree, CLIP)).toBeNull()
+  })
 })
 
 describe('removeIngestWorktree with a draft', () => {
