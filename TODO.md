@@ -21,20 +21,6 @@
   daily runs, recount the same codes from clips escalated after 2026-10-11 and
   compare.
 
-- [ ] A worker node shut down mid-job parks the clip in needs-claude as if the
-      model had refused it. Clip `01M097NSDE2ESB5KMBGRDEPPJY` (2026-10-28 11:32Z
-      run): the selection job `45490bd0…` succeeded, the writing job
-      `e8ff3c105bce…` ended `failed` with error `lease_lost` (GET
-      `/v1/jobs/<id>`), right after another session booted out
-      `com.syntopica.worker.node` on the MacBook for memory. The run recorded
-      `MODEL_ESCALATED`, `retryable: false`; no synthesis existed, so no draft
-      ref and no branch were kept, which is correct. `clips requeue` accepts the
-      code, but nothing calls it, so every node restart can strand clips until
-      someone looks. Smallest next step: in `workerSynthesisPortOnQueue`, report
-      a job whose state is `failed` with `lease_lost` as a transport failure
-      that leaves the clip pending, and add a test with a stubbed
-      `/v1/jobs/<id>` response.
-
 - [~] The 2026-10-09 daily run logged two clips and then nothing: no clip line,
   no `done:` and no `stop:`, although each clip is bounded by a 2 h timeout. The
   machine booted again around 19:45Z that day, and `log show` no longer holds

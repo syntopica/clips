@@ -283,3 +283,24 @@
   - Evidence: clips f6ee82c, fd2fdac, 2aefe5b, 0d1d977 and this commit; pnpm run
     check 1354 passed; four codex review rounds, each finding fixed; git -C
     ~/p/wiki for-each-ref refs/ingest-drafts lists 13 with non-empty diffs
+
+- [x] 2026-10-28 — **General:** A worker node shut down mid-job parks the clip
+      in needs-claude as if the model had refused it. Clip
+      `01M097NSDE2ESB5KMBGRDEPPJY` (2026-10-28 11:32Z run): the selection job
+      `45490bd0…` succeeded, the writing job `e8ff3c105bce…` ended `failed` with
+      error `lease_lost` (GET `/v1/jobs/<id>`), right after another session
+      booted out `com.syntopica.worker.node` on the MacBook for memory. The run
+      recorded `MODEL_ESCALATED`, `retryable: false`; no synthesis existed, so
+      no draft ref and no branch were kept, which is correct. `clips requeue`
+      accepts the code, but nothing calls it, so every node restart can strand
+      clips until someone looks. Smallest next step: in
+      `workerSynthesisPortOnQueue`, report a job whose state is `failed` with
+      `lease_lost` as a transport failure that leaves the clip pending, and add
+      a test with a stubbed `/v1/jobs/<id>` response.
+  - Result: A worker job the coordinator fails as lease_lost is reported as
+    interrupted; synthesis returns skipped, so the clip stays pending and the
+    daily run continues (an exhausted ladder still ends it). The next run
+    resubmits under the :r1 key suffix.
+  - Evidence: clips 4d918a9; pnpm check 1358 tests pass; uv run pytest -q 711
+    pass; codex review --base HEAD~1: no actionable regressions; new tests in
+    worker-synthesis-port-on-queue.test.ts and worker-synthesizer.test.ts.
