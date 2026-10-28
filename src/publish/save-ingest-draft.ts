@@ -1,3 +1,4 @@
+import { hasHiddenIndexEntries } from '../git/has-hidden-index-entries.ts'
 import { hasIgnoredFiles } from '../git/has-ignored-files.ts'
 import { hasStagedChanges } from '../git/has-staged-changes.ts'
 import { indexHasGitlink } from '../git/index-has-gitlink.ts'
@@ -18,12 +19,14 @@ import { ingestDraftRef } from './ingest-draft-ref.ts'
  * 2026-10-28) holding a one-to-three file diff; once the diff is a commit the
  * checkout can go.
  *
- * Three states cannot be captured by one commit, and both return null so the
+ * Several states cannot be captured by one commit, and both return null so the
  * caller keeps the worktree as before: an index that already differs from
  * HEAD (staging again would overwrite the staged version with the working
- * one), ignored files, which `add -A` leaves out, and any gitlink - an untracked embedded repository that `add -A`
- * stages, or a tracked submodule - whose contents a commit does not hold. In
- * the second case the index is reset back to HEAD, which is where it was. */
+ * one), ignored files and assume-unchanged or skip-worktree entries, which `add
+ * -A` leaves out, a tree `add -A` cannot stage at all, and any gitlink - an untracked embedded repository that `add -A`
+ * stages, or a tracked submodule - whose contents a commit does not hold. After
+ * a staging attempt the index is reset back to HEAD, which is where it was;
+ * none of these throws, because a throw here stops every later recovery. */
 export const saveIngestDraft = async (
   worktree: string,
   clipId: string,
@@ -31,8 +34,9 @@ export const saveIngestDraft = async (
   if (await isWorkingTreeClean(worktree)) return null
   if (await hasStagedChanges(worktree)) return null
   if (await hasIgnoredFiles(worktree)) return null
-  await runGitOrThrow(worktree, ['add', '-A'])
-  if (await indexHasGitlink(worktree)) {
+  if (await hasHiddenIndexEntries(worktree)) return null
+  const staged = await runGit(worktree, ['add', '-A'])
+  if (staged.exitCode !== 0 || (await indexHasGitlink(worktree))) {
     await runGit(worktree, ['reset', '-q'])
     return null
   }

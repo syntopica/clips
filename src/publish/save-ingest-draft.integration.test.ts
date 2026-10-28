@@ -12,6 +12,11 @@ const CLIP = '01M097NSDE2AS0S4N9YY2WXHFP'
 const DRAFT = `refs/ingest-drafts/${CLIP}`
 const roots: string[] = []
 
+const mkdirAndReturn = (path: string): string => {
+  mkdirSync(path)
+  return path
+}
+
 const repositoryWithWorktree = (): { brain: string; worktree: string } => {
   const root = mkdtempSync(join(tmpdir(), 'clips-draft-'))
   roots.push(root)
@@ -74,6 +79,24 @@ describe('saveIngestDraft', () => {
     writeFileSync(join(worktree, 'notes.txt'), 'local\n')
 
     expect(await saveIngestDraft(worktree, CLIP)).toBeNull()
+  })
+
+  it('refuses a worktree with an assume-unchanged edit', async () => {
+    const { worktree } = repositoryWithWorktree()
+    git(worktree, 'update-index', '--assume-unchanged', 'page.md')
+    writeFileSync(join(worktree, 'page.md'), 'hidden\n')
+    writeFileSync(join(worktree, 'new.md'), 'new\n')
+
+    expect(await saveIngestDraft(worktree, CLIP)).toBeNull()
+  })
+
+  it('refuses without throwing when add -A cannot stage the tree', async () => {
+    const { worktree } = repositoryWithWorktree()
+    initGitRepo(mkdirAndReturn(join(worktree, 'empty-repo')))
+    writeFileSync(join(worktree, 'new.md'), 'new\n')
+
+    expect(await saveIngestDraft(worktree, CLIP)).toBeNull()
+    expect(git(worktree, 'diff', '--cached', '--name-only')).toBe('')
   })
 
   it('refuses a worktree whose index tracks a submodule', async () => {
