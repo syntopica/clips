@@ -1,3 +1,4 @@
+import { hasIgnoredFiles } from '../git/has-ignored-files.ts'
 import { hasStagedChanges } from '../git/has-staged-changes.ts'
 import { indexHasGitlink } from '../git/index-has-gitlink.ts'
 import { isWorkingTreeClean } from '../git/is-working-tree-clean.ts'
@@ -17,10 +18,10 @@ import { ingestDraftRef } from './ingest-draft-ref.ts'
  * 2026-10-28) holding a one-to-three file diff; once the diff is a commit the
  * checkout can go.
  *
- * Two states cannot be captured by one commit, and both return null so the
+ * Three states cannot be captured by one commit, and both return null so the
  * caller keeps the worktree as before: an index that already differs from
  * HEAD (staging again would overwrite the staged version with the working
- * one), and any gitlink - an untracked embedded repository that `add -A`
+ * one), ignored files, which `add -A` leaves out, and any gitlink - an untracked embedded repository that `add -A`
  * stages, or a tracked submodule - whose contents a commit does not hold. In
  * the second case the index is reset back to HEAD, which is where it was. */
 export const saveIngestDraft = async (
@@ -29,6 +30,7 @@ export const saveIngestDraft = async (
 ): Promise<string | null> => {
   if (await isWorkingTreeClean(worktree)) return null
   if (await hasStagedChanges(worktree)) return null
+  if (await hasIgnoredFiles(worktree)) return null
   await runGitOrThrow(worktree, ['add', '-A'])
   if (await indexHasGitlink(worktree)) {
     await runGit(worktree, ['reset', '-q'])

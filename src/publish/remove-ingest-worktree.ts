@@ -1,5 +1,7 @@
+import { refExists } from '../git/ref-exists.ts'
 import { runGit } from '../git/run-git.ts'
 import { ingestBranchName } from './ingest-branch-name.ts'
+import { ingestDraftRef } from './ingest-draft-ref.ts'
 import { saveIngestDraft } from './save-ingest-draft.ts'
 
 /** Cleanup that refuses to destroy work: no `--force` on either command, so a
@@ -37,6 +39,12 @@ export const removeIngestWorktree = async (
     worktree,
   ])
   if (removed.exitCode !== 0) kept.push(`worktree ${worktree}`)
+  // A draft saved by an earlier run makes the branch its marker, even once
+  // the checkout is clean: deleting it would let synthesis overwrite the draft.
+  if (await refExists(brainRepository, ingestDraftRef(clipId))) {
+    kept.push(`branch ${branch}`)
+    return kept.join(', ')
+  }
   const deleted = await runGit(brainRepository, ['branch', '-d', branch])
   if (deleted.exitCode !== 0) kept.push(`branch ${branch}`)
   return kept.length === 0 ? null : kept.join(', ')

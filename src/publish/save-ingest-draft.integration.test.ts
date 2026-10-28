@@ -68,6 +68,14 @@ describe('saveIngestDraft', () => {
     expect(git(worktree, 'diff', '--cached', '--name-only')).toBe('')
   })
 
+  it('refuses a worktree holding ignored files', async () => {
+    const { worktree } = repositoryWithWorktree()
+    writeFileSync(join(worktree, '.gitignore'), 'notes.txt\n')
+    writeFileSync(join(worktree, 'notes.txt'), 'local\n')
+
+    expect(await saveIngestDraft(worktree, CLIP)).toBeNull()
+  })
+
   it('refuses a worktree whose index tracks a submodule', async () => {
     const { worktree } = repositoryWithWorktree()
     const nested = join(worktree, 'nested')
@@ -108,5 +116,17 @@ describe('removeIngestWorktree with a draft', () => {
     expect(await recoverIntegratedBranch(brain, `ingest/${CLIP}`, CLIP)).toBe(
       `ingest/${CLIP}: kept with ${DRAFT} for an operator`,
     )
+  })
+
+  it('keeps the branch marker when a saved checkout is clean again', async () => {
+    const { brain, worktree } = repositoryWithWorktree()
+    writeFileSync(join(worktree, 'page.md'), 'draft\n')
+    await saveIngestDraft(worktree, CLIP)
+    writeFileSync(join(worktree, 'page.md'), 'base\n')
+
+    expect(await removeIngestWorktree(brain, CLIP, worktree)).toBe(
+      `branch ingest/${CLIP}`,
+    )
+    expect(git(brain, 'branch', '--list', `ingest/${CLIP}`)).not.toBe('')
   })
 })
