@@ -22,14 +22,15 @@
   compare.
 
 - [ ] The worker review gate escalates most clips written on the worker's fine
-  tier, because the ladder answers the review on that same tier and
-  `workerReviewer` correctly discards it (`graderAuthorRefusal`). Measured
-  2026-11-12 on the instance's needs-claude bucket: 75 clips escalated this way
-  between 2026-10-05 and 2026-11-11, 47 of them in one run on 2026-11-10, every
-  one `AUTO_REVIEWER_ESCALATED` with "the agy-fine tier that wrote this page".
-  The guard is right; the routing is what wastes the synthesis. Smallest next
-  step: let the review job exclude the author's tier from the ladder (or route
-  it to a tier the author cannot hold) instead of escalating after the answer.
+      tier, because the ladder answers the review on that same tier and
+      `workerReviewer` correctly discards it (`graderAuthorRefusal`). Measured
+      2026-11-12 on the instance's needs-claude bucket: 75 clips escalated this
+      way between 2026-10-05 and 2026-11-11, 47 of them in one run on
+      2026-11-10, every one `AUTO_REVIEWER_ESCALATED` with "the agy-fine tier
+      that wrote this page". The guard is right; the routing is what wastes the
+      synthesis. Smallest next step: let the review job exclude the author's
+      tier from the ladder (or route it to a tier the author cannot hold)
+      instead of escalating after the answer.
 
 - [~] The 2026-10-09 daily run logged two clips and then nothing: no clip line,
   no `done:` and no `stop:`, although each clip is bounded by a 2 h timeout. The
