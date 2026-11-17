@@ -1,0 +1,20 @@
+{
+  "tadu": 2,
+  "id": "t-1e554670-077d-454b-94e9-817ac1f7b4f7",
+  "title": "Shared package scope migration: `npm view` gives",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    `@syntopica/eslint-config` 0.9.0, `@syntopica/prettier-config` 0.2.2,",
+    "    `@syntopica/tsconfig` 0.3.1; the lockfile already resolves the new scope",
+    "    and a fresh clone installs with `--frozen-lockfile`. The expired",
+    "    `minimumReleaseAgeExclude` entries were dropped (`248c430`)."
+  ],
+  "closed": "2026-11-17",
+  "result": "Shared package scope migration: `npm view` gives",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

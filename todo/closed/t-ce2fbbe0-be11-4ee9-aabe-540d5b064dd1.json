@@ -1,0 +1,19 @@
+{
+  "tadu": 2,
+  "id": "t-ce2fbbe0-be11-4ee9-aabe-540d5b064dd1",
+  "title": "Dependencies at their latest releases (`a11a2df`): `pnpm up --latest -r`,",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    `uv lock --upgrade`, and every GitHub Action re-pinned to the SHA of its",
+    "    latest tag. Verified by `pnpm check`, `uv run pytest -q` (678 passed, 4",
+    "    skipped), `uv run codeality-py gate` and `actionlint`."
+  ],
+  "closed": "2026-11-17",
+  "result": "Dependencies at their latest releases (`a11a2df`): `pnpm up --latest -r`,",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

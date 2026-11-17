@@ -1,0 +1,21 @@
+{
+  "tadu": 2,
+  "id": "t-e0c70ac0-2708-407c-9393-aacdad21b439",
+  "title": "`clips requeue` refuses while the failed run's `ingest/<id>` branch is",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    still kept, names the clear command and writes nothing (`ed8fa6a`). Codex",
+    "    decision D1, option (b), high: clearing a branch that may hold a refused",
+    "    diff stays the operator's call. Verified by",
+    "    `pnpm exec vitest run src/commands/requeue.integration.test.ts` (6",
+    "    passed)."
+  ],
+  "closed": "2026-11-17",
+  "result": "`clips requeue` refuses while the failed run's `ingest/<id>` branch is",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "tadu": 2,
+  "id": "t-94b4e665-fd29-4484-87d2-b741a31ded8e",
+  "title": "OpenRouter's shared free cap: a writing or selection answer the local",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    model gave to a prompt its window could not hold now leaves the clip",
+    "    pending, ends the run with exit 4, and `daily.sh` stops on it (`361f63e`).",
+    "    Codex D3 (a), high. Verified by `pnpm check` (1344 tests) and an ingest",
+    "    integration test asserting exit 4, a pending clip and no kept branch."
+  ],
+  "closed": "2026-11-17",
+  "result": "OpenRouter's shared free cap: a writing or selection answer the local",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

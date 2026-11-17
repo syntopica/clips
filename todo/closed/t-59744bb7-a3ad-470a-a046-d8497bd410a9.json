@@ -1,0 +1,23 @@
+{
+  "tadu": 2,
+  "id": "t-59744bb7-a3ad-470a-a046-d8497bd410a9",
+  "title": "Resolve the sessions converter output from instance configuration",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    `convert.py` now resolves rendered pages and mirrored hosts from",
+    "    `SYNTOPICA_DATA` and `brain.sources` at call time. Tests use temporary",
+    "    instances and a synthetic home; missing or invalid configuration refuses",
+    "    before scanning stores. Verified by `uv run pytest -q` (668 passed, 4",
+    "    skipped), `uv run codeality-py gate` (all applicable checks passed),",
+    "    `convert.py --help` with an instance (usage, exit 0), and `convert.py`",
+    "    without `SYNTOPICA_DATA` (configuration error on stderr, exit 78)."
+  ],
+  "closed": "2026-11-17",
+  "result": "Resolve the sessions converter output from instance configuration",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

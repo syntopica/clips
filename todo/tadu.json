@@ -1,0 +1,9 @@
+{
+  "tadu": 2,
+  "categories": {
+    "general": "General",
+    "reproducibility": "Reproducibility",
+    "security": "Security",
+    "session-rendering": "Session rendering"
+  }
+}

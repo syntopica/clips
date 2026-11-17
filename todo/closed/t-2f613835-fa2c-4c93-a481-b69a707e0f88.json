@@ -1,0 +1,23 @@
+{
+  "tadu": 2,
+  "id": "t-2f613835-fa2c-4c93-a481-b69a707e0f88",
+  "title": "The brain index builder now runs through",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    `uv run --no-sync --project <brain>` (`bf4166c`). Under launchd's PATH a",
+    "    bare `python3` was the system 3.9, the builder died at import on",
+    "    `typing.Never`, and three daily clips (01KYSGC20YH4P9Z1NQDAX39MZ6,",
+    "    01KYSGC20YH7B36RNBTBK9BBG5, 01KYSGC20YHBWGVX6EYA2YVWRZ) parked as",
+    "    INDEX_MAP_FAILED from 2026-10-09. Reproduced with",
+    "    `PATH=/opt/homebrew/bin:/usr/bin:/bin pnpm exec vitest run src/commands/ingest.claim-markers.integration.test.ts`",
+    "    (1 failed before, passes after)."
+  ],
+  "closed": "2026-11-17",
+  "result": "The brain index builder now runs through",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

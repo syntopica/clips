@@ -1,0 +1,17 @@
+{
+  "tadu": 2,
+  "id": "t-bbc789c8-9c30-4839-9cb6-8231c9828418",
+  "title": "Pin the paired Brain engine reference to",
+  "state": "done",
+  "category": "reproducibility",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    the exact source used for integration verification."
+  ],
+  "closed": "2026-10-22",
+  "result": "Replace the floating main reference with the exact accepted Brain commit 5329682bd31fbc414840400ede77359ae9f3a398, as required by the CI pin contract.",
+  "evidence": [
+    "Reference coverage found the two CI consumers and documentation; no tests depend on the literal branch name. The pin is a valid existing 40-character commit ID. Final pnpm run check:ci --maxWorkers=1 passed 304 test files and 1344 tests, with all ten paired ingest integration suites executing against that exact sibling engine. One existing todo remains."
+  ]
+}

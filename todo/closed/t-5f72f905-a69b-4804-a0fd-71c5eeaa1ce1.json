@@ -1,0 +1,26 @@
+{
+  "tadu": 2,
+  "id": "t-5f72f905-a69b-4804-a0fd-71c5eeaa1ce1",
+  "title": "`tools/capture` HTTPS calls under the python.org framework `python3`",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    (`CERTIFICATE_VERIFY_FAILED`): the network tools are now documented to run",
+    "    through `uv run python` (capture `README.md`, `push_index_to_service.py`",
+    "    usage), with `SSL_CERT_FILE=/etc/ssl/cert.pem` as the bare-Python",
+    "    alternative. Verified from a plain shell: an unauthenticated request to",
+    "    the capture origin under `uv run python` completed the handshake",
+    "    (`http 401`), the same request under `/usr/local/bin/python3` failed",
+    "    `CERTIFICATE_VERIFY_FAILED`, and",
+    "    `uv run python tools/capture/push_index_to_service.py --dry-run --limit 1`",
+    "    printed `pushed 1, skipped 0, failed 0 of 1`. A live `--limit 1` push was",
+    "    not run: it needs the capture token."
+  ],
+  "closed": "2026-11-17",
+  "result": "`tools/capture` HTTPS calls under the python.org framework `python3`",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

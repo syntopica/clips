@@ -1,0 +1,26 @@
+{
+  "tadu": 2,
+  "id": "t-2e96c8d5-c826-4a47-a19f-d65564457b5d",
+  "title": "`tools/daily/daily.sh` names where it stopped: a `start:` line with pid",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    and boot time, a `pending:` count, a `<id> start` line before each clip,",
+    "    and EXIT/TERM/HUP/INT traps that log `stop: ... during <step>`. The same",
+    "    change fixes a latent bug: `timeout clips ...` never called the script's",
+    "    `clips()` function (timeout executes a program), so every step ran the",
+    "    first `clips` on PATH; it now runs `node \"$ENGINE/bin/clips\"` from an",
+    "    array. Verified with `shellcheck` (clean) and a stub engine in a scratch",
+    "    instance: a normal run ends `done: 2 clips attempted`, a TERM to the",
+    "    process group mid-clip logs `stop: received SIGTERM during ingest B2` (rc",
+    "    143), and a failing preamble logs",
+    "    `stop: exited with code 1 during     start`."
+  ],
+  "closed": "2026-11-17",
+  "result": "`tools/daily/daily.sh` names where it stopped: a `start:` line with pid",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

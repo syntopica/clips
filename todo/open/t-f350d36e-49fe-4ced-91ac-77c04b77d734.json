@@ -1,0 +1,20 @@
+{
+  "tadu": 2,
+  "id": "t-f350d36e-49fe-4ced-91ac-77c04b77d734",
+  "title": "The 2026-10-09 daily run logged two clips and then nothing: no clip line,",
+  "state": "in_progress",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "no `done:` and no `stop:`, although each clip is bounded by a 2 h timeout. The",
+    "machine booted again around 19:45Z that day, and `log show` no longer holds",
+    "that window. Guards landed 2026-10-11 (see `TODO_LOG.md`): the run now logs",
+    "its boot time, a `<id> start` line before each clip and a",
+    "`stop: ... during <step>` on any exit or signal. Smallest next step: on the",
+    "next run that ends without `done:`, read the last line of",
+    "`~/p/.clips-daily.launchd.log` (a `<id> start` with nothing after it is a",
+    "SIGKILL or power loss; compare the `booted` time of the next run) and close",
+    "this with the cause."
+  ]
+}

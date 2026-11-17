@@ -1,0 +1,19 @@
+{
+  "tadu": 2,
+  "id": "t-fb500162-7088-4b96-bd08-e5984dfd08ca",
+  "title": "Section-drop retry and selection prompt (`480c77d`, `6ee5ac3`). Codex D4",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    (b)+(c), medium: one writing retry told which section it dropped,",
+    "    validator unchanged; the selection pass no longer escalates because a new",
+    "    page is needed."
+  ],
+  "closed": "2026-11-17",
+  "result": "Section-drop retry and selection prompt (`480c77d`, `6ee5ac3`). Codex D4",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

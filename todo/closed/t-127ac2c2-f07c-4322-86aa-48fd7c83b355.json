@@ -1,0 +1,17 @@
+{
+  "tadu": 2,
+  "id": "t-127ac2c2-f07c-4322-86aa-48fd7c83b355",
+  "title": "`vexaMessageArguments` pins the id after `--`, tested with a dash-leading",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    id (`c3a7483`)."
+  ],
+  "closed": "2026-11-17",
+  "result": "`vexaMessageArguments` pins the id after `--`, tested with a dash-leading",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

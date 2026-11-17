@@ -1,0 +1,18 @@
+{
+  "tadu": 2,
+  "id": "t-db667207-6c0b-4eef-9a32-4750804da9aa",
+  "title": "Twelve ingest integration tests failing on a clean checkout: no longer",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    reproduce. `pnpm check` on `a8b42e6` with the brain engine beside: 297",
+    "    files, 1325 passed, exit 0."
+  ],
+  "closed": "2026-11-17",
+  "result": "Twelve ingest integration tests failing on a clean checkout: no longer",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "tadu": 2,
+  "id": "t-06ef2702-ef3c-4622-998e-04bb174a9d2e",
+  "title": "Instance repairs in `~/p/wiki`: the seven kept `ingest/<id>` branches and",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    their worktrees are cleared (E4BM's locked worktree no longer existed on",
+    "    disk; unlocked and pruned), after a verified bundle of all seven branches",
+    "    plus each worktree's diff, status and untracked files were saved to",
+    "    `~/Backups/wiki-ingest-branches-20261011/`. The three `INDEX_MAP_FAILED`",
+    "    clips are requeued (wiki `81a464628`, `eb507c3aa`, `d8a1bd9df`), and",
+    "    01KYSGC20YGHQTSEX81YT61J3C's uncommitted `state.json` is restored with",
+    "    `git checkout`. Verified: `git branch --list 'ingest/*'` and the",
+    "    `brain-ingest` worktree list are empty; each requeue printed",
+    "    `requeued to     pending`."
+  ],
+  "closed": "2026-11-17",
+  "result": "Instance repairs in `~/p/wiki`: the seven kept `ingest/<id>` branches and",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

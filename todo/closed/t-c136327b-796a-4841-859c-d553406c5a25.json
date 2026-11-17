@@ -1,0 +1,19 @@
+{
+  "tadu": 2,
+  "id": "t-c136327b-796a-4841-859c-d553406c5a25",
+  "title": "The 81 frozen `code-policy/no-inline-types-in-runtime-files` suppressions",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    are paid down; `eslint-suppressions.json` is empty and emitted JavaScript",
+    "    is unchanged (`6443646`, implemented by Codex in workspace-write and",
+    "    re-verified by `pnpm check`, 1339 tests)."
+  ],
+  "closed": "2026-11-17",
+  "result": "The 81 frozen `code-policy/no-inline-types-in-runtime-files` suppressions",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

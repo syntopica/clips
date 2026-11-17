@@ -1,0 +1,14 @@
+{
+  "tadu": 2,
+  "id": "t-7476ee58-c87d-4ab6-957b-509192a7fbe3",
+  "title": "`INDEX_MAP_FAILED` is requeueable (`d2e4c5c`). Codex D2 (a), high",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "closed": "2026-11-17",
+  "result": "`INDEX_MAP_FAILED` is requeueable (`d2e4c5c`). Codex D2 (a), high",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

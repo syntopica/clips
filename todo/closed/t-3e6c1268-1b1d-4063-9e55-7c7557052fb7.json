@@ -1,0 +1,20 @@
+{
+  "tadu": 2,
+  "id": "t-3e6c1268-1b1d-4063-9e55-7c7557052fb7",
+  "title": "`runSyntopicaGit` names the spawn error code, e.g",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    `Cannot inspect configured Git repository (ENOBUFS)`, never the path",
+    "    (`eb554ba`); a test forces ENOBUFS. Likely cause of the 2026-09-30 flake:",
+    "    the 5 s spawn timeout under load (ETIMEDOUT), which the next occurrence",
+    "    will now say."
+  ],
+  "closed": "2026-11-17",
+  "result": "`runSyntopicaGit` names the spawn error code, e.g",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

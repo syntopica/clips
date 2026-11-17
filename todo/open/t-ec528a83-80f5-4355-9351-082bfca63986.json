@@ -1,0 +1,22 @@
+{
+  "tadu": 2,
+  "id": "t-ec528a83-80f5-4355-9351-082bfca63986",
+  "title": "Worker-ladder synthesis refusal rates. Measured 2026-10-11 over the",
+  "state": "in_progress",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "instance's needs-claude bucket (198 clips from the daily runs of",
+    "2026-10-05..11; 1444 processed, 588 pending): MODEL_ESCALATED 111 (34 of them",
+    "the selection pass saying a new page would be needed, 4 local-window",
+    "overflows, about 10 refused page writes such as a `link_from` naming a page",
+    "the model was not shown), CONTENT_VALIDATION_FAILED 68 (44 a rewrite that",
+    "drops an existing section, 10 missing frontmatter, 3 too many changed lines),",
+    "AUTO_REVIEWER_ESCALATED 16, INDEX_MAP_FAILED 3. Landed: one writing retry told",
+    "which section it dropped (`480c77d`) and a selection prompt that no longer",
+    "escalates for a missing page (`6ee5ac3`). Smallest next step: after a week of",
+    "daily runs, recount the same codes from clips escalated after 2026-10-11 and",
+    "compare."
+  ]
+}

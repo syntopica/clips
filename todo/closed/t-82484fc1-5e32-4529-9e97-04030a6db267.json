@@ -1,0 +1,19 @@
+{
+  "tadu": 2,
+  "id": "t-82484fc1-5e32-4529-9e97-04030a6db267",
+  "title": "Fresh-clone coverage: README states the brain engine must be checked out",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    beside the engine and synced before `pnpm test` (`cea339b`). Measured on a",
+    "    clips-only clone today: 1301 passed, 24 skipped, coverage 74.96% lines",
+    "    against 76% (exit 1); CI already checks out brain."
+  ],
+  "closed": "2026-11-17",
+  "result": "Fresh-clone coverage: README states the brain engine must be checked out",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

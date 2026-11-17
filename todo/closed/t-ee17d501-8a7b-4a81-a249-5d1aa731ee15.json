@@ -1,0 +1,21 @@
+{
+  "tadu": 2,
+  "id": "t-ee17d501-8a7b-4a81-a249-5d1aa731ee15",
+  "title": "Resolve the ChatGPT converter output from instance configuration",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    `convert.py` now reads `SYNTOPICA_DATA` and `brain.sources` at call time;",
+    "    `run.sh` and `purge.sh` use the same configuration contract as",
+    "    `keeper.sh`. Verified with temporary instances by `uv run pytest -q` (646",
+    "    passed, 4 skipped) and `uv run codeality-py gate` (all applicable checks",
+    "    passed)."
+  ],
+  "closed": "2026-11-17",
+  "result": "Resolve the ChatGPT converter output from instance configuration",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

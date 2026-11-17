@@ -1,0 +1,18 @@
+{
+  "tadu": 2,
+  "id": "t-f179b62f-70a7-4cf7-91e3-46064484c914",
+  "title": "`WIKI_REGISTER_INSTRUCTION` stays unchanged. Of the 16",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    AUTO_REVIEWER_ESCALATED clips in the instance's needs-claude bucket none",
+    "    cites puffery or `-ing` tails. Codex D5 (b), high."
+  ],
+  "closed": "2026-11-17",
+  "result": "`WIKI_REGISTER_INSTRUCTION` stays unchanged. Of the 16",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

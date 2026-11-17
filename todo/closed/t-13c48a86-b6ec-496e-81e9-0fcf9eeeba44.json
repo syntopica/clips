@@ -1,0 +1,22 @@
+{
+  "tadu": 2,
+  "id": "t-13c48a86-b6ec-496e-81e9-0fcf9eeeba44",
+  "title": "Pass the instance directory through the ChatGPT launchd template",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    `EnvironmentVariables` now carries `SYNTOPICA_DATA` through an explicit",
+    "    `__DATA_ROOT__` placeholder, filled by the documented render command.",
+    "    Verified by `uv run pytest -q tests/test_chatgpt_launchd_template.py` and",
+    "    the full Python suite: the documented command renders a valid plist in a",
+    "    temporary checkout with every path filled. No job was installed or",
+    "    bootstrapped; `tools/sessions/` has no launchd template."
+  ],
+  "closed": "2026-11-17",
+  "result": "Pass the instance directory through the ChatGPT launchd template",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

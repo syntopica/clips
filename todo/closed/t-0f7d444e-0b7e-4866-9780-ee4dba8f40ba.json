@@ -1,0 +1,18 @@
+{
+  "tadu": 2,
+  "id": "t-0f7d444e-0b7e-4866-9780-ee4dba8f40ba",
+  "title": "`clips status --json` holds the polling budget: 20 runs at load averages",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    86-114 on a 2230-clip store, p95 0.80 s, max 1.22 s, RSS about 137 MB",
+    "    (`/usr/bin/time -l node bin/clips status --json` in the instance)."
+  ],
+  "closed": "2026-11-17",
+  "result": "`clips status --json` holds the polling budget: 20 runs at load averages",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

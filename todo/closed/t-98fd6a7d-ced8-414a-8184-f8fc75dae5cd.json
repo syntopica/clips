@@ -1,0 +1,21 @@
+{
+  "tadu": 2,
+  "id": "t-98fd6a7d-ced8-414a-8184-f8fc75dae5cd",
+  "title": "**Security: update the locked certifi trust",
+  "state": "done",
+  "category": "security",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    bundle.** The lockfile candidate updates only certifi from 2026.7.22 to",
+    "    the patched 2026.10.19 release for GHSA-6q48-6c7w-9gw2. Next: verify the",
+    "    exact locked candidate in an isolated environment and complete the",
+    "    required source gates. Installed instances require separate verification;",
+    "    source acceptance does not establish their runtime state."
+  ],
+  "closed": "2026-10-22",
+  "result": "Update only certifi from 2026.7.22 to 2026.10.19, preserving every other locked package and metadata field. Installed consumer adoption remains separate.",
+  "evidence": [
+    "Isolated wheel-only locked setup and both engine lock checks passed. pytest -q passed 678 tests with four existing skips; codeality-py gate --json passed all seven required stages (90.08-percent coverage, unchanged 65-percent requirement). pnpm run check:ci --maxWorkers=1 passed with unchanged Node coverage thresholds. All 1956 source bytes/modes, 89 installed distribution records and 26983 dependency file hashes retained parity; owned process groups were empty."
+  ]
+}

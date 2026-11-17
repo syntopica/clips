@@ -1,0 +1,20 @@
+{
+  "tadu": 2,
+  "id": "t-8e627408-08ec-4b5a-a873-78cc127c11e1",
+  "title": "A clip move writes state.json after `git mv` succeeds and refuses an",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    occupied destination (`632147f`); a refused mv had left",
+    "    01KYSGC20YGHQTSEX81YT61J3C in `pending/` claiming needs-claude since",
+    "    2026-10-07, and `git mv` into an existing directory nested the clip",
+    "    instead of refusing."
+  ],
+  "closed": "2026-11-17",
+  "result": "A clip move writes state.json after `git mv` succeeds and refuses an",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

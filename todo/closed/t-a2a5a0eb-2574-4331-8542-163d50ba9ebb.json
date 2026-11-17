@@ -1,0 +1,20 @@
+{
+  "tadu": 2,
+  "id": "t-a2a5a0eb-2574-4331-8542-163d50ba9ebb",
+  "title": "`tools/daily/daily.sh` completes scheduled runs:",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    `~/p/.clips-daily.launchd.log` has `done: 40 clips attempted` on",
+    "    2026-10-05, 06 and 07, and `stop: five escalations in a row` on 08, 10",
+    "    and 11. Its harvest/promote `exit=` lines always read 0 because `$(stamp)`",
+    "    reset `$?`; fixed in `705547f`."
+  ],
+  "closed": "2026-11-17",
+  "result": "`tools/daily/daily.sh` completes scheduled runs:",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

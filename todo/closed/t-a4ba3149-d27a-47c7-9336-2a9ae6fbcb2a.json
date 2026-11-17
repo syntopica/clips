@@ -1,0 +1,22 @@
+{
+  "tadu": 2,
+  "id": "t-a4ba3149-d27a-47c7-9336-2a9ae6fbcb2a",
+  "title": "The daily job can read Chrome's cookies under launchd again: `/bin/bash`",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "    (the plist's `ProgramArguments[0]`) has Full Disk Access, granted in",
+    "    System Settings on 2026-10-11 (TCC `kTCCServiceSystemPolicyAllFiles`,",
+    "    `auth_value=2`). Verified with a throwaway launchd job running",
+    "    `/bin/bash -c 'cp .../Chrome/Default/Cookies ...'`, which printed `ok`",
+    "    where the daily job had failed with `EPERM` since 2026-10-05. The next",
+    "    `promote exit=` line in `~/p/.clips-daily.launchd.log` is the live check."
+  ],
+  "closed": "2026-11-17",
+  "result": "The daily job can read Chrome's cookies under launchd again: `/bin/bash`",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}
