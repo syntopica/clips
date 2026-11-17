@@ -59,7 +59,7 @@ number, a failure that cost a session, a rule that looks arbitrary until you
 know what it prevents. Commit messages are conventional and say what verified
 the change.
 
-<!-- tadu:rule v4 -->
+<!-- tadu:rule v5 -->
 
 ## Continuous TODO, Work Log, and History Coverage
 
@@ -82,15 +82,15 @@ conversations more than once.
   complete, `[-]` obsolete or superseded (in format 2: pending, in_progress,
   blocked, done, cancelled). Keep blockers open and name the smallest action
   required to unblock them.
-- Format 1: when work becomes `[x]` or `[-]`, remove it from `TODO.md` and add
-  a dated entry to `TODO_LOG.md` under `## YYYY` and `### YYYY-MM` headings, in
+- Format 1: when work becomes `[x]` or `[-]`, remove it from `TODO.md` and add a
+  dated entry to `TODO_LOG.md` under `## YYYY` and `### YYYY-MM` headings, in
   the shape below. An `[x]` entry needs an `Evidence:` line and a `[-]` entry a
   `Resolution:` line, each with content.
-- Format 1: give an item a `Kind:` field when it is clear what it is: `task`
-  for work you can do, `decision` for a choice a person must make, `waiting` for
-  something someone else owes, `later` for something not to do now. Leave it
-  out when unclear. `Due:` is the deadline, `Check on:` the day to look at the
-  item again and `Not before:` the day before which it cannot start.
+- Format 1: give an item a `Kind:` field when it is clear what it is: `task` for
+  work you can do, `decision` for a choice a person must make, `waiting` for
+  something someone else owes, `later` for something not to do now. Leave it out
+  when unclear. `Due:` is the deadline, `Check on:` the day to look at the item
+  again and `Not before:` the day before which it cannot start.
 - Take work with `tadu next`; `tadu inbox` lists what waits on a person and
   `tadu urgent` what is urgent. When only a person can answer a question while
   you work alone, record it (format 1: `tadu add --kind decision`; format 2: a
@@ -103,6 +103,8 @@ conversations more than once.
   (`--resolution`, or `--duplicate-of ID`). Close reports the tasks that no
   longer wait on it; decide for each whether it moves to pending. Every command
   is a dry run until `--write`.
+- In anything a person reads, such as a summary, a report or a question, name a
+  task by its title, never by its ID; IDs stay in commands and tool calls.
 - Before reviewing past conversations, consult the history index and skip
   unchanged records already marked `complete` or `irrelevant`. Update a record
   only after its findings are reconciled; interrupted work stays `partial`.
@@ -125,9 +127,9 @@ In format 1, close an item with
 `[-]`, `--result` for the Result line); it moves the item and writes the entry
 in this shape. `add`, `mark` and `close` print a diff and write only with
 `--write`; a connected `tadu mcp` server offers the same tools. Run
-`tadu doctor .` after changing the backlog and before committing. If `tadu` is not
-on PATH, install it as https://github.com/syntopica/tadu#install describes, or report that it is
-missing. Formats: tadu spec v1,
+`tadu doctor .` after changing the backlog and before committing. If `tadu` is
+not on PATH, install it as https://github.com/syntopica/tadu#install describes,
+or report that it is missing. Formats: tadu spec v1,
 https://github.com/syntopica/tadu/blob/main/spec/todo-format-v1.md, and v2,
 https://github.com/syntopica/tadu/blob/main/spec/todo-format-v2.md. The
 tadu-create and tadu-work skills automate these workflows and are optional.
