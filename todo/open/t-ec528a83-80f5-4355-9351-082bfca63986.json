@@ -1,11 +1,12 @@
 {
   "tadu": 2,
   "id": "t-ec528a83-80f5-4355-9351-082bfca63986",
-  "title": "Worker-ladder synthesis refusal rates. Measured 2026-10-11 over the",
-  "state": "in_progress",
+  "title": "Recount worker-ladder escalation codes after the 2026-10-11 fixes and compare with the baseline (111 MODEL_ESCALATED, 68 CONTENT_VALIDATION_FAILED)",
+  "state": "pending",
   "category": "general",
-  "type": "untriaged",
-  "priority": "untriaged",
+  "type": "chore",
+  "priority": "low",
+  "kind": "task",
   "notes": [
     "instance's needs-claude bucket (198 clips from the daily runs of",
     "2026-10-05..11; 1444 processed, 588 pending): MODEL_ESCALATED 111 (34 of them",
@@ -17,6 +18,7 @@
     "which section it dropped (`480c77d`) and a selection prompt that no longer",
     "escalates for a missing page (`6ee5ac3`). Smallest next step: after a week of",
     "daily runs, recount the same codes from clips escalated after 2026-10-11 and",
-    "compare."
+    "compare.",
+    "2026-11-24 audit: both fixes landed (480c77d retry on dropped section, 6ee5ac3 selection no longer escalates for a missing page; 361f63e/4d918a9/37df0b5 later ladder fixes). The follow-up recount is NOT done: no recount commit or note exists. Instance needs-claude dir /Users/cristiandeluxe/p/wiki/clips-inbox/clips/needs-claude is currently empty, so the old bucket was cleared and the comparison needs the escalation records (run logs or status per-clip items since 2026-10-11), not that dir. Next step: count escalation codes from clips escalated after 2026-10-11 via clips status and compare with the baseline."
   ]
 }

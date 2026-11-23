@@ -1,11 +1,12 @@
 {
   "tadu": 2,
   "id": "t-615798ef-eff6-4d59-babd-4bd234452866",
-  "title": "The worker review gate escalates most clips written on the worker's fine",
+  "title": "Review gate: stop escalating clips whose worker review lands on the author's own fine tier; exclude that tier from the review ladder",
   "state": "pending",
   "category": "general",
-  "type": "untriaged",
-  "priority": "untriaged",
+  "type": "bug",
+  "priority": "normal",
+  "kind": "task",
   "notes": [
     "    tier, because the ladder answers the review on that same tier and",
     "    `workerReviewer` correctly discards it (`graderAuthorRefusal`). Measured",
@@ -15,6 +16,7 @@
     "    that wrote this page\". The guard is right; the routing is what wastes the",
     "    synthesis. Smallest next step: let the review job exclude the author's",
     "    tier from the ladder (or route it to a tier the author cannot hold)",
-    "    instead of escalating after the answer."
+    "    instead of escalating after the answer.",
+    "2026-11-24 audit: not done. No commit since the 2026-11-12 measurement touches src/review or src/grade (log only shows todo/guidance commits). workerReviewer (src/review/worker-reviewer.ts) still calls port.infer after the fact and then graderAuthorRefusal escalates; tierAwareReviewer (cc9c25e, 2026-10-05) only reroutes local-tier authors to the remote queue, not the agy-fine tier. Next: let the review infer job exclude the author tier (or route to a tier the author cannot hold) in src/review/worker-reviewer.ts / worker-synthesis port."
   ]
 }

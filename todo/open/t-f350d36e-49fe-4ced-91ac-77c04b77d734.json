@@ -1,11 +1,13 @@
 {
   "tadu": 2,
   "id": "t-f350d36e-49fe-4ced-91ac-77c04b77d734",
-  "title": "The 2026-10-09 daily run logged two clips and then nothing: no clip line,",
-  "state": "in_progress",
+  "title": "Daily clips run of 2026-10-09 died silently with no done/stop line; guards landed, no recurrence since, close as unreproduced or wait for next case",
+  "state": "pending",
   "category": "general",
-  "type": "untriaged",
-  "priority": "untriaged",
+  "type": "bug",
+  "priority": "low",
+  "kind": "later",
+  "check_on": "2026-12-24",
   "notes": [
     "no `done:` and no `stop:`, although each clip is bounded by a 2 h timeout. The",
     "machine booted again around 19:45Z that day, and `log show` no longer holds",
@@ -15,6 +17,7 @@
     "next run that ends without `done:`, read the last line of",
     "`~/p/.clips-daily.launchd.log` (a `<id> start` with nothing after it is a",
     "SIGKILL or power loss; compare the `booted` time of the next run) and close",
-    "this with the cause."
+    "this with the cause.",
+    "2026-11-24 audit: guards verified live in ~/p/.clips-daily.launchd.log (start line with pid and boot time from 2026-10-12, per-clip start lines, stop: lines). Every run from 2026-10-12 to 2026-11-23 (about 40 start lines) ends with done: or stop:; awk over start/done/stop found no run left open. No recurrence, so cause of 2026-10-09 stays unknown (boot 2026-10-09 21:44 suggests reboot/power loss). TODO_LOG.md no longer exists in clips. Smallest next step: close as unreproduced with that evidence, or keep until a run ends without done:/stop:."
   ]
 }

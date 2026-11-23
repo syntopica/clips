@@ -1,11 +1,12 @@
 {
   "tadu": 2,
   "id": "t-9a48e1b2-1416-4fb8-8227-e3ce0f188355",
-  "title": "Worker synthesis on qwen3.6:35b does not yet produce a publishable page",
+  "title": "Confirm worker synthesis on qwen3.6:35b yields validator-accepted pages: rerun smoke 3x on the TaxHacker clip, or fold into refusal-rate recount",
   "state": "in_progress",
   "category": "general",
-  "type": "untriaged",
-  "priority": "untriaged",
+  "type": "test",
+  "priority": "normal",
+  "kind": "task",
   "notes": [
     "Three runs of the TaxHacker clip, 2026-09-30: once the selection named pages",
     "without `.md` (now resolved leniently); twice the writing pass created a new",
@@ -21,6 +22,7 @@
     "sat queued 36 min without being leased, while the local Ollama answered 500",
     "after 4-17 min and swap stood at 23.6 of 24.5 GB. Next step: rerun `smoke` on",
     "the same clip three times once the worker drains, and close this only if the",
-    "validator accepts the results."
+    "validator accepts the results.",
+    "2026-11-24 audit: fix landed (35228ba link_from, 4de149f worker queue, 480c77d retry, 6ee5ac3 selection). Daily runs 2026-10-05..11 processed 1444 clips on the worker ladder, so the pipeline works at scale; but the specific 3x smoke rerun on the TaxHacker clip has no recorded result in repo. Remaining: recount refusal codes after 2026-10-11 (see Worker-ladder synthesis refusal rates task) and close this as superseded by that, or run the smoke rerun if the worker is idle. Evidence: git log, docs/worker-synthesis-contract.md, launchctl com.syntopica.clips-daily loaded."
   ]
 }
