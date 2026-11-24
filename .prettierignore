@@ -10,3 +10,8 @@ pnpm-lock.yaml
 # Written by `eslint --suppress-all` and rewritten by `lint:prune`; ESLint owns
 # its shape, and formatting it would make every prune a formatting diff.
 eslint-suppressions.json
+# Task JSON uses tadu's canonical format.
+todo/open/*.json
+todo/closed/*.json
+# Local Serena workspace metadata is not repository content.
+/.serena/project.yml

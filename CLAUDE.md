@@ -59,6 +59,8 @@ number, a failure that cost a session, a rule that looks arbitrary until you
 know what it prevents. Commit messages are conventional and say what verified
 the change.
 
+<!-- prettier-ignore-start -->
+
 <!-- tadu:rule v5 -->
 
 ## Continuous TODO, Work Log, and History Coverage
@@ -112,3 +114,5 @@ https://github.com/syntopica/tadu/blob/main/spec/todo-format-v2.md. A connected
 `tadu mcp` server offers the same tools. The tadu-create and tadu-work skills
 automate these workflows and are optional.
 <!-- /tadu:rule -->
+
+<!-- prettier-ignore-end -->

@@ -16,6 +16,9 @@ allowBuilds:
 # a CommonJS build with the same default-export shape.
 minimumReleaseAgeExclude:
   - '@syntopica/prettier-config@0.3.0'
+  - '@syntopica/eslint-config'
+  - '@syntopica/quality-config'
+  - 'eslint-plugin-code-policy'
 overrides:
   brace-expansion: ^5.0.9
   # 13 GHSA advisories (11 high) in @xmldom/xmldom 0.9.10-0.9.11, reached only
