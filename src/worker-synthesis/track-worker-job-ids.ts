@@ -7,14 +7,13 @@ export const trackWorkerJobIds = (
   port: WorkerSynthesisPort,
 ): TrackedWorkerJobIds => {
   const jobIds: string[] = []
-  return {
-    jobIds,
-    port: {
-      infer: async (step, prompt, schema, reserveBytes) => {
-        const answer = await port.infer(step, prompt, schema, reserveBytes)
-        if (answer.jobId !== undefined) jobIds.push(answer.jobId)
-        return answer
-      },
+  const track = (inner: WorkerSynthesisPort): WorkerSynthesisPort => ({
+    infer: async (step, prompt, schema, reserveBytes) => {
+      const answer = await inner.infer(step, prompt, schema, reserveBytes)
+      if (answer.jobId !== undefined) jobIds.push(answer.jobId)
+      return answer
     },
-  }
+    excluding: (providers) => track(inner.excluding(providers)),
+  })
+  return { jobIds, port: track(port) }
 }

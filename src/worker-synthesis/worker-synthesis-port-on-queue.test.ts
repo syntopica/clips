@@ -72,7 +72,16 @@ describe('workerSynthesisPortOnQueue', () => {
 
   const timing = { pollMs: 0, waitMs: 1_000 }
 
-  const infer = async (prompt: string, reserveBytes = 0) =>
+  const submits = () =>
+    calls
+      .filter((call) => call.method === 'POST' && call.path === '/v1/jobs')
+      .map((call) => call.body as Record<string, unknown>)
+
+  const infer = async (
+    prompt: string,
+    reserveBytes = 0,
+    excludeProviders?: readonly string[],
+  ) =>
     withFixtureSyntopicaConfig(async () => {
       const root = currentSyntopicaConfig().dataRoot
       mkdirSync(join(root, 'worker'), { recursive: true })
@@ -80,12 +89,9 @@ describe('workerSynthesisPortOnQueue', () => {
         join(root, 'worker', 'config.json'),
         JSON.stringify({ models: { m: { num_ctx: 1000 } } }),
       )
-      return workerSynthesisPortOnQueue('q.synthesis', timing, {}).infer(
-        'write',
-        prompt,
-        { type: 'object' },
-        reserveBytes,
-      )
+      return workerSynthesisPortOnQueue('q.synthesis', timing, {})
+        .excluding(excludeProviders ?? [])
+        .infer('write', prompt, { type: 'object' }, reserveBytes)
     })
 
   it('submits a tool-less personal inference job pinned to the worker model', async () => {
@@ -160,6 +166,44 @@ describe('workerSynthesisPortOnQueue', () => {
       ) as unknown,
       jobId: 's-1',
       interrupted: true,
+    })
+  })
+
+  it('names the providers that must not run the job and keys it apart from the same prompt without them', async () => {
+    await infer(PROMPT)
+    await infer(PROMPT, 0, ['openrouter', 'agy'])
+
+    const [plain, excluding] = submits()
+    expect(plain?.['requirements']).toEqual({
+      capability: 'chat.json',
+      models: ['m'],
+    })
+    expect(excluding?.['requirements']).toEqual({
+      capability: 'chat.json',
+      models: ['m'],
+      exclude_providers: ['openrouter', 'agy'],
+    })
+    expect(excluding?.['idempotency_key']).not.toBe(plain?.['idempotency_key'])
+  })
+
+  it('sends no exclusion for an empty list, and keeps the key it always had', async () => {
+    await infer(PROMPT)
+    await infer(PROMPT, 0, [])
+
+    const [plain, empty] = submits()
+    expect(empty).toEqual(plain)
+  })
+
+  it('reports an exclusion that left no executor as its own failure', async () => {
+    result = { result_id: 'r-1', control: 'failed', output: null }
+    afterAck = { state: 'failed', error: 'no_eligible_executor', result: null }
+    const answer = await infer(PROMPT, 0, ['openrouter'])
+
+    expect(answer).toEqual({
+      failure: expect.stringMatching(
+        /s-1 on q.synthesis had no eligible executor once openrouter excluded \(no_eligible_executor\)/,
+      ) as unknown,
+      jobId: 's-1',
     })
   })
 })

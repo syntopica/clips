@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto'
 import { currentSyntopicaConfig } from '../config/current-syntopica-config.ts'
 import { localGradeOverflow } from '../grade/local-grade-overflow.ts'
 import { awaitWorkerResult } from '../worker/await-worker-result.ts'
@@ -8,7 +7,10 @@ import { workerJobLeaseLost } from '../worker/worker-job-lease-lost.ts'
 import { workerModel } from '../worker/worker-model.ts'
 import { workerOutputText } from '../worker/worker-output-text.ts'
 import type { WorkerTiming } from '../worker/worker-timing.ts'
+import { workerNoEligibleExecutorFailure } from './worker-no-eligible-executor-failure.ts'
+import { workerSynthesisDigest } from './worker-synthesis-digest.ts'
 import type { WorkerSynthesisPort } from './worker-synthesis-port.ts'
+import { workerSynthesisRequirements } from './worker-synthesis-requirements.ts'
 
 /** Synthesis inference as jobs on a worker queue.
  *
@@ -28,21 +30,19 @@ import type { WorkerSynthesisPort } from './worker-synthesis-port.ts'
  * to a remote model).
  *
  * The key is the model, the step and the prompt, so a rerun collects the job a
- * previous run left queued instead of paying for it twice. */
+ * previous run left queued instead of paying for it twice. `excluded` names
+ * the executor providers the worker must never run the jobs on. */
 export const workerSynthesisPortOnQueue = (
   queue: string,
   timing: WorkerTiming,
   environ: NodeJS.ProcessEnv = process.env,
+  excluded: readonly string[] = [],
 ): WorkerSynthesisPort => ({
+  excluding: (providers) =>
+    workerSynthesisPortOnQueue(queue, timing, environ, providers),
   infer: async (step, prompt, schema, reserveBytes) => {
     const model = workerModel(environ)
-    const context = readWorkerModelContext(
-      currentSyntopicaConfig().dataRoot,
-      model,
-    )
-    const digest = createHash('sha256')
-      .update(`${model}\n${step}\n${prompt}`)
-      .digest('hex')
+    const digest = workerSynthesisDigest(model, step, prompt, excluded)
     const jobId = await submitWorkerJob({
       contract: 1,
       kind: 'inference',
@@ -51,7 +51,7 @@ export const workerSynthesisPortOnQueue = (
       priority: 45,
       privacy: 'personal',
       max_attempts: 2,
-      requirements: { capability: 'chat.json', models: [model] },
+      requirements: workerSynthesisRequirements(model, excluded),
       input: { messages: [{ role: 'user', content: prompt }], schema },
     })
     const result = await awaitWorkerResult(jobId, timing)
@@ -63,15 +63,17 @@ export const workerSynthesisPortOnQueue = (
         interrupted: true,
       }
     if (result === null || text === null)
-      return {
-        failure: `worker job ${jobId} on ${queue} ended without an answer; a rerun collects it by its key if it is still queued`,
-        jobId,
-      }
+      return (
+        (await workerNoEligibleExecutorFailure(jobId, queue, excluded)) ?? {
+          failure: `worker job ${jobId} on ${queue} ended without an answer; a rerun collects it by its key if it is still queued`,
+          jobId,
+        }
+      )
     const executor = result.executor ?? null
     const overflow = localGradeOverflow(
       executor,
       Buffer.byteLength(prompt, 'utf8') + reserveBytes,
-      context,
+      readWorkerModelContext(currentSyntopicaConfig().dataRoot, model),
     )
     if (overflow !== null) return { failure: overflow, jobId, exhausted: true }
     return { text, executor, jobId }

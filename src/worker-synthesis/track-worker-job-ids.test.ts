@@ -12,6 +12,7 @@ describe('trackWorkerJobIds', () => {
     const port: WorkerSynthesisPort = {
       infer: async () =>
         Promise.resolve(answers.shift() ?? { failure: 'none' }),
+      excluding: () => port,
     }
     const tracked = trackWorkerJobIds(port)
     expect(await tracked.port.infer('select', 'p', {}, 0)).toEqual({
@@ -22,5 +23,15 @@ describe('trackWorkerJobIds', () => {
     await tracked.port.infer('write', 'p', {}, 0)
     await tracked.port.infer('write', 'p', {}, 0)
     expect(tracked.jobIds).toEqual(['job-1', 'job-2'])
+  })
+
+  it('keeps tracking through a port narrowed by an exclusion', async () => {
+    const port: WorkerSynthesisPort = {
+      infer: async () => Promise.resolve({ failure: 'x', jobId: 'job-3' }),
+      excluding: () => port,
+    }
+    const tracked = trackWorkerJobIds(port)
+    await tracked.port.excluding(['agy']).infer('review', 'p', {}, 0)
+    expect(tracked.jobIds).toEqual(['job-3'])
   })
 })

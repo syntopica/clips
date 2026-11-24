@@ -1,4 +1,5 @@
 import type { WorkerInferenceAnswer } from '../worker-synthesis/worker-inference-answer.ts'
+import type { WorkerSynthesisPort } from '../worker-synthesis/worker-synthesis-port.ts'
 import type { FakeWorkerSynthesisPortResult } from './fake-worker-synthesis-port-result.ts'
 import type { WorkerPortCall } from './worker-port-call.ts'
 
@@ -9,13 +10,12 @@ export const fakeWorkerSynthesisPort = (
   write: WorkerInferenceAnswer,
 ): FakeWorkerSynthesisPortResult => {
   const calls: WorkerPortCall[] = []
-  return {
-    calls,
-    port: {
-      infer: async (step, prompt, _schema, reserveBytes) => {
-        calls.push({ step, prompt, reserveBytes })
-        return Promise.resolve(step === 'select' ? select : write)
-      },
+  const port: WorkerSynthesisPort = {
+    infer: async (step, prompt, _schema, reserveBytes) => {
+      calls.push({ step, prompt, reserveBytes })
+      return Promise.resolve(step === 'select' ? select : write)
     },
+    excluding: () => port,
   }
+  return { calls, port }
 }

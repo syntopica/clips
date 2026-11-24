@@ -1,6 +1,7 @@
 import { EVERY_GRADE_TIER } from '../grade/every-grade-tier.ts'
 import { gradeTiersOfAuthor } from '../grade/grade-tiers-of-author.ts'
 import { graderAuthorRefusal } from '../grade/grader-author-refusal.ts'
+import { providersOfGradeTiers } from '../grade/providers-of-grade-tiers.ts'
 import type { WorkerSynthesisPort } from '../worker-synthesis/worker-synthesis-port.ts'
 import { agyReviewPrompt } from './agy-review-prompt.ts'
 import { AGY_REVIEW_SCHEMA } from './agy-review-schema.ts'
@@ -17,7 +18,10 @@ import { sensitiveDiffRefusal } from './sensitive-diff-refusal.ts'
  * setting: the job cannot name an executor, so the answer's reported executor
  * is placed on a tier after the fact, and a verdict from the tier that wrote
  * the diff - or from an executor no tier holds - escalates instead of
- * applying. The same fail-closed bounds as the agy gate
+ * applying. The author's providers are also sent as an exclusion so the worker
+ * does not spend the review there; a worker that fails the job for want of any
+ * other executor, or that predates the field and answers on the author's tier
+ * anyway, ends in the same escalation. The same fail-closed bounds as the agy gate
  * run first: `diffNeedsHuman` and the sensitive-path refusal are checked on the
  * diff text before any model sees it. */
 export const workerReviewer = (port: WorkerSynthesisPort): Reviewer => ({
@@ -28,21 +32,17 @@ export const workerReviewer = (port: WorkerSynthesisPort): Reviewer => ({
     if (sensitive !== null) return { verdict: 'claude', reason: sensitive }
     const blocked = diffNeedsHuman(diff)
     if (blocked !== null) return { verdict: 'claude', reason: blocked }
-    const answer = await port.infer(
-      'review',
-      agyReviewPrompt(diff),
-      AGY_REVIEW_SCHEMA,
-      4096,
-    )
+    const authorTiers =
+      gradeTiersOfAuthor(input.authorModel) ?? EVERY_GRADE_TIER
+    const answer = await port
+      .excluding(providersOfGradeTiers(authorTiers))
+      .infer('review', agyReviewPrompt(diff), AGY_REVIEW_SCHEMA, 4096)
     if ('failure' in answer)
       return { verdict: 'claude', reason: `review: ${answer.failure}` }
     // The grade lane's tier policy, not a model-name match: OpenRouter
     // reports whichever fallback answered, so two names on one tier prove
     // nothing, and an author the lane cannot place refuses every tier.
-    const refusal = graderAuthorRefusal(
-      answer.executor,
-      gradeTiersOfAuthor(input.authorModel) ?? EVERY_GRADE_TIER,
-    )
+    const refusal = graderAuthorRefusal(answer.executor, authorTiers)
     if (refusal !== null) return { verdict: 'claude', reason: refusal }
     return readAgyVerdict(answer.text)
   },
