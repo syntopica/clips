@@ -9,6 +9,7 @@
   "kind": "decision",
   "created": "2026-11-24",
   "notes": [
-    "Parked 2026-10-12..11-23 with AUTO_REVIEWER_ESCALATED \"the worker answered on <tier>, the agy-fine tier that wrote this page, so the verdict was discarded\" (63 claude-sonnet, 57 gemini-flash, 5 haiku ungradable). Requeueing spends worker and agy quota, so the owner decides when."
+    "Parked 2026-10-12..11-23 with AUTO_REVIEWER_ESCALATED \"the worker answered on <tier>, the agy-fine tier that wrote this page, so the verdict was discarded\" (63 claude-sonnet, 57 gemini-flash, 5 haiku ungradable). Requeueing spends worker and agy quota, so the owner decides when.",
+    "2026-11-24: owner chose to requeue all 125 now and synthesize on codex. All 125 are in pending (48 kept draft branches were cleared after a backup under refs/requeue-backup/2026-11-24/ in the wiki). The codex run is blocked by the shared-mount index escalation task."
   ]
 }
