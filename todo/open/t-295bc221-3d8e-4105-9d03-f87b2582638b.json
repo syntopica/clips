@@ -10,6 +10,7 @@
   "created": "2026-11-24",
   "notes": [
     "Parked 2026-10-12..11-23 with AUTO_REVIEWER_ESCALATED \"the worker answered on <tier>, the agy-fine tier that wrote this page, so the verdict was discarded\" (63 claude-sonnet, 57 gemini-flash, 5 haiku ungradable). Requeueing spends worker and agy quota, so the owner decides when.",
-    "2026-11-24: owner chose to requeue all 125 now and synthesize on codex. All 125 are in pending (48 kept draft branches were cleared after a backup under refs/requeue-backup/2026-11-24/ in the wiki). The codex run is blocked by the shared-mount index escalation task."
+    "2026-11-24: owner chose to requeue all 125 now and synthesize on codex. All 125 are in pending (48 kept draft branches were cleared after a backup under refs/requeue-backup/2026-11-24/ in the wiki). The codex run is blocked by the shared-mount index escalation task.",
+    "2026-11-24: the shared-mount index issue was fixed in 94369fb. A separate three-clip run at b843765 finished with one rejection, two manual review escalations, and no publications. All three modified existing pages preserved their titles and summaries byte for byte in the retained drafts. The review cited source-marker concerns on all three, and cited the unchanged summary on one. Validate a bounded replay after addressing the review findings before resuming the wider batch."
   ]
 }

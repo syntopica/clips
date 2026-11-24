@@ -1,0 +1,20 @@
+{
+  "tadu": 2,
+  "id": "t-2a1d9323-3e65-4693-91be-3ff4d7c02213",
+  "title": "Align automatic clip review with preservation of existing page summaries",
+  "state": "pending",
+  "category": "general",
+  "type": "bug",
+  "priority": "normal",
+  "kind": "task",
+  "created": "2026-11-24",
+  "related": [
+    "t-295bc221-3d8e-4105-9d03-f87b2582638b"
+  ],
+  "notes": [
+    "In the 2026-11-24 validation of Codex synthesis at b843765, a retained draft preserved the existing title and summary byte for byte. The automatic reviewer cited the unchanged summary as one reason to escalate, alongside citation and link concerns."
+  ],
+  "done_when": [
+    "An otherwise acceptable addition to an existing page can pass automatic review with its summary unchanged. Citation and link checks still apply."
+  ]
+}

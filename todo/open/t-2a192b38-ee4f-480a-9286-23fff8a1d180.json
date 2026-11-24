@@ -1,0 +1,20 @@
+{
+  "tadu": 2,
+  "id": "t-2a192b38-ee4f-480a-9286-23fff8a1d180",
+  "title": "Resolve recurring citation and attribution issues in Codex clip drafts",
+  "state": "pending",
+  "category": "general",
+  "type": "bug",
+  "priority": "normal",
+  "kind": "task",
+  "created": "2026-11-24",
+  "related": [
+    "t-295bc221-3d8e-4105-9d03-f87b2582638b"
+  ],
+  "notes": [
+    "All three Codex validation drafts on 2026-11-24 reached automatic review. Each verdict raised a source-marker issue. Two verdicts also raised claims presented as fact, and one questioned whether it had enough unchanged context to judge a rewrite."
+  ],
+  "done_when": [
+    "Determine whether the flagged markers fail to resolve in the full draft or are unverifiable from the review input. Address the confirmed causes and check that source-reported claims are explicitly attributed in a replay."
+  ]
+}
