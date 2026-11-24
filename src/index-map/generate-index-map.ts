@@ -4,6 +4,7 @@ import { currentSyntopicaConfig } from '../config/current-syntopica-config.ts'
 import type { IndexMapGenerationFailure } from './index-map-generation-failure.ts'
 import { indexMapScript } from './index-map-script.ts'
 import { withWorktreeEngineOverlay } from './with-worktree-engine-overlay.ts'
+import { withWorktreePageMounts } from './with-worktree-page-mounts.ts'
 
 /** Regenerates the index inside the worktree from every page's `summary:`
  * frontmatter. Returns why it could not, or null when the map is written.
@@ -34,29 +35,37 @@ import { withWorktreeEngineOverlay } from './with-worktree-engine-overlay.ts'
  * nothing from its own location, so without the flag it would walk upward out
  * of the worktree and index the wrong instance. The worktree's configuration
  * names its engines relative to a checkout it is not in, which is what
- * `withWorktreeEngineOverlay` pins. */
+ * `withWorktreeEngineOverlay` pins, and may name page directories Git did not
+ * carry into the worktree, which is what `withWorktreePageMounts` links. */
 export const generateIndexMap = async (
   worktree: string,
 ): Promise<string | null> => {
   const execFileAsync = promisify(execFile)
   const script = indexMapScript()
   try {
-    await withWorktreeEngineOverlay(worktree, async () =>
-      execFileAsync(
-        'uv',
-        [
-          'run',
-          '--no-sync',
-          '--project',
-          currentSyntopicaConfig().brainPath,
-          'python',
-          '-B',
-          script,
-          '--data',
-          '.',
-        ],
-        { cwd: worktree, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
-      ),
+    const config = currentSyntopicaConfig()
+    await withWorktreePageMounts(
+      config.dataRoot,
+      config.pages,
+      worktree,
+      async () =>
+        withWorktreeEngineOverlay(worktree, async () =>
+          execFileAsync(
+            'uv',
+            [
+              'run',
+              '--no-sync',
+              '--project',
+              config.brainPath,
+              'python',
+              '-B',
+              script,
+              '--data',
+              '.',
+            ],
+            { cwd: worktree, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
+          ),
+        ),
     )
     return null
   } catch (error) {

@@ -2,7 +2,7 @@
   "tadu": 2,
   "id": "t-14ff927f-f8d0-476d-bfd7-6b464c439501",
   "title": "Every ingest escalates since the shared Vibra brain was mounted: the ingest worktree lacks the ignored brain/shared mount, so the rebuilt index.md drops its 12 entries",
-  "state": "pending",
+  "state": "done",
   "category": "ingest",
   "type": "bug",
   "priority": "urgent",
@@ -12,5 +12,10 @@
     "Evidence 2026-11-24: wiki commit dd4666bb6 (02:48:06 +0100) mounted a nested repository at brain/shared/vibra, ignored by .gitignore line brain/shared/, added brain/shared/vibra/{projects,business,topics} to syntopica.config.json and 12 shared/vibra entries to brain/index.md. Three clips ingested right after (codex synthesis, worker review) all parked with AUTO_REVIEWER_ESCALATED \"the diff drops shared/vibra/projects/contratos from index.md\". The ingest worktree is a git worktree of the wiki, so the ignored mount is absent there and the index rebuild removes its entries.",
     "Impact: the 06:30 com.syntopica.clips-daily run will park five clips and stop on its streak. 328 clips wait in pending, 125 of them requeued on 2026-11-24 for a codex run that was stopped after three clips (all three requeued again).",
     "Smallest next step: decide where the fix lives - make the index builder keep entries of configured page directories that are absent from the worktree, or make the ingest worktree carry the mount - then rerun one clip with CLIPS_SYNTHESIS_RUNNER=codex CLIPS_REVIEW_RUNNER=worker."
+  ],
+  "closed": "2026-11-24",
+  "result": "Every ingest escalates since the shared Vibra brain was mounted: the ingest worktree lacks the ignored brain/shared mount, so the rebuilt index.md drops its 12 entries",
+  "evidence": [
+    "generateIndexMap now copies configured page directories the worktree lacks (ignored mounts) in for the builder run and removes them after; src/index-map/with-worktree-page-mounts.test.ts passes, vitest 1372 passed, type-check and lint clean. Live proof 2026-11-24T02:07Z: clip 01KYSGC20YMT9FVZCRZFN6FV50 with codex synthesis passed index generation and reached an ordinary reviewer rejection instead of AUTO_REVIEWER_ESCALATED; brain/index.md still lists 12 shared/vibra entries. A first attempt with symlinks failed with 'brain.pages escapes the data directory', hence the copy."
   ]
 }
