@@ -1,0 +1,11 @@
+{
+  "tadu": 2,
+  "id": "t-7146034a-d950-447d-8dfe-d18c5eb09c1d",
+  "title": "Carry the defuddle extractor name in clip metadata as a new optional site_extractor_name field",
+  "state": "pending",
+  "category": "general",
+  "type": "feature",
+  "priority": "low",
+  "kind": "later",
+  "created": "2026-11-24"
+}
