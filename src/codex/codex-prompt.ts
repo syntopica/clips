@@ -2,6 +2,7 @@ import { CLAIM_MARKER_INSTRUCTION } from '../citations/claim-marker-instruction.
 import { currentWikiLayout } from '../layout/current-wiki-layout.ts'
 import { indexRepositoryPath } from '../layout/index-repository-path.ts'
 import { repositoryPageDirectories } from '../layout/repository-page-directories.ts'
+import { EXISTING_FRONTMATTER_INSTRUCTION } from '../synthesis/existing-frontmatter-instruction.ts'
 import { SATURATION_INSTRUCTION } from '../synthesis/saturation-instruction.ts'
 import { SUPERSESSION_INSTRUCTION } from '../synthesis/supersession-instruction.ts'
 import { WIKI_REGISTER_INSTRUCTION } from '../synthesis/wiki-register-instruction.ts'
@@ -55,6 +56,7 @@ ${WIKI_REGISTER_INSTRUCTION}
   web page, then a social post. Never decide it by which is newer.
 ${SUPERSESSION_INSTRUCTION}
 ${SATURATION_INSTRUCTION}
+${EXISTING_FRONTMATTER_INSTRUCTION}
 - A page you create must be linked FROM at least one other page - the project
   or topic page it serves. A line in ${index} does not count and the pipeline
   rejects a new page nothing else links to.
