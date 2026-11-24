@@ -1,0 +1,14 @@
+{
+  "tadu": 2,
+  "id": "t-ac04437f-18be-4cbb-9501-4849d958c139",
+  "title": "Rewrites that drop an existing section still park clips after the one-retry fix: 63 of 334 parked clips (2026-10-12..11-23)",
+  "state": "pending",
+  "category": "general",
+  "type": "bug",
+  "priority": "normal",
+  "kind": "task",
+  "created": "2026-11-24",
+  "notes": [
+    "Top pages: coding-agents (10), claude-skills-ecosystem (7), agent-harnesses (6). Next step: read three failures on coding-agents.md, see whether the retry ran and what the second answer dropped; large topic pages may need a section-scoped edit instead of a full rewrite."
+  ]
+}

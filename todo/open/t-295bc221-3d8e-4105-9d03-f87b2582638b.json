@@ -1,0 +1,14 @@
+{
+  "tadu": 2,
+  "id": "t-295bc221-3d8e-4105-9d03-f87b2582638b",
+  "title": "Requeue the 125 clips parked by the same-tier review discard now that the review gate excludes the author tier",
+  "state": "pending",
+  "category": "general",
+  "type": "chore",
+  "priority": "normal",
+  "kind": "decision",
+  "created": "2026-11-24",
+  "notes": [
+    "Parked 2026-10-12..11-23 with AUTO_REVIEWER_ESCALATED \"the worker answered on <tier>, the agy-fine tier that wrote this page, so the verdict was discarded\" (63 claude-sonnet, 57 gemini-flash, 5 haiku ungradable). Requeueing spends worker and agy quota, so the owner decides when."
+  ]
+}
